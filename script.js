@@ -3,7 +3,7 @@ const mapInner = document.getElementById("map-inner");
 const newPointBtn = document.getElementById("new-point-btn");
 const hintSpan = document.getElementById("hint");
 
-// --- ÉTAT ---
+// --- ÉTATS ---
 let isDragging = false;
 let wasDragging = false;
 
@@ -19,8 +19,8 @@ let zoom = 1;
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 3;
 
+// Ajout de point : on attend le prochain clic sur la carte
 let addingPoint = false;
-let pendingMarkerData = null;
 
 // --- APPLIQUE LE DÉPLACEMENT + ZOOM ---
 function updateTransform() {
@@ -28,9 +28,10 @@ function updateTransform() {
   mapInner.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${zoom})`;
 }
 
-// --- DRAG (déplacement au clic gauche) ---
+// --- DEPLACEMENT (DRAG AU CLIC GAUCHE) ---
 mapContainer.addEventListener("mousedown", (e) => {
-  if (addingPoint) return;          // si on ajoute un point, on ne drag pas
+  // si on est en mode ajout de point, on ne drag pas
+  if (addingPoint) return;
   if (e.button !== 0) return;       // uniquement clic gauche
 
   isDragging = true;
@@ -61,26 +62,30 @@ document.addEventListener("mouseup", () => {
   mapContainer.classList.remove("dragging");
 });
 
-// --- ZOOM MOLETTE ---
+// --- ZOOM MOLETTE (UNIQUEMENT SUR LA CARTE, PAS SUR LA BARRE DU HAUT) ---
 mapContainer.addEventListener("wheel", (e) => {
+  // Si la souris est sur la topbar (titre + bouton), on ne zoom pas
+  const isOverTopbar = e.target.closest("#topbar");
+  if (isOverTopbar) {
+    return;
+  }
+
   e.preventDefault();
 
   const rect = mapContainer.getBoundingClientRect();
   const mouseX = e.clientX - rect.left;
   const mouseY = e.clientY - rect.top;
 
-  // coordonnée "monde" avant zoom
+  // coord "monde" avant zoom
   const worldXBefore = (mouseX - offsetX) / zoom;
   const worldYBefore = (mouseY - offsetY) / zoom;
 
   const delta = e.deltaY < 0 ? 0.1 : -0.1; // molette vers soi = zoom +
   let newZoom = zoom + delta;
   newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
-
-  // facteur de zoom
   zoom = newZoom;
 
-  // on recalcule offset pour garder le point sous la souris
+  // garder le point sous la souris au même endroit visuel
   offsetX = mouseX - worldXBefore * zoom;
   offsetY = mouseY - worldYBefore * zoom;
 
@@ -88,18 +93,13 @@ mapContainer.addEventListener("wheel", (e) => {
 }, { passive: false });
 
 // --- BOUTON "NOUVEAU POINT" ---
+// Le prochain clic gauche sur la carte posera un marqueur
 newPointBtn.addEventListener("click", () => {
-  const name = prompt("Nom du point :");
-  if (!name) return;
-
-  const imageUrl = prompt("URL de l'icône (laisser vide pour une icône par défaut) :") || "";
-
-  pendingMarkerData = { name, imageUrl };
   addingPoint = true;
-  hintSpan.textContent = "Clique sur la carte pour placer le point.";
+  hintSpan.textContent = "Clique sur la carte pour placer un point.";
 });
 
-// --- CLIC POUR POSER LE MARQUEUR ---
+// --- CLIC SUR LA CARTE POUR POSER LE MARQUEUR ---
 mapContainer.addEventListener("click", (e) => {
   // si on vient juste de drag, on ignore le clic
   if (wasDragging) {
@@ -107,7 +107,7 @@ mapContainer.addEventListener("click", (e) => {
     return;
   }
 
-  if (!addingPoint || !pendingMarkerData) return;
+  if (!addingPoint) return;
 
   const rect = mapInner.getBoundingClientRect();
 
@@ -115,39 +115,28 @@ mapContainer.addEventListener("click", (e) => {
   const x = (e.clientX - rect.left) / zoom;
   const y = (e.clientY - rect.top) / zoom;
 
-  createMarker(x, y, pendingMarkerData);
+  createMarker(x, y);
 
   addingPoint = false;
-  pendingMarkerData = null;
   hintSpan.textContent = "";
 });
 
-// --- CRÉATION D'UN MARQUEUR ---
-function createMarker(x, y, data) {
+// --- CRÉATION D'UN MARQUEUR (SIMPLE POUR L'INSTANT) ---
+function createMarker(x, y) {
   const marker = document.createElement("div");
   marker.className = "marker";
   marker.style.left = x + "px";
   marker.style.top = y + "px";
 
-  if (data.imageUrl && data.imageUrl.trim() !== "") {
-    const img = document.createElement("img");
-    img.src = data.imageUrl;
-    img.alt = data.name;
-    marker.appendChild(img);
-  } else {
-    const dot = document.createElement("span");
-    dot.className = "marker-default";
-    marker.appendChild(dot);
-  }
-
-  const label = document.createElement("div");
-  label.className = "marker-label";
-  label.textContent = data.name;
-  marker.appendChild(label);
+  // petit point par défaut
+  const dot = document.createElement("span");
+  dot.className = "marker-default";
+  marker.appendChild(dot);
 
   mapInner.appendChild(marker);
 }
 
 // position / zoom de départ
 updateTransform();
+
 

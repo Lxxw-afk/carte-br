@@ -199,9 +199,9 @@ function populateIconSelect() {
   const icons = [
     "Meth.png",
     "cocaine.png",
-    "munitions.png",
+    "Munitions.png",
     "organes.png",
-    "weed.png"
+    "Weed.png"
   ];
 
   icons.forEach(i => {
@@ -219,6 +219,7 @@ function populateIconSelect() {
 populateIconSelect();
 loadMarkers();
 updateTransform();
+
 
 
 

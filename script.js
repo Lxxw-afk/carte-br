@@ -20,11 +20,71 @@ const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 3;
 
 // --- MARQUEURS & SAUVEGARDE ---
-const STORAGE_KEY = "rp_markers_v1";
-let markersData = []; // { x, y }
+const STORAGE_KEY = "rp_markers_v2";
+let markersData = []; // { id, x, y, name }
 
-// --- FONCTIONS SAUVEGARDE ---
+// pour ID unique
+let nextMarkerId = 1;
 
+// modes
+let addingPoint = false;
+let movingMarkerId = null;
+
+// --- MENU CONTEXTUEL (clic droit) ---
+let markerMenu = null;
+let contextMarkerId = null;
+
+function createMarkerMenu() {
+  markerMenu = document.createElement("div");
+  markerMenu.id = "marker-menu";
+  markerMenu.innerHTML = `
+    <div class="item" data-action="edit">Modifier le nom</div>
+    <div class="item" data-action="move">Déplacer le point</div>
+    <div class="item" data-action="delete">Supprimer le point</div>
+  `;
+  document.body.appendChild(markerMenu);
+
+  markerMenu.addEventListener("click", (e) => {
+    const action = e.target.dataset.action;
+    if (!action || contextMarkerId == null) return;
+
+    if (action === "edit") {
+      editMarkerName(contextMarkerId);
+    } else if (action === "move") {
+      startMoveMarker(contextMarkerId);
+    } else if (action === "delete") {
+      deleteMarker(contextMarkerId);
+    }
+
+    hideMarkerMenu();
+  });
+}
+
+function showMarkerMenu(x, y, markerId) {
+  if (!markerMenu) createMarkerMenu();
+  contextMarkerId = markerId;
+  markerMenu.style.left = x + "px";
+  markerMenu.style.top = y + "px";
+  markerMenu.style.display = "block";
+}
+
+function hideMarkerMenu() {
+  if (markerMenu) {
+    markerMenu.style.display = "none";
+  }
+  contextMarkerId = null;
+}
+
+// fermer le menu si on clique ailleurs
+document.addEventListener("click", (e) => {
+  if (markerMenu && e.button === 0) {
+    if (!markerMenu.contains(e.target)) {
+      hideMarkerMenu();
+    }
+  }
+});
+
+// --- SAUVEGARDE ---
 function saveMarkers() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(markersData));
@@ -41,8 +101,11 @@ function loadMarkers() {
     if (!Array.isArray(arr)) return;
 
     markersData = arr;
+    // recalcul de nextMarkerId
+    nextMarkerId = markersData.reduce((max, m) => Math.max(max, m.id || 0), 0) + 1;
+
     markersData.forEach(m => {
-      createMarkerElement(m.x, m.y);
+      createMarkerElement(m);
     });
   } catch (e) {
     console.warn("Impossible de charger les marqueurs :", e);
@@ -57,8 +120,8 @@ function updateTransform() {
 
 // --- DEPLACEMENT (DRAG AU CLIC GAUCHE) ---
 mapContainer.addEventListener("mousedown", (e) => {
-  // si on est en mode ajout de point, on ne drag pas
-  if (addingPoint) return;
+  // si on est en mode ajout ou déplacement de point, on ne drag pas
+  if (addingPoint || movingMarkerId !== null) return;
   if (e.button !== 0) return;       // uniquement clic gauche
 
   isDragging = true;
@@ -119,15 +182,17 @@ mapContainer.addEventListener("wheel", (e) => {
   updateTransform();
 }, { passive: false });
 
-// --- AJOUT DE POINT : BOUTON "NOUVEAU POINT" ---
-let addingPoint = false;
-
+// --- BOUTON "NOUVEAU POINT" ---
+// Le prochain clic gauche sur la carte posera un marqueur
 newPointBtn.addEventListener("click", () => {
   addingPoint = true;
+  movingMarkerId = null;
   hintSpan.textContent = "Clique sur la carte pour placer un point.";
+  hideMarkerMenu();
 });
 
-// --- CLIC SUR LA CARTE POUR POSER LE MARQUEUR ---
+// --- CLIC SUR LA CARTE ---
+// Sert soit à poser un nouveau point, soit à déplacer un point en mode "déplacement"
 mapContainer.addEventListener("click", (e) => {
   // si on vient juste de drag, on ignore le clic
   if (wasDragging) {
@@ -135,14 +200,31 @@ mapContainer.addEventListener("click", (e) => {
     return;
   }
 
-  if (!addingPoint) return;
-
   const rect = mapInner.getBoundingClientRect();
-
-  // coordonnées dans le repère de la carte (avant zoom)
   const x = (e.clientX - rect.left) / zoom;
   const y = (e.clientY - rect.top) / zoom;
 
+  if (movingMarkerId !== null) {
+    // déplacement d'un point existant
+    const markerData = markersData.find(m => m.id === movingMarkerId);
+    if (markerData) {
+      markerData.x = x;
+      markerData.y = y;
+      const el = mapInner.querySelector(`.marker[data-id="${movingMarkerId}"]`);
+      if (el) {
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+      }
+      saveMarkers();
+    }
+    movingMarkerId = null;
+    hintSpan.textContent = "";
+    return;
+  }
+
+  if (!addingPoint) return;
+
+  // ajout d'un nouveau point
   addMarker(x, y);
 
   addingPoint = false;
@@ -151,29 +233,80 @@ mapContainer.addEventListener("click", (e) => {
 
 // --- AJOUT D'UN MARQUEUR (données + DOM) ---
 function addMarker(x, y) {
-  markersData.push({ x, y });
-  createMarkerElement(x, y);
+  const data = {
+    id: nextMarkerId++,
+    x,
+    y,
+    name: ""  // on ajoutera un vrai nom plus tard
+  };
+  markersData.push(data);
+  createMarkerElement(data);
   saveMarkers();
 }
 
-// --- CRÉE JUSTE L'ÉLÉMENT DOM DU MARQUEUR ---
-function createMarkerElement(x, y) {
+// --- CRÉE L'ÉLÉMENT DOM D'UN MARQUEUR ---
+function createMarkerElement(data) {
   const marker = document.createElement("div");
   marker.className = "marker";
-  marker.style.left = x + "px";
-  marker.style.top = y + "px";
+  marker.dataset.id = data.id;
+  marker.style.left = data.x + "px";
+  marker.style.top = data.y + "px";
 
-  // petit point par défaut
+  // point rouge par défaut
   const dot = document.createElement("span");
   dot.className = "marker-default";
   marker.appendChild(dot);
 
+  // label (optionnel pour l'instant)
+  const label = document.createElement("div");
+  label.className = "marker-label";
+  label.textContent = data.name || ""; // vide pour l'instant
+  marker.appendChild(label);
+
+  // clic droit sur le marqueur -> menu
+  marker.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    showMarkerMenu(e.clientX, e.clientY, data.id);
+  });
+
   mapInner.appendChild(marker);
 }
 
+// --- MODIFIER NOM ---
+function editMarkerName(markerId) {
+  const m = markersData.find(mm => mm.id === markerId);
+  if (!m) return;
+
+  const newName = prompt("Nouveau nom du point :", m.name || "");
+  if (newName === null) return;
+
+  m.name = newName;
+  const label = mapInner.querySelector(`.marker[data-id="${markerId}"] .marker-label`);
+  if (label) {
+    label.textContent = newName;
+  }
+  saveMarkers();
+}
+
+// --- DEPLACER MARQUEUR ---
+function startMoveMarker(markerId) {
+  movingMarkerId = markerId;
+  addingPoint = false;
+  hintSpan.textContent = "Clique sur la carte pour choisir la nouvelle position du point.";
+}
+
+// --- SUPPRIMER MARQUEUR ---
+function deleteMarker(markerId) {
+  markersData = markersData.filter(m => m.id !== markerId);
+  const el = mapInner.querySelector(`.marker[data-id="${markerId}"]`);
+  if (el) el.remove();
+  saveMarkers();
+}
+
 // --- INITIALISATION ---
-loadMarkers();     // charge les marqueurs déjà enregistrés
-updateTransform(); // applique zoom/déplacement de départ
+loadMarkers();
+updateTransform();
+
 
 
 

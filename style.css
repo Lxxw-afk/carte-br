@@ -113,3 +113,26 @@ html, body {
   cursor: grabbing !important;
 }
 
+/* Menu clic droit sur marqueur */
+#marker-menu {
+  position: fixed;
+  z-index: 2000;
+  background: #222;
+  color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  padding: 4px 0;
+  font-size: 13px;
+  display: none;
+  min-width: 150px;
+}
+
+#marker-menu .item {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+#marker-menu .item:hover {
+  background: #444;
+}
+

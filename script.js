@@ -12,13 +12,13 @@ const modalSaveBtn = document.getElementById("marker-save-btn");
 const markerMenu = document.getElementById("marker-menu");
 
 // --- LISTE DES ICONES DISPONIBLES ---
-// ⚠️ Assure-toi d'avoir bien les fichiers dans /icons
+// ⚠️ Tu dois avoir ces fichiers dans /icons
 const ICONS = [
   { id: "", label: "Point rouge (par défaut)", url: "" },
   { id: "nightclub", label: "Nightclub", url: "icons/nightclub.png" },
-  { id: "police", label: "Police", url: "icons/police.png" },
-  { id: "shop", label: "Magasin", url: "icons/shop.png" },
-  { id: "house", label: "Maison", url: "icons/house.png" }
+  { id: "police",    label: "Police",    url: "icons/police.png" },
+  { id: "shop",      label: "Magasin",   url: "icons/shop.png" },
+  { id: "house",     label: "Maison",    url: "icons/house.png" }
 ];
 
 function populateIconSelect() {
@@ -48,13 +48,13 @@ const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 3;
 
 // --- MARQUEURS & SAUVEGARDE ---
-const STORAGE_KEY = "rp_markers_v3";
+const STORAGE_KEY = "rp_markers_v4";
 let markersData = []; // { id, x, y, name, iconId }
 let nextMarkerId = 1;
 
 // Modes
 let addingPoint = false;
-let pendingPos = null; // {x, y} pendant la création
+let pendingPos = null; // {x, y} en attente après clic sur la carte
 let movingMarkerId = null;
 let contextMarkerId = null;
 
@@ -145,18 +145,18 @@ modalSaveBtn.addEventListener("click", () => {
   if (!pendingPos) return;
   const name = nameInput.value.trim();
   const iconId = iconSelect.value;
-
   addMarker(pendingPos.x, pendingPos.y, name, iconId);
   closeCreateModal();
 });
 
-// --- EDITION / DEPLACEMENT / DELETE MARQUEURS ---
+// --- EDITION / DEPLACEMENT / SUPPRESSION MARQUEURS ---
 function editMarkerName(markerId) {
   const m = markersData.find(mm => mm.id === markerId);
   if (!m) return;
   const newName = prompt("Nouveau nom du point :", m.name || "");
   if (newName === null) return;
   m.name = newName.trim();
+
   const label = mapInner.querySelector(`.marker[data-id="${markerId}"] .marker-label`);
   if (label) label.textContent = m.name;
   saveMarkers();
@@ -320,7 +320,7 @@ mapContainer.addEventListener("click", (e) => {
 
   if (!addingPoint) return;
 
-  // On ne crée pas encore le marqueur, on ouvre d'abord le menu Nom + Image
+  // On n'ajoute pas encore le marqueur : on ouvre d'abord le menu Nom + Image
   openCreateModal({ x, y });
 });
 
@@ -328,6 +328,7 @@ mapContainer.addEventListener("click", (e) => {
 populateIconSelect();
 loadMarkers();
 updateTransform();
+
 
 
 

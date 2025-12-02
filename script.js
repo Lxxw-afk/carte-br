@@ -29,7 +29,7 @@ const ICONS = [
   { id: "",         label: "Point rouge (par défaut)", url: "" },
   { id: "Meth",     label: "Meth",      url: "icons/Meth.png" },
   { id: "cocaine",  label: "Cocaïne",   url: "icons/cocaine.png" },
-  { id: "munitions",label: "Munitions", url: "icons/Munitions.png" },
+  { id: "Munitions",label: "Munitions", url: "icons/Munitions.png" },
   { id: "organes",  label: "Organes",   url: "icons/organes.png" },
   { id: "weed",     label: "Weed",      url: "icons/Weed.png" }
 ];

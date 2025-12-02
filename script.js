@@ -10,16 +10,29 @@ let offsetX = 0;   // position actuelle de mapInner.left
 let offsetY = 0;   // position actuelle de mapInner.top
 let wasDragging = false;
 
-// Pour l'ajout de points
+// Zoom
+let zoom = 1;
+const MIN_ZOOM = 0.5;
+const MAX_ZOOM = 3;
+
+// Ajout de points
 let addingPoint = false;
 let pendingMarkerData = null;
 
-// ---- DRAG DEPLACEMENT ----
-mapContainer.addEventListener("mousedown", (e) => {
-  // Si on est en mode ajout de point, on ne démarre pas le drag
-  if (addingPoint) return;
+// --- FONCTION COMMUNE POUR APPLIQUER POSITION + ZOOM ---
+function updateTransform() {
+  mapInner.style.left = offsetX + "px";
+  mapInner.style.top = offsetY + "px";
+  mapInner.style.transform = `scale(${zoom})`;
+  mapInner.style.transformOrigin = "0 0";
+}
 
-  if (e.button !== 0) return; // bouton gauche seulement
+// ---- DEPLACEMENT (DRAG) ----
+mapContainer.addEventListener("mousedown", (e) => {
+  // si on est en mode ajout de point, on ne drag pas
+  if (addingPoint) return;
+  if (e.button !== 0) return; // bouton gauche uniquement
+
   isDragging = true;
   wasDragging = false;
   mapContainer.classList.add("dragging");
@@ -35,14 +48,28 @@ document.addEventListener("mousemove", (e) => {
   offsetX = e.clientX - startX;
   offsetY = e.clientY - startY;
 
-  mapInner.style.left = offsetX + "px";
-  mapInner.style.top = offsetY + "px";
+  updateTransform();
 });
 
 document.addEventListener("mouseup", () => {
   isDragging = false;
   mapContainer.classList.remove("dragging");
 });
+
+// ---- ZOOM AVEC LA MOLETTE ----
+mapContainer.addEventListener("wheel", (e) => {
+  e.preventDefault();
+
+  const delta = e.deltaY > 0 ? -0.1 : 0.1; // molette vers le haut = zoom +
+  const oldZoom = zoom;
+
+  zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom + delta));
+
+  // (option simple) on zoome depuis le coin haut-gauche
+  // Si tu veux, on pourra plus tard centrer le zoom sur la souris.
+
+  updateTransform();
+}, { passive: false });
 
 // ---- BOUTON NOUVEAU POINT ----
 newPointBtn.addEventListener("click", () => {
@@ -68,10 +95,12 @@ mapContainer.addEventListener("click", (e) => {
 
   if (!addingPoint || !pendingMarkerData) return;
 
-  // position du clic par rapport à mapInner
+  // position du clic par rapport à mapInner (qui est zoomé)
   const rect = mapInner.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+
+  // coordonnée dans le repère "non zoomé" de la carte
+  const x = (e.clientX - rect.left) / zoom;
+  const y = (e.clientY - rect.top) / zoom;
 
   createMarker(x, y, pendingMarkerData);
 
@@ -107,3 +136,7 @@ function createMarker(x, y, data) {
 
   mapInner.appendChild(marker);
 }
+
+// Initialiser la position / zoom
+updateTransform();
+

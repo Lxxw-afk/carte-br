@@ -10,3 +10,8 @@ header {
     color: white;
     padding: 15px 25px;
     font-size: 20px;
+#map {
+    width: 100%;
+    height: auto;
+    display: block;
+}

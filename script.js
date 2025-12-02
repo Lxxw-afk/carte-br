@@ -38,3 +38,4 @@ function updateTransform() {
     mapImg.style.transform =
         `translate(${posX}px, ${posY}px) scale(${zoom})`;
 }
+

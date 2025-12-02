@@ -1,16 +1,26 @@
-body {
-    margin: 0;
-    background: #111;
-    color: #fff;
-    font-family: Arial, sans-serif;
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #fff;
 }
 
-h1 {
-    margin: 10px;
+.title {
+  position: absolute;
+  z-index: 1000;
+  left: 10px;
+  top: 10px;
+  margin: 0;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  font-size: 18px;
 }
 
 #map {
-    display: block;
-    max-width: 100vw;
-    height: auto;
+  width: 100vw;
+  height: 100vh;
 }

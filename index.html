@@ -51,6 +51,26 @@
     <div class="item" data-action="delete">Supprimer le point</div>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "TA_CLE",
+    authDomain: "carte-br.firebaseapp.com",
+    databaseURL: "https://carte-br-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "carte-br",
+    storageBucket: "carte-br.appspot.com",
+    messagingSenderId: "698417792662",
+    appId: "1:698417792662:web:4766a306741b5c571274b7"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+
+<script src="script.js"></script>
+
   <script src="script.js"></script>
 </body>
 </html>

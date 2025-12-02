@@ -3,7 +3,7 @@ const mapInner = document.getElementById("map-inner");
 const newPointBtn = document.getElementById("new-point-btn");
 const hintSpan = document.getElementById("hint");
 
-// --- ÉTATS ---
+// --- ÉTATS DE LA CARTE ---
 let isDragging = false;
 let wasDragging = false;
 
@@ -19,10 +19,37 @@ let zoom = 1;
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 3;
 
-// Ajout de point : on attend le prochain clic sur la carte
-let addingPoint = false;
+// --- MARQUEURS & SAUVEGARDE ---
+const STORAGE_KEY = "rp_markers_v1";
+let markersData = []; // { x, y }
 
-// --- APPLIQUE LE DÉPLACEMENT + ZOOM ---
+// --- FONCTIONS SAUVEGARDE ---
+
+function saveMarkers() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(markersData));
+  } catch (e) {
+    console.warn("Impossible d'enregistrer les marqueurs :", e);
+  }
+}
+
+function loadMarkers() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return;
+
+    markersData = arr;
+    markersData.forEach(m => {
+      createMarkerElement(m.x, m.y);
+    });
+  } catch (e) {
+    console.warn("Impossible de charger les marqueurs :", e);
+  }
+}
+
+// --- TRANSFORM (déplacement + zoom) ---
 function updateTransform() {
   mapInner.style.transformOrigin = "0 0";
   mapInner.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${zoom})`;
@@ -62,7 +89,7 @@ document.addEventListener("mouseup", () => {
   mapContainer.classList.remove("dragging");
 });
 
-// --- ZOOM MOLETTE (UNIQUEMENT SUR LA CARTE, PAS SUR LA BARRE DU HAUT) ---
+// --- ZOOM MOLETTE (PAS SUR LA BARRE DU HAUT) ---
 mapContainer.addEventListener("wheel", (e) => {
   // Si la souris est sur la topbar (titre + bouton), on ne zoom pas
   const isOverTopbar = e.target.closest("#topbar");
@@ -92,8 +119,9 @@ mapContainer.addEventListener("wheel", (e) => {
   updateTransform();
 }, { passive: false });
 
-// --- BOUTON "NOUVEAU POINT" ---
-// Le prochain clic gauche sur la carte posera un marqueur
+// --- AJOUT DE POINT : BOUTON "NOUVEAU POINT" ---
+let addingPoint = false;
+
 newPointBtn.addEventListener("click", () => {
   addingPoint = true;
   hintSpan.textContent = "Clique sur la carte pour placer un point.";
@@ -115,14 +143,21 @@ mapContainer.addEventListener("click", (e) => {
   const x = (e.clientX - rect.left) / zoom;
   const y = (e.clientY - rect.top) / zoom;
 
-  createMarker(x, y);
+  addMarker(x, y);
 
   addingPoint = false;
   hintSpan.textContent = "";
 });
 
-// --- CRÉATION D'UN MARQUEUR (SIMPLE POUR L'INSTANT) ---
-function createMarker(x, y) {
+// --- AJOUT D'UN MARQUEUR (données + DOM) ---
+function addMarker(x, y) {
+  markersData.push({ x, y });
+  createMarkerElement(x, y);
+  saveMarkers();
+}
+
+// --- CRÉE JUSTE L'ÉLÉMENT DOM DU MARQUEUR ---
+function createMarkerElement(x, y) {
   const marker = document.createElement("div");
   marker.className = "marker";
   marker.style.left = x + "px";
@@ -136,7 +171,9 @@ function createMarker(x, y) {
   mapInner.appendChild(marker);
 }
 
-// position / zoom de départ
-updateTransform();
+// --- INITIALISATION ---
+loadMarkers();     // charge les marqueurs déjà enregistrés
+updateTransform(); // applique zoom/déplacement de départ
+
 
 

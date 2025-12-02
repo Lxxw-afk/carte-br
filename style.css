@@ -4,23 +4,35 @@ html, body {
   height: 100%;
   overflow: hidden;
   font-family: Arial, sans-serif;
-  background: #111;
-  color: #fff;
 }
 
-.title {
+h1 {
   position: absolute;
-  z-index: 1000;
+  z-index: 10;
   left: 10px;
   top: 10px;
   margin: 0;
   padding: 6px 10px;
   background: rgba(0, 0, 0, 0.6);
+  color: #fff;
   border-radius: 4px;
   font-size: 18px;
 }
 
-#map {
+#map-container {
   width: 100vw;
   height: 100vh;
+  overflow: hidden;        /* on cache ce qui dépasse */
+  position: relative;
+}
+
+#map {
+  position: absolute;
+  left: 0;
+  top: 0;
+  /* l’image ne se fait pas “attraper” par le navigateur */
+  user-drag: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: grab;
 }

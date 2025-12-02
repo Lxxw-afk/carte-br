@@ -1,42 +1,35 @@
-const map = document.getElementById("map");
+const container = document.getElementById("map-container");
 
 let isDragging = false;
-let startX = 0;
-let startY = 0;
-let offsetX = 0;
-let offsetY = 0;
+let startX, startY;
+let scrollLeft = 0, scrollTop = 0;
 
-// on empêche le drag natif de l'image
-map.draggable = false;
+container.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    container.style.cursor = "grabbing";
 
-// quand on appuie sur le clic gauche
-map.addEventListener("mousedown", (e) => {
-  if (e.button !== 0) return; // seulement clic gauche
-  isDragging = true;
-  map.style.cursor = "grabbing";
-  startX = e.clientX - offsetX;
-  startY = e.clientY - offsetY;
+    startX = e.clientX + scrollLeft;
+    startY = e.clientY + scrollTop;
 });
 
-// quand on bouge la souris
-document.addEventListener("mousemove", (e) => {
-  if (!isDragging) return;
-
-  offsetX = e.clientX - startX;
-  offsetY = e.clientY - startY;
-
-  map.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+container.addEventListener("mouseup", () => {
+    isDragging = false;
+    container.style.cursor = "grab";
 });
 
-// quand on relâche le clic
-document.addEventListener("mouseup", () => {
-  isDragging = false;
-  map.style.cursor = "grab";
+container.addEventListener("mouseleave", () => {
+    isDragging = false;
+    container.style.cursor = "grab";
 });
 
-// optionnel : empêcher la molette de zoomer la page (si tu veux)
-document.addEventListener("wheel", (e) => {
-  e.preventDefault();
-}, { passive: false });
+container.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+
+    scrollLeft = startX - e.clientX;
+    scrollTop = startY - e.clientY;
+
+    container.scrollTo(scrollLeft, scrollTop);
+});
+
 
 

@@ -15,10 +15,12 @@ const markerMenu = document.getElementById("marker-menu");
 // ⚠️ Tu dois avoir ces fichiers dans /icons
 const ICONS = [
   { id: "", label: "Point rouge (par défaut)", url: "" },
-  { id: "nightclub", label: "Nightclub", url: "icons/nightclub.png" },
-  { id: "police",    label: "Police",    url: "icons/police.png" },
-  { id: "shop",      label: "Magasin",   url: "icons/shop.png" },
-  { id: "house",     label: "Maison",    url: "icons/house.png" }
+  { id: "Meth", label: "Meth", url: "icons/Meth.png" },
+  { id: "cocaïne",    label: "cocaïne",    url: "icons/cocaïne.png" },
+  { id: "munitions",      label: "munitions",   url: "icons/munitions.png" },
+  { id: "organes",     label: "organes",    url: "icons/organes.png" }
+  { id: "weed",     label: "weed",     url: "icons/weed.png } 
+  
 ];
 
 function populateIconSelect() {

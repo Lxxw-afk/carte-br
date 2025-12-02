@@ -19,6 +19,7 @@ mapImg.addEventListener("mousedown", (e) => {
     isDragging = true;
     startX = e.clientX - posX;
     startY = e.clientY - posY;
+    mapImg.style.cursor = "grabbing";
 });
 
 document.addEventListener("mousemove", (e) => {
@@ -28,4 +29,12 @@ document.addEventListener("mousemove", (e) => {
     updateTransform();
 });
 
-document.addEventL
+document.addEventListener("mouseup", () => {
+    isDragging = false;
+    mapImg.style.cursor = "grab";
+});
+
+function updateTransform() {
+    mapImg.style.transform =
+        `translate(${posX}px, ${posY}px) scale(${zoom})`;
+}

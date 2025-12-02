@@ -16,8 +16,39 @@
   <div id="map-container">
     <div id="map-inner">
       <img id="map" src="images/map.png" alt="Carte RP">
-      <!-- Les marqueurs seront ajoutés ici en JS -->
+      <!-- Les marqueurs sont ajoutés ici en JS -->
     </div>
+  </div>
+
+  <!-- Modal de création de marqueur -->
+  <div id="marker-create-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Nouveau point</h2>
+
+      <label>
+        Nom :
+        <input type="text" id="marker-name-input" placeholder="Ex : Paradise Beach Club">
+      </label>
+
+      <label>
+        Image :
+        <select id="marker-icon-select">
+          <!-- rempli en JS -->
+        </select>
+      </label>
+
+      <div class="modal-actions">
+        <button id="marker-cancel-btn">Annuler</button>
+        <button id="marker-save-btn">Valider</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu clic droit sur marqueur -->
+  <div id="marker-menu">
+    <div class="item" data-action="edit">Modifier le nom</div>
+    <div class="item" data-action="move">Déplacer le point</div>
+    <div class="item" data-action="delete">Supprimer le point</div>
   </div>
 
   <script src="script.js"></script>

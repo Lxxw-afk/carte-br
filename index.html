@@ -7,19 +7,18 @@
 </head>
 <body>
 
-  <h1>Carte interactive RP</h1>
+  <div id="toolbar">
+    <button id="new-point-btn">Nouveau point</button>
+    <span id="hint"></span>
+  </div>
 
   <div id="map-container">
-    <img id="map" src="images/map.png" alt="Carte RP">
+    <div id="map-inner">
+      <img id="map" src="images/map.png" alt="Carte RP">
+      <!-- Les marqueurs seront ajoutés ici en JS -->
+    </div>
   </div>
 
   <script src="script.js"></script>
 </body>
 </html>
-<h1>Carte interactive RP</h1>
-
-<div id="map-container">
-    <img id="map" src="images/map.png" alt="Carte RP">
-</div>
-
-<script src="script.js"></script>

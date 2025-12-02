@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Carte interactive RP</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Carte interactive RP</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+
+  <!-- Ton CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Carte interactive RP</h1>
+  <h1 class="title">Carte interactive RP</h1>
+  <div id="map"></div>
 
-<img id="map" src="images/map.png" alt="Carte RP">
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<script src="script.js"></script>
+  <!-- Ton script -->
+  <script src="script.js"></script>
 </body>
 </html>

@@ -14,12 +14,15 @@ const markerMenu = document.getElementById("marker-menu");
 // --- LISTE DES ICONES DISPONIBLES ---
 // ⚠️ Tu dois avoir ces fichiers dans /icons
 const ICONS = [
-  { id: "", label: "Point rouge (par défaut)", url: "" },
-  { id: "Meth", label: "Meth", url: "icons/Meth.png" },
-  { id: "cocaïne",    label: "cocaïne",    url: "icons/cocaïne.png" },
-  { id: "munitions",      label: "munitions",   url: "icons/munitions.png" },
-  { id: "organes",     label: "organes",    url: "icons/organes.png" }
-  { id: "weed",     label: "weed",     url: "icons/weed.png } 
+    { id: "", label: "Point rouge (par défaut)", url: "" },
+
+    { id: "meth",      label: "Meth",      url: "icons/Meth.png" },
+    { id: "cocaine",   label: "Cocaïne",   url: "icons/cocaine.png" },
+    { id: "munitions", label: "Munitions", url: "icons/munitions.png" },
+    { id: "organes",   label: "Organes",   url: "icons/organes.png" },
+    { id: "weed",      label: "Weed",      url: "icons/weed.png" }
+];
+
   
 ];
 

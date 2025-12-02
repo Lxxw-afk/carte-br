@@ -136,3 +136,75 @@ html, body {
   background: #444;
 }
 
+/* Modal création de marqueur */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #222;
+  padding: 16px 20px;
+  border-radius: 8px;
+  min-width: 260px;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.modal-content label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  margin-top: 4px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: #111;
+  color: #fff;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.modal-actions button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+#marker-cancel-btn {
+  background: #555;
+  color: #fff;
+}
+
+#marker-save-btn {
+  background: #1e90ff;
+  color: #fff;
+}
+
+

@@ -1,38 +1,29 @@
+/* Style général */
 html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden; 
+    font-family: Arial, sans-serif;
+    background-color: #003F87; /* 🔵 FOND BLEU IDENTIQUE À TA CARTE */
 }
 
-h1 {
-  position: absolute;
-  z-index: 10;
-  left: 10px;
-  top: 10px;
-  margin: 0;
-  padding: 6px 10px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  border-radius: 4px;
-  font-size: 18px;
-}
-
+/* Conteneur qui contient la carte */
 #map-container {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;        /* on cache ce qui dépasse */
-  position: relative;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: grab; /* Curseur main */
+    overflow: hidden;
 }
 
+/* Image de la carte */
 #map {
-  position: absolute;
-  left: 0;
-  top: 0;
-  /* l’image ne se fait pas “attraper” par le navigateur */
-  user-drag: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  cursor: grab;
+    position: absolute;
+    top: 0;
+    left: 0;
+    user-select: none; /* Empêche la sélection */
+    -webkit-user-drag: none; /* Empêche le drag natif */
+    pointer-events: none; /* Empêche les interactions directes */
 }
+

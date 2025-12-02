@@ -1,24 +1,42 @@
-// Dimensions approximatives de ton image (en pixels)
-const MAP_WIDTH = 2048;
-const MAP_HEIGHT = 2048;
+const map = document.getElementById("map");
 
-// On crée une carte Leaflet en "CRS.Simple" (coordonnées en pixels)
-const map = L.map('map', {
-  crs: L.CRS.Simple,
-  minZoom: -2,
-  maxZoom: 2
+let isDragging = false;
+let startX = 0;
+let startY = 0;
+let offsetX = 0;
+let offsetY = 0;
+
+// on empêche le drag natif de l'image
+map.draggable = false;
+
+// quand on appuie sur le clic gauche
+map.addEventListener("mousedown", (e) => {
+  if (e.button !== 0) return; // seulement clic gauche
+  isDragging = true;
+  map.style.cursor = "grabbing";
+  startX = e.clientX - offsetX;
+  startY = e.clientY - offsetY;
 });
 
-// Limites de l'image
-const bounds = [[0, 0], [MAP_HEIGHT, MAP_WIDTH]];
+// quand on bouge la souris
+document.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
 
-// On affiche ton image comme fond de carte
-L.imageOverlay('images/map.png', bounds).addTo(map);
+  offsetX = e.clientX - startX;
+  offsetY = e.clientY - startY;
 
-// On ajuste la vue pour voir toute la carte
-map.fitBounds(bounds);
+  map.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+});
 
-// Maintenant tu peux te déplacer avec la souris (drag)
-// et zoomer avec la molette comme sur une vraie carte.
+// quand on relâche le clic
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+  map.style.cursor = "grab";
+});
+
+// optionnel : empêcher la molette de zoomer la page (si tu veux)
+document.addEventListener("wheel", (e) => {
+  e.preventDefault();
+}, { passive: false });
 
 

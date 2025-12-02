@@ -40,6 +40,32 @@ function populateIconSelect() {
     iconSelect.appendChild(opt);
   });
 }
+  <!-- Firebase compat via CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <script>
+    // ⚠️ colle ici ton firebaseConfig EXACT depuis la console
+   const firebaseConfig = {
+  apiKey: "...",
+  authDomain: "carte-br.firebaseapp.com",
+  projectId: "carte-br",
+  storageBucket: "carte-br.appspot.com",
+  messagingSenderId: "698417792662",
+  appId: "1:698417792662:web:4766a306741b5c571274b7"
+};
+
+
+    // Initialisation Firebase
+    firebase.initializeApp(firebaseConfig);
+    // On exporte 'db' pour script.js
+    const db = firebase.database();
+  </script>
+
+  <!-- Ton script de carte -->
+  <script src="script.js"></script>
+</body>
+</html>
 
 // ============================
 // ÉTAT DE LA CARTE

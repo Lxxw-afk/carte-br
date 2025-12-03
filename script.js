@@ -18,25 +18,32 @@ const db = firebase.firestore();
 ---------------------------*/
 const mapContainer = document.getElementById("map-container");
 const mapInner = document.getElementById("map-inner");
-const map = document.getElementById("map");
 const markerLayer = document.getElementById("marker-layer");
+const menu = document.getElementById("marker-menu");
+const nameInput = document.getElementById("marker-name");
+const iconList = document.getElementById("icon-list");
+const confirmBtn = document.getElementById("confirm-marker");
+const cancelBtn = document.getElementById("cancel-marker");
+
 let scale = 1;
 let isDragging = false;
 let startX, startY;
 let posX = 0, posY = 0;
 
 let addingPoint = false;
+let pendingX, pendingY;
+let selectedIcon = null;
 
 /* -------------------------
    MODE AJOUT DE POINT
 ---------------------------*/
 document.getElementById("new-point-btn").addEventListener("click", () => {
     addingPoint = true;
-    alert("Clique sur la carte pour ajouter un point");
+    alert("Clique sur la carte pour placer le point");
 });
 
 /* -------------------------
-   DEPLACEMENT (GOOGLE MAPS)
+   DEPLACEMENT CARTE
 ---------------------------*/
 mapContainer.addEventListener("mousedown", (e) => {
     if (addingPoint) return;
@@ -45,18 +52,14 @@ mapContainer.addEventListener("mousedown", (e) => {
     startY = e.clientY - posY;
 });
 
-window.addEventListener("mouseup", () => {
-    isDragging = false;
-});
+window.addEventListener("mouseup", () => isDragging = false);
 
 window.addEventListener("mousemove", (e) => {
     if (!isDragging || addingPoint) return;
-
     posX = e.clientX - startX;
     posY = e.clientY - startY;
 
-    mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-    markerLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    updateTransform();
 });
 
 /* -------------------------
@@ -64,102 +67,133 @@ window.addEventListener("mousemove", (e) => {
 ---------------------------*/
 mapContainer.addEventListener("wheel", (e) => {
     e.preventDefault();
-
     const zoomIntensity = 0.1;
-    
-    if (e.deltaY < 0) scale += zoomIntensity;
-    else scale -= zoomIntensity;
 
+    scale += (e.deltaY < 0 ? zoomIntensity : -zoomIntensity);
     if (scale < 0.2) scale = 0.2;
     if (scale > 5) scale = 5;
 
-    mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-    markerLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    updateTransform();
 });
 
+function updateTransform() {
+    mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    markerLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+}
+
 /* -------------------------
-   CLICK CARTE POUR AJOUTER
+   CLICK POUR AJOUTER LE POINT
 ---------------------------*/
 mapContainer.addEventListener("click", (e) => {
     if (!addingPoint) return;
 
     const rect = mapContainer.getBoundingClientRect();
-    const x = (e.clientX - rect.left - posX) / scale;
-    const y = (e.clientY - rect.top - posY) / scale;
+    pendingX = (e.clientX - rect.left - posX) / scale;
+    pendingY = (e.clientY - rect.top - posY) / scale;
 
-    openMarkerCreationMenu(x, y);
+    openMarkerMenu();
 });
 
 /* -------------------------
-   MENU CREATION MARQUEUR
+   CHARGER LES ICONES
 ---------------------------*/
-function openMarkerCreationMenu(x, y) {
-    const name = prompt("Nom du point :");
-    if (!name) {
-        addingPoint = false;
-        return;
-    }
+const icons = [
+    "Meth.png",
+    "cocaine.png",
+    "munitions.png",
+    "organes.png",
+    "weed.png"
+];
 
-    const icon = prompt("Nom du fichier icône (ex: weed.png) :");
-    if (!icon) {
-        addingPoint = false;
-        return;
-    }
+function loadIcons() {
+    iconList.innerHTML = "";
+    icons.forEach(file => {
+        const img = document.createElement("img");
+        img.src = "icons/" + file;
+        img.classList.add("icon-option");
 
-    saveMarkerToFirebase(x, y, name, icon);
+        img.addEventListener("click", () => {
+            document.querySelectorAll(".icon-option").forEach(i => i.classList.remove("selected"));
+            img.classList.add("selected");
+            selectedIcon = file;
+        });
 
-    addingPoint = false;
+        iconList.appendChild(img);
+    });
 }
+
+loadIcons();
+
+/* -------------------------
+   MENU CREATION
+---------------------------*/
+function openMarkerMenu() {
+    nameInput.value = "";
+    selectedIcon = null;
+    document.querySelectorAll(".icon-option").forEach(i => i.classList.remove("selected"));
+
+    menu.classList.remove("hidden");
+}
+
+cancelBtn.addEventListener("click", () => {
+    menu.classList.add("hidden");
+    addingPoint = false;
+});
+
+confirmBtn.addEventListener("click", () => {
+    if (!nameInput.value || !selectedIcon) {
+        alert("Nom + icône obligatoires !");
+        return;
+    }
+
+    saveMarkerToFirebase(pendingX, pendingY, nameInput.value, selectedIcon);
+
+    menu.classList.add("hidden");
+    addingPoint = false;
+});
 
 /* -------------------------
    SAUVEGARDE FIREBASE
 ---------------------------*/
 function saveMarkerToFirebase(x, y, name, icon) {
-    db.collection("markers").add({
-        x, y, name, icon
-    });
+    db.collection("markers").add({ x, y, name, icon });
 }
 
 /* -------------------------
-   AFFICHAGE DES MARQUEURS
+   AFFICHER LES MARQUEURS
 ---------------------------*/
 function displayMarker(id, data) {
     const marker = document.createElement("img");
     marker.classList.add("marker");
-    marker.src = `icons/${data.icon}`;
+    marker.src = "icons/" + data.icon;
     marker.style.left = data.x + "px";
     marker.style.top = data.y + "px";
     marker.title = data.name;
 
-    // clic droit → menu
+    // clic droit : menu
     marker.addEventListener("contextmenu", (e) => {
         e.preventDefault();
-        const choice = prompt("1 = Modifier\n2 = Supprimer\n3 = Déplacer");
+        const choice = prompt("1 = Renommer\n2 = Supprimer\n3 = Déplacer");
+
+        if (choice == "1") {
+            const newName = prompt("Nouveau nom :", data.name);
+            if (newName) db.collection("markers").doc(id).update({ name: newName });
+        }
 
         if (choice == "2") {
             db.collection("markers").doc(id).delete();
         }
 
-        if (choice == "1") {
-            const newName = prompt("Nouveau nom :", data.name);
-            if (newName) {
-                db.collection("markers").doc(id).update({ name: newName });
-            }
-        }
-
         if (choice == "3") {
-            alert("Clique pour choisir la nouvelle position...");
+            alert("Clique une nouvelle position");
             addingPoint = true;
 
-            mapContainer.addEventListener("click", function move(e2) {
+            mapContainer.addEventListener("click", function move(ev) {
                 const rect = mapContainer.getBoundingClientRect();
-                const newX = (e2.clientX - rect.left - posX) / scale;
-                const newY = (e2.clientY - rect.top - posY) / scale;
+                const newX = (ev.clientX - rect.left - posX) / scale;
+                const newY = (ev.clientY - rect.top - posY) / scale;
 
-                db.collection("markers").doc(id).update({
-                    x: newX,
-                    y: newY
-                });
+                db.collection("markers").doc(id).update({ x: newX, y: newY });
 
                 addingPoint = false;
                 mapContainer.removeEventListener("click", move);
@@ -171,12 +205,13 @@ function displayMarker(id, data) {
 }
 
 /* -------------------------
-   SYNCHRONISATION LIVE
+   SYNCHRO FIREBASE EN LIVE
 ---------------------------*/
-db.collection("markers").onSnapshot(snapshot => {
+db.collection("markers").onSnapshot(snap => {
     markerLayer.innerHTML = "";
-    snapshot.forEach(doc => displayMarker(doc.id, doc.data()));
+    snap.forEach(doc => displayMarker(doc.id, doc.data()));
 });
+
 
 
 

@@ -435,36 +435,29 @@ document.getElementById("validate-point").addEventListener("click", async () => 
   }
 
   // -----------------------
-  // CREATION NOUVEAU POINT
-  // -----------------------
+// CREATION NOUVEAU POINT
+// -----------------------
 
-  const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
+const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
 
-  const img1URL = await uploadImageToStorage(uploadedImg1, "markers/" + id + "_1.png");
-  const img2URL = await uploadImageToStorage(uploadedImg2, "markers/" + id + "_2.png");
+const img1URL = await uploadImageToStorage(uploadedImg1, "markers/" + id + "_1.png");
+const img2URL = await uploadImageToStorage(uploadedImg2, "markers/" + id + "_2.png");
 
-  await db.collection("markers").doc(id).update({
-    img1: img1URL,
-    img2: img2URL
-  });
-
-  addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
-
-  pointMenu.classList.add("hidden");
-  step1.classList.add("hidden");
-
-  uploadedImg1 = null;
-  uploadedImg2 = null;
-
+await db.collection("markers").doc(id).update({
+  img1: img1URL,
+  img2: img2URL
 });
-
 
 // afficher le marker sur la carte
 addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
 
 pointMenu.classList.add("hidden");
+step1.classList.add("hidden");
 
-}); 
+uploadedImg1 = null;
+uploadedImg2 = null;
+
+}); // ← FERMETURE CORRECTE DU validate-point UNIQUEMENT !!!
 
 /* ============================================================
    ANNULER

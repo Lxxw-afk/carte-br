@@ -49,14 +49,14 @@ body {
 /* MARQUEURS */
 .marker {
     position: absolute;
-    transform: translate(-50%, -100%);
+    transform: translate(-50%, -50%);
     width: 40px;
     height: 40px;
     pointer-events: auto;
     z-index: 3000;
 }
 
-/* MENU POINT */
+/* MENU AJOUT POINT */
 #point-menu {
     position: fixed;
     bottom: 20px;
@@ -82,7 +82,9 @@ body {
 .preview {
     width: 40px;
     height: 40px;
+    margin-top: 5px;
 }
+
 
 
 

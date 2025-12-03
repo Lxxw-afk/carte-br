@@ -52,8 +52,9 @@ const iconList = [
   "Munitions.png",
   "organes.png",
   "Weed.png",
-   "Entrepôt.png"
+  "Entrepot.png"  
 ];
+
 
 iconList.forEach(icon => {
   const option = document.createElement("option");

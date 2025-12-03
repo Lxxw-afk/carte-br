@@ -1,7 +1,23 @@
 /* ============================
-   VARIABLES
+   FIREBASE CONFIG
 ============================ */
 
+const firebaseConfig = {
+    apiKey: "TA_CLE",
+    authDomain: "ton-projet.firebaseapp.com",
+    databaseURL: "https://ton-projet-default-rtdb.firebaseio.com",
+    projectId: "ton-projet",
+    storageBucket: "ton-projet.appspot.com",
+    messagingSenderId: "xxx",
+    appId: "xxx"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+/* ============================
+   VARIABLES DOM
+============================ */
 const mapContainer = document.getElementById("map-container");
 const mapInner = document.getElementById("map-inner");
 const markerLayer = document.getElementById("marker-layer");
@@ -12,163 +28,210 @@ const pointName = document.getElementById("point-name");
 const pointIcon = document.getElementById("point-icon");
 const iconPreview = document.getElementById("icon-preview");
 
+const markerMenu = document.getElementById("marker-menu");
+const editBtn = document.getElementById("edit-marker");
+const moveBtn = document.getElementById("move-marker");
+const deleteBtn = document.getElementById("delete-marker");
+
 /* ============================
-   LISTE DES ICONES DISPONIBLES
+   LISTE DES ICONES
 ============================ */
+const iconList = ["Meth.png", "cocaine.png", "munitions.png", "organes.png", "weed.png"];
 
-const iconList = [
-    "Meth.png",
-    "cocaine.png",
-    "Munitions.png",
-    "organes.png",
-    "Weed.png"
-];
-
-/* Remplir le menu automatiquement */
+// Remplir liste icônes
 iconList.forEach(icon => {
-    const option = document.createElement("option");
-    option.value = icon;
-    option.textContent = icon.replace(".png", "");
-    pointIcon.appendChild(option);
+    let opt = document.createElement("option");
+    opt.value = icon;
+    opt.textContent = icon.replace(".png", "");
+    pointIcon.appendChild(opt);
 });
-
 
 /* ============================
    VARIABLES CARTE
 ============================ */
-let markers = [];
+let markers = {}; // stock par ID Firebase
 let isDragging = false;
-let startX = 0, startY = 0;
-let posX = 0, posY = 0;
+let posX = 0, posY = 0, startX = 0, startY = 0;
 let scale = 1;
-
 let waitingForPlacement = false;
+let moveMode = false;
+let markerToMove = null;
+
 let tempX = 0, tempY = 0;
 
-
 /* ============================
-   DRAG (Déplacement carte)
+   DRAG
 ============================ */
-mapContainer.addEventListener("mousedown", (e) => {
-    if (waitingForPlacement) return;
-
+mapContainer.addEventListener("mousedown", e => {
+    if (waitingForPlacement || moveMode) return;
     isDragging = true;
     startX = e.clientX - posX;
     startY = e.clientY - posY;
-
-    mapContainer.style.cursor = "grabbing";
 });
 
-window.addEventListener("mouseup", () => {
-    isDragging = false;
-    mapContainer.style.cursor = "grab";
-});
+window.addEventListener("mouseup", () => isDragging = false);
 
-window.addEventListener("mousemove", (e) => {
+window.addEventListener("mousemove", e => {
     if (!isDragging) return;
 
     posX = e.clientX - startX;
     posY = e.clientY - startY;
 
-    mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-    markerLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    updateTransforms();
 });
-
 
 /* ============================
    ZOOM
 ============================ */
-mapContainer.addEventListener("wheel", (e) => {
+mapContainer.addEventListener("wheel", e => {
     e.preventDefault();
+    scale += (e.deltaY < 0 ? 0.1 : -0.1);
+    scale = Math.min(Math.max(scale, 0.5), 4);
 
-    const zoomSpeed = 0.1;
-    scale += (e.deltaY < 0 ? zoomSpeed : -zoomSpeed);
-
-    scale = Math.max(0.5, Math.min(4, scale));
-
-    mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-    markerLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    updateTransforms();
 });
 
+function updateTransforms() {
+    mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    markerLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+}
 
 /* ============================
-   BOUTON "Nouveau point"
+   NOUVEAU POINT
 ============================ */
 document.getElementById("new-point-btn").addEventListener("click", () => {
     step1.classList.remove("hidden");
     waitingForPlacement = true;
 });
 
-
 /* ============================
-   CLICK SUR LA CARTE POUR POSER
+   CLICK SUR LA CARTE
 ============================ */
-mapContainer.addEventListener("click", (e) => {
-    if (!waitingForPlacement || isDragging) return;
+mapContainer.addEventListener("click", e => {
+    if (isDragging) return;
+
+    // Déplacement d’un point
+    if (moveMode && markerToMove) {
+        const rect = mapContainer.getBoundingClientRect();
+        let x = (e.clientX - rect.left - posX) / scale;
+        let y = (e.clientY - rect.top - posY) / scale;
+
+        db.ref("markers/" + markerToMove).update({ x, y });
+
+        moveMode = false;
+        markerToMove = null;
+        markerMenu.style.display = "none";
+        return;
+    }
+
+    // Placement d'un NOUVEAU point
+    if (!waitingForPlacement) return;
 
     const rect = mapContainer.getBoundingClientRect();
     tempX = (e.clientX - rect.left - posX) / scale;
     tempY = (e.clientY - rect.top - posY) / scale;
 
+    waitingForPlacement = false;
     step1.classList.add("hidden");
     pointMenu.classList.remove("hidden");
 });
-
 
 /* ============================
    APERCU ICONE
 ============================ */
 pointIcon.addEventListener("change", () => {
-    if (!pointIcon.value) {
-        iconPreview.classList.add("hidden");
-        return;
-    }
+    if (!pointIcon.value) return iconPreview.classList.add("hidden");
     iconPreview.src = "icons/" + pointIcon.value;
     iconPreview.classList.remove("hidden");
 });
 
-
 /* ============================
-   VALIDER LE POINT
+   ENREGISTRER LE POINT
 ============================ */
 document.getElementById("save-point").addEventListener("click", () => {
-    if (!pointName.value || !pointIcon.value) {
-        alert("Nom + icône obligatoires !");
-        return;
-    }
+    if (!pointName.value || !pointIcon.value) return alert("Nom + icône obligatoires !");
 
-    addMarker(tempX, tempY, pointIcon.value, pointName.value);
+    let ref = db.ref("markers").push();
+    ref.set({
+        x: tempX,
+        y: tempY,
+        name: pointName.value,
+        icon: pointIcon.value
+    });
 
     pointMenu.classList.add("hidden");
-    waitingForPlacement = false;
 });
 
-
-/* ============================
-   ANNULER
-============================ */
+/* ANNULER */
 document.getElementById("cancel-point").addEventListener("click", () => {
     pointMenu.classList.add("hidden");
-    step1.classList.add("hidden");
-    waitingForPlacement = false;
 });
 
+/* ============================
+   CHARGEMENT DES POINTS
+============================ */
+db.ref("markers").on("value", snap => {
+    markerLayer.innerHTML = "";
+    markers = snap.val() || {};
+
+    Object.keys(markers).forEach(id => {
+        createMarker(id, markers[id]);
+    });
+});
 
 /* ============================
-   CREER LE MARQUEUR
+   CREER UN MARQUEUR
 ============================ */
-function addMarker(x, y, icon, name) {
+function createMarker(id, data) {
     const img = document.createElement("img");
-    img.src = "icons/" + icon;
+    img.src = "icons/" + data.icon;
     img.className = "marker";
-    img.title = name;
+    img.title = data.name;
 
-    img.style.left = x + "px";
-    img.style.top = y + "px";
+    img.style.left = data.x + "px";
+    img.style.top = data.y + "px";
+
+    img.addEventListener("contextmenu", e => {
+        e.preventDefault();
+        markerToMove = id;
+        markerMenu.style.left = e.pageX + "px";
+        markerMenu.style.top = e.pageY + "px";
+        markerMenu.style.display = "flex";
+    });
 
     markerLayer.appendChild(img);
-    markers.push({ x, y, icon, name, element: img });
 }
+
+/* ============================
+   MENU CONTEXTUEL : ACTIONS
+============================ */
+
+// Supprimer
+deleteBtn.addEventListener("click", () => {
+    db.ref("markers/" + markerToMove).remove();
+    markerMenu.style.display = "none";
+});
+
+// Modifier
+editBtn.addEventListener("click", () => {
+    let newName = prompt("Nouveau nom :", markers[markerToMove].name);
+    let newIcon = prompt("Nouvelle icône :", markers[markerToMove].icon);
+
+    if (newName && newIcon) {
+        db.ref("markers/" + markerToMove).update({
+            name: newName,
+            icon: newIcon
+        });
+    }
+
+    markerMenu.style.display = "none";
+});
+
+// Déplacer
+moveBtn.addEventListener("click", () => {
+    moveMode = true;
+    markerMenu.style.display = "none";
+});
 
 
 

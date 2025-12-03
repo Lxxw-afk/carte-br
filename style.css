@@ -98,6 +98,29 @@ body {
     margin-top: 5px;
 }
 
+#marker-menu {
+    position: absolute;
+    background: #222;
+    border: 1px solid #555;
+    padding: 5px;
+    border-radius: 5px;
+    display: none;
+    flex-direction: column;
+    z-index: 99999;
+}
+
+#marker-menu button {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    text-align: left;
+    cursor: pointer;
+}
+
+#marker-menu button:hover {
+    background: #666;
+}
 
 
 

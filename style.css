@@ -164,3 +164,19 @@ body {
     background: rgba(0,0,0,0.8);
 }
 
+#marker-tooltip {
+    position: fixed;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+    pointer-events: none;
+    transform: translate(-50%, -10px);
+    z-index: 99999;
+}
+
+#marker-tooltip.hidden {
+    display: none;
+}
+

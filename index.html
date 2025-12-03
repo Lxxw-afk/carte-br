@@ -1,61 +1,81 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Carte BR</title>
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase compat -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
+    <meta charset="UTF-8" />
+    <title>BRIGADE DE RECHERCHE</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div id="topbar">
-  <button id="new-point-btn">Nouveau point</button>
+    <!-- BARRE DU HAUT -->
+    <div id="topbar">
+        <h1>BRIGADE DE RECHERCHE</h1>
+        <button id="new-point-btn">Nouveau point</button>
+    </div>
+<button id="credit-btn">Créé par Lxxw</button>
+
+    <!-- MESSAGE : étape 1 -->
+    <div id="step1" class="hidden">
+        👉 Cliquez sur la carte pour placer votre point.
+    </div>
+
+    <!-- CONTENEUR CARTE -->
+    <div id="map-container">
+        <div id="map-inner">
+            <img id="map" src="images/map.png" alt="Carte RP">
+        </div>
+
+        <div id="marker-layer"></div>
+    </div>
+
+    <!-- MENU ÉTAPE 2 : NOM + ICÔNE -->
+    <div id="point-menu" class="hidden">
+        <div class="point-box">
+            <h3>Configurer le point</h3>
+
+            <label>Nom :</label>
+            <input type="text" id="point-name">
+
+            <label>Icône :</label>
+            <select id="point-icon">
+                <option value="">Choisir...</option>
+            </select>
+
+            <img id="icon-preview" class="preview hidden" src="">
+
+            <button id="validate-point">Valider</button>
+            <button id="cancel-point">Annuler</button>
+        </div>
+    </div>
+    
+<!-- MENU CLIC DROIT -->
+<div id="marker-menu" class="hidden">
+    <button id="edit-marker">Modifier</button>
+    <button id="move-marker">Déplacer</button>
+    <button id="delete-marker">Supprimer</button>
 </div>
+<!-- Firebase compat (adapté à GitHub Pages) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-<div id="step1" class="hidden">Clique sur la carte pour placer le point</div>
+    <script src="script.js"></script>
+<!-- Firebase v8 (compat) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-<div id="map-container">
-  <div id="map-inner">
-    <img id="map" src="map.png">
-  </div>
-  <div id="marker-layer"></div>
-</div>
-
-<!-- Menu pour configurer un point -->
-<div id="point-menu" class="hidden">
-  <div class="point-box">
-    <h2>Configurer le point</h2>
-
-    <label>Nom :</label>
-    <input id="point-name" type="text">
-
-    <label>Icône :</label>
-    <select id="point-icon"></select>
-    <img id="icon-preview" class="preview hidden">
-
-    <button id="validate-point">Valider</button>
-    <button id="cancel-point">Annuler</button>
-  </div>
-</div>
-
-<!-- Menu clic droit sur un marker -->
-<div id="marker-menu">
-  <button id="edit-marker">Modifier</button>
-  <button id="move-marker">Déplacer</button>
-  <button id="delete-marker">Supprimer</button>
-</div>
-
-<!-- Tooltip sous le point -->
-<div id="tooltip" class="hidden"></div>
-
+<!-- Ton script -->
 <script src="script.js"></script>
+
+    <div id="marker-menu" class="hidden">
+    <button id="edit-marker">Modifier</button>
+    <button id="move-marker">Déplacer</button>
+    <button id="delete-marker">Supprimer</button>
+</div>
+<div id="marker-tooltip" class="hidden"></div>
+
 </body>
 </html>
-
 
 
 

@@ -24,6 +24,77 @@ try {
 }
 
 /* ============================================================
+   TEXTES MODIFIABLES POUR LE POPUP
+============================================================ */
+const TEXT_1 = "Entrée";
+const TEXT_2 = "Sortie";
+
+/* ============================
+   DRAG & DROP
+============================ */
+let uploadedImg1 = null;
+let uploadedImg2 = null;
+
+function setupDropZone(zoneId, previewId, callback) {
+  const zone = document.getElementById(zoneId);
+  const preview = document.getElementById(previewId);
+
+  zone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    zone.style.borderColor = "white";
+  });
+
+  zone.addEventListener("dragleave", () => {
+    zone.style.borderColor = "rgba(255,255,255,0.4)";
+  });
+
+  zone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    zone.style.borderColor = "rgba(255,255,255,0.4)";
+
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      preview.src = reader.result;
+      preview.classList.remove("hidden");
+      callback(file);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  zone.addEventListener("click", () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        preview.src = reader.result;
+        preview.classList.remove("hidden");
+        callback(file);
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  });
+}
+
+/* ============================================================
+   FIREBASE STORAGE UPLOAD
+============================================================ */
+async function uploadImageToStorage(file, path) {
+  const ref = firebase.storage().ref().child(path);
+  await ref.put(file);
+  return await ref.getDownloadURL();
+}
+
+
+/* ============================================================
    VARIABLES DOM
 ============================================================ */
 const mapContainer = document.getElementById("map-container");
@@ -42,6 +113,10 @@ const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
 const tooltip = document.getElementById("tooltip");
+
+setupDropZone("drop-img1", "preview-img1", (file) => uploadedImg1 = file);
+setupDropZone("drop-img2", "preview-img2", (file) => uploadedImg2 = file);
+
 
 /* ============================================================
    LISTE DES ICONES
@@ -224,6 +299,29 @@ function addMarker(x, y, icon, name, id = null) {
     tooltip.classList.add("hidden");
   });
 
+/* ============================================================
+   CLIC GAUCHE → POPUP AVEC TEXTE + PHOTOS
+============================================================ */
+img.addEventListener("click", async () => {
+  const doc = await db.collection("markers").doc(id).get();
+  const d = doc.data();
+
+  const rect = img.getBoundingClientRect();
+  const popup = document.getElementById("marker-popup");
+
+  document.getElementById("popup-text1").textContent = TEXT_1;
+  document.getElementById("popup-text2").textContent = TEXT_2;
+
+  document.getElementById("popup-img1").src = d.img1;
+  document.getElementById("popup-img2").src = d.img2;
+
+  popup.style.left = (rect.left + rect.width / 2) + "px";
+  popup.style.top = (rect.top - 200) + "px";
+
+  popup.classList.remove("hidden");
+});
+
+   
   /* ============================================================
      MENU CLIC DROIT (inchangé)
   ============================================================ */
@@ -325,12 +423,24 @@ document.getElementById("validate-point").addEventListener("click", async () => 
     return;
   }
 
-  // CREATION
-  const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
-  addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
+  // CREATION DU POINT DANS FIRESTORE
+const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
 
-  pointMenu.classList.add("hidden");
+// Upload des deux images dans Firebase Storage
+const img1URL = await uploadImageToStorage(uploadedImg1, "markers/" + id + "_1.png");
+const img2URL = await uploadImageToStorage(uploadedImg2, "markers/" + id + "_2.png");
+
+// Mise à jour du document Firestore avec les 2 photos
+await db.collection("markers").doc(id).update({
+  img1: img1URL,
+  img2: img2URL
 });
+
+// afficher le marker sur la carte
+addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
+
+pointMenu.classList.add("hidden");
+
 
 /* ============================================================
    ANNULER
@@ -430,6 +540,12 @@ function listenMarkersRealtime() {
 // ACTIVATION DU MODE TEMPS RÉEL
 listenMarkersRealtime();
 
+window.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("marker") &&
+      !e.target.classList.contains("popup-img")) {
+    document.getElementById("marker-popup").classList.add("hidden");
+  }
+});
 
 
 

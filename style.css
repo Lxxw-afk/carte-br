@@ -206,3 +206,22 @@ body {
   z-index: 10000;
 }
 
+/* TOOLTIP SOUS LE MARQUEUR */
+#tooltip {
+    position: fixed;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.35);
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    pointer-events: none;
+    white-space: nowrap;
+    transform: translate(-50%, 0);
+    z-index: 99999;
+    backdrop-filter: blur(4px);
+}
+
+#tooltip.hidden {
+    display: none;
+}

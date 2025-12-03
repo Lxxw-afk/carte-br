@@ -19,6 +19,18 @@ let scale = 1;
 let waitingForPlacement = false;
 let tempX = 0, tempY = 0;
 
+/* ============================
+   LISTE DES ICÔNES DISPONIBLES
+============================ */
+const iconList = [
+    "Meth.png",
+    "cocaine.png",
+    "munitions.png",
+    "organes.png",
+    "weed.png"
+];
+
+
 /* ============================ DRAG ============================ */
 
 mapContainer.addEventListener("mousedown", (e) => {

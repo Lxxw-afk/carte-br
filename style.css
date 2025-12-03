@@ -1,77 +1,51 @@
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #003F87;
-  overflow: hidden;
+    margin: 0;
+    overflow: hidden;
+    background-color: #003F87;
 }
 
-/* Barre du haut */
 #topbar {
-  background: rgba(0,0,0,0.4);
-  color: white;
-  padding: 10px;
-  display: flex;
-  gap: 20px;
-  align-items: center;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
-#topbar h1 {
-  margin: 0;
-  font-size: 20px;
-}
-
-#new-point-btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  background: orange;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-#new-point-btn:hover {
-  background: #ffb347;
-}
-
-/* Carte */
 #map-container {
-  position: relative;
-  width: 100vw;
-  height: calc(100vh - 52px);
-  overflow: hidden;
-  cursor: grab;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
 }
 
 #map-inner {
-  position: absolute;
-  top: 0;
-  left: 0;
+    position: absolute;
+    transform-origin: 0 0;
 }
 
 #map {
-  display: block;
-  max-width: none; /* important */
-  user-select: none;
-  pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
 }
 
-/* Marqueurs */
 #marker-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
 }
 
 .marker {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  transform: translate(-50%, -50%);
-  pointer-events: auto;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    pointer-events: auto;
+    cursor: pointer;
 }
+
 
 
 

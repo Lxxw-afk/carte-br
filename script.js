@@ -201,17 +201,20 @@ function addMarker(x, y, icon, name, id = null) {
   if (id) img.dataset.id = id;
 
   /* ============================================================
-     TOOLTIP SOUS LE POINT
+     TOOLTIP AUTO-ADAPTÉ SELON TAILLE ET ZOOM
   ============================================================ */
   img.addEventListener("mouseenter", () => {
+
     const rect = img.getBoundingClientRect();
+    const markerHeight = rect.height;
 
     tooltip.textContent = img.title;
-    tooltip.className = "marker-tooltip";  // class CSS spéciale
+    tooltip.className = "marker-tooltip";
 
-    // Centré horizontalement + positionné juste sous le marker
+    // Position : centré + juste sous le marker selon sa taille réelle
     tooltip.style.left = (rect.left + rect.width / 2) + "px";
-    tooltip.style.top = (rect.bottom + 4) + "px";
+    tooltip.style.top = (rect.top + markerHeight + 6) + "px"; 
+    // +6 pour un petit espace, tu peux ajuster
 
     tooltip.classList.remove("hidden");
   });
@@ -221,7 +224,7 @@ function addMarker(x, y, icon, name, id = null) {
   });
 
   /* ============================================================
-     MENU CLIC DROIT EXISTANT
+     MENU CLIC DROIT (inchangé)
   ============================================================ */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
@@ -238,6 +241,7 @@ function addMarker(x, y, icon, name, id = null) {
 
   updateMarkerDisplay();
 }
+
 
 
 /* ============================================================

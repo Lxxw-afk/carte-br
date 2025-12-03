@@ -195,37 +195,37 @@ function addMarker(x, y, icon, name, id = null) {
   img.src = "icons/" + icon;
   img.className = "marker";
   img.title = name;
-
-  img.dataset.x = x;
-  img.dataset.y = y;
-  img.dataset.icon = icon;
-  if (id) img.dataset.id = id;
-
- // === TOOLTIP AFFICHÉ SOUS LE POINT ===
+   
+// === TOOLTIP SOUS LE POINT (nom du point) ===
 img.addEventListener("mouseenter", () => {
     const rect = img.getBoundingClientRect();
-    const markerHeight = rect.height;
+    const h = rect.height;
 
     tooltip.textContent = img.title;
     tooltip.classList.remove("hidden");
 
     tooltip.style.left = (rect.left + rect.width / 2) + "px";
-    tooltip.style.top = (rect.top + markerHeight + 6) + "px";
+    tooltip.style.top = (rect.top + h + 6) + "px";
 });
 
 img.addEventListener("mousemove", () => {
     const rect = img.getBoundingClientRect();
-    const markerHeight = rect.height;
+    const h = rect.height;
 
     tooltip.style.left = (rect.left + rect.width / 2) + "px";
-    tooltip.style.top = (rect.top + markerHeight + 6) + "px";
+    tooltip.style.top = (rect.top + h + 6) + "px";
 });
 
 img.addEventListener("mouseleave", () => {
     tooltip.classList.add("hidden");
 });
 
-   
+  img.dataset.x = x;
+  img.dataset.y = y;
+  img.dataset.icon = icon;
+  if (id) img.dataset.id = id;
+
+
   /* ============================================================
      TOOLTIP AUTO-ADAPTÉ SELON TAILLE ET ZOOM
   ============================================================ */

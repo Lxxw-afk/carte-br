@@ -92,6 +92,52 @@ body {
     border-color: blue;
 }
 
+/* ----- MENU COMPACT ----- */
+#point-menu {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.85);
+    padding: 15px;
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    z-index: 5000;
+}
+
+#point-menu.hidden { display: none; }
+
+.point-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#point-menu input,
+#point-menu select {
+    padding: 6px;
+    border-radius: 5px;
+    border: none;
+}
+
+#validate-point,
+#cancel-point {
+    padding: 5px 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+#validate-point { background: #4CAF50; color: white; }
+#cancel-point { background: #a11; color: white; }
+
+.preview {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+.hidden { display: none; }
 
 
 

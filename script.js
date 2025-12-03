@@ -19,9 +19,9 @@ const iconPreview = document.getElementById("icon-preview");
 const iconList = [
     "Meth.png",
     "cocaine.png",
-    "munitions.png",
+    "Munitions.png",
     "organes.png",
-    "weed.png"
+    "Weed.png"
 ];
 
 /* Remplir le menu automatiquement */

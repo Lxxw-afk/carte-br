@@ -139,7 +139,6 @@ document.addEventListener("mouseup", () => {
   mapContainer.classList.remove("dragging");
 });
 
-});
 
 document.addEventListener("mousemove", (e) => {
   if (!isDragging) return;

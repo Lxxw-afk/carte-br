@@ -5,16 +5,24 @@ const mapContainer = document.getElementById("map-container");
 const mapInner = document.getElementById("map-inner");
 const markerLayer = document.getElementById("marker-layer");
 
+const pointMenu = document.getElementById("point-menu");
+const pointName = document.getElementById("point-name");
+const pointIcon = document.getElementById("point-icon");
+const iconPreview = document.getElementById("icon-preview");
+
 let posX = 0, posY = 0;
 let startX = 0, startY = 0;
 let isDragging = false;
-
 let scale = 1;
 
+let waitingForClick = false;   // <--- placement après validation
+
 /* ============================
-   DEPLACEMENT
+   DRAG
 ============================ */
 mapContainer.addEventListener("mousedown", (e) => {
+    if (waitingForClick) return;
+
     isDragging = true;
     startX = e.clientX - posX;
     startY = e.clientY - posY;
@@ -37,7 +45,7 @@ window.addEventListener("mousemove", (e) => {
 });
 
 /* ============================
-   ZOOM MOLETTE
+   ZOOM
 ============================ */
 mapContainer.addEventListener("wheel", (e) => {
     e.preventDefault();
@@ -63,8 +71,8 @@ function addMarker(x, y, icon, name) {
     img.className = "marker";
     img.title = name;
 
-    const obj = { x, y, icon, name, element: img };
-    markers.push(obj);
+    const data = { x, y, icon, name, element: img };
+    markers.push(data);
 
     markerLayer.appendChild(img);
     updateMarkers();
@@ -82,59 +90,53 @@ function updateMarkers() {
 /* ============================
    NOUVEAU POINT
 ============================ */
-let addMode = false;
-let tempX, tempY;
-
 document.getElementById("new-point-btn").addEventListener("click", () => {
-    addMode = true;
-    alert("Clique sur la carte pour placer ton point.");
-});
+    pointName.value = "";
+    pointIcon.value = "";
+    iconPreview.classList.add("hidden");
 
-mapContainer.addEventListener("click", (e) => {
-    if (!addMode || isDragging) return;
-
-    const rect = mapContainer.getBoundingClientRect();
-    tempX = (e.clientX - rect.left - posX) / scale;
-    tempY = (e.clientY - rect.top - posY) / scale;
-
-    document.getElementById("point-name").value = "";
-    document.getElementById("point-icon").value = "";
-    document.getElementById("icon-preview").classList.add("hidden");
-
-    document.getElementById("point-menu").classList.remove("hidden");
+    pointMenu.classList.remove("hidden");
 });
 
 /* APERCU ICONE */
-document.getElementById("point-icon").addEventListener("change", () => {
-    const val = document.getElementById("point-icon").value;
-    const preview = document.getElementById("icon-preview");
-
-    if (!val) return preview.classList.add("hidden");
-
-    preview.src = "icons/" + val;
-    preview.classList.remove("hidden");
+pointIcon.addEventListener("change", () => {
+    if (!pointIcon.value) {
+        iconPreview.classList.add("hidden");
+        return;
+    }
+    iconPreview.src = "icons/" + pointIcon.value;
+    iconPreview.classList.remove("hidden");
 });
 
-/* VALIDER */
+/* VALIDER = LE PROCHAIN CLIC PLACE LE POINT */
 document.getElementById("validate-point").addEventListener("click", () => {
-    const name = document.getElementById("point-name").value;
-    const icon = document.getElementById("point-icon").value;
-
-    if (!name || !icon) {
-        alert("Nom et icône obligatoires !");
+    if (!pointName.value || !pointIcon.value) {
+        alert("Nom + icône obligatoires !");
         return;
     }
 
-    addMarker(tempX, tempY, icon, name);
+    pointMenu.classList.add("hidden");
 
-    document.getElementById("point-menu").classList.add("hidden");
-    addMode = false;
+    waitingForClick = true; // <----- activate placement mode
+    alert("Clique sur la carte pour placer le point.");
 });
 
 /* ANNULER */
 document.getElementById("cancel-point").addEventListener("click", () => {
-    document.getElementById("point-menu").classList.add("hidden");
-    addMode = false;
+    pointMenu.classList.add("hidden");
+});
+
+/* CLICK CARTE = PLACEMENT FINAL */
+mapContainer.addEventListener("click", (e) => {
+    if (!waitingForClick || isDragging) return;
+
+    const rect = mapContainer.getBoundingClientRect();
+    const x = (e.clientX - rect.left - posX) / scale;
+    const y = (e.clientY - rect.top - posY) / scale;
+
+    addMarker(x, y, pointIcon.value, pointName.value);
+
+    waitingForClick = false; // done
 });
 
 

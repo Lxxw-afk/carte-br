@@ -92,8 +92,11 @@ function updateTransform() {
 
 // Drag (déplacement)
 mapContainer.addEventListener("mousedown", (e) => {
-  if (addingPoint || movingMarkerId !== null) return;
-  if (e.button !== 0) return;
+  // On ne commence PAS à drag si on clique sur la barre du haut ou une fenêtre
+  const overUI = e.target.closest("#topbar, #marker-create-modal, #marker-menu");
+  if (overUI) return;
+
+  if (e.button !== 0) return; // seulement clic gauche
 
   isDragging   = true;
   wasDragging  = false;
@@ -105,6 +108,7 @@ mapContainer.addEventListener("mousedown", (e) => {
 
   mapContainer.classList.add("dragging");
 });
+
 
 document.addEventListener("mousemove", (e) => {
   if (!isDragging) return;

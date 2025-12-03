@@ -1,64 +1,44 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Carte BR</title>
+    <meta charset="UTF-8" />
+    <title>CARTE BR</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<!-- BARRE DU HAUT -->
-<div id="topbar">
-    <h1>Carte BR</h1>
-    <button id="new-point-btn">Nouveau point</button>
-</div>
+    <!-- ░░░ BARRE DU HAUT ░░░ -->
+    <div id="topbar">
 
-<!-- CARTE -->
-<div id="map-container">
-    <div id="map-inner">
-        <img id="map" src="images/map.png">
+        <h1>CARTE BR</h1>
+
+        <!-- Message d'information pendant la création du point -->
+        <p id="place-info" style="display:none;">👉 Cliquez sur la carte pour placer votre point.</p>
+
+        <button id="new-point-btn">Nouveau point</button>
     </div>
 
-    <div id="marker-layer"></div>
-</div>
 
-<!-- MENU D'AJOUT POINT -->
-<div id="point-menu" class="hidden">
-    <div class="point-box">
-        <h3>Nouveau point</h3>
+    <!-- ░░░ CONTENEUR PRINCIPAL ░░░ -->
+    <div id="map-container">
 
-        <label>Nom :</label>
-        <input type="text" id="point-name">
+        <!-- Image de la carte -->
+        <div id="map-inner">
+            <img id="map" src="images/map.png" alt="Carte RP">
+        </div>
 
-        <label>Icône :</label>
-        <select id="point-icon">
-            <option value="">Choisir...</option>
-            <option value="Meth.png">Meth</option>
-            <option value="cocaine.png">Cocaïne</option>
-            <option value="munitions.png">Munitions</option>
-            <option value="organes.png">Organes</option>
-            <option value="weed.png">Weed</option>
-        </select>
+        <!-- Calque des marqueurs -->
+        <div id="marker-layer"></div>
 
-        <img id="icon-preview" class="preview hidden" src="">
-
-        <button id="validate-point">Valider</button>
-        <button id="cancel-point">Annuler</button>
     </div>
-</div>
 
-<script src="script.js"></script>
-<div id="click-hint" class="hidden">Clique sur la carte pour placer ton point…</div>
-
-    <!-- MENU CLIC DROIT SUR MARQUEUR -->
-<div id="marker-menu" class="hidden">
-    <button id="edit-marker">Modifier</button>
-    <button id="move-marker">Déplacer</button>
-    <button id="delete-marker">Supprimer</button>
-</div>
+    <!-- ░░░ SCRIPT PRINCIPAL ░░░ -->
+    <script src="script.js"></script>
 
 </body>
 </html>
+
 
 
 

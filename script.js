@@ -1,142 +1,183 @@
-//----------------------------------------
-// VARIABLES DE BASE
-//----------------------------------------
+/* -------------------------
+   CONFIG FIREBASE
+---------------------------*/
+const firebaseConfig = {
+    apiKey: "AIzaSyAOl4dbsUaqmp9S0OBvx3A7F6jw4E3K4TE",
+    authDomain: "carte-br.firebaseapp.com",
+    projectId: "carte-br",
+    storageBucket: "carte-br.firebasestorage.app",
+    messagingSenderId: "698417792662",
+    appId: "1:698417792662:web:4766a306741b5c71724b7"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/* -------------------------
+   VARIABLES
+---------------------------*/
 const mapContainer = document.getElementById("map-container");
-const mapInner     = document.getElementById("map-inner");
-const mapImg       = document.getElementById("map");
-
-// PAN (déplacement)
-let offsetX = 0;
-let offsetY = 0;
+const mapInner = document.getElementById("map-inner");
+const map = document.getElementById("map");
+const markerLayer = document.getElementById("marker-layer");
+let scale = 1;
 let isDragging = false;
-let startX = 0;
-let startY = 0;
+let startX, startY;
+let posX = 0, posY = 0;
 
-// ZOOM
-let zoom = 1;
-const MIN_ZOOM = 0.4;
-const MAX_ZOOM = 3;
+let addingPoint = false;
 
-//----------------------------------------
-// FONCTION POUR METTRE À JOUR LA TRANSFORMATION
-//----------------------------------------
-function updateTransform() {
-    mapInner.style.transformOrigin = "0 0";
-    mapInner.style.transform =
-        `translate(${offsetX}px, ${offsetY}px) scale(${zoom})`;
+/* -------------------------
+   MODE AJOUT DE POINT
+---------------------------*/
+document.getElementById("new-point-btn").addEventListener("click", () => {
+    addingPoint = true;
+    alert("Clique sur la carte pour ajouter un point");
+});
 
-    updateMarkers();
-}
-
-//----------------------------------------
-// DRAG COMME GOOGLE MAPS
-//----------------------------------------
+/* -------------------------
+   DEPLACEMENT (GOOGLE MAPS)
+---------------------------*/
 mapContainer.addEventListener("mousedown", (e) => {
-    if (e.button !== 0) return;
-
+    if (addingPoint) return;
     isDragging = true;
-    startX = e.clientX - offsetX;
-    startY = e.clientY - offsetY;
-
-    mapContainer.style.cursor = "grabbing";
+    startX = e.clientX - posX;
+    startY = e.clientY - posY;
 });
 
-document.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-
-    offsetX = e.clientX - startX;
-    offsetY = e.clientY - startY;
-
-    updateTransform();
-});
-
-document.addEventListener("mouseup", () => {
+window.addEventListener("mouseup", () => {
     isDragging = false;
-    setTimeout(() => isDragging = false, 10);
-    mapContainer.style.cursor = "grab";
 });
 
-//----------------------------------------
-// ZOOM À LA MOLETTE
-//----------------------------------------
+window.addEventListener("mousemove", (e) => {
+    if (!isDragging || addingPoint) return;
+
+    posX = e.clientX - startX;
+    posY = e.clientY - startY;
+
+    mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    markerLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+});
+
+/* -------------------------
+   ZOOM MOLETTE
+---------------------------*/
 mapContainer.addEventListener("wheel", (e) => {
     e.preventDefault();
 
+    const zoomIntensity = 0.1;
+    
+    if (e.deltaY < 0) scale += zoomIntensity;
+    else scale -= zoomIntensity;
+
+    if (scale < 0.2) scale = 0.2;
+    if (scale > 5) scale = 5;
+
+    mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    markerLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+});
+
+/* -------------------------
+   CLICK CARTE POUR AJOUTER
+---------------------------*/
+mapContainer.addEventListener("click", (e) => {
+    if (!addingPoint) return;
+
     const rect = mapContainer.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+    const x = (e.clientX - rect.left - posX) / scale;
+    const y = (e.clientY - rect.top - posY) / scale;
 
-    const worldX = (mouseX - offsetX) / zoom;
-    const worldY = (mouseY - offsetY) / zoom;
+    openMarkerCreationMenu(x, y);
+});
 
-    const delta = e.deltaY < 0 ? 0.1 : -0.1;
-    zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
+/* -------------------------
+   MENU CREATION MARQUEUR
+---------------------------*/
+function openMarkerCreationMenu(x, y) {
+    const name = prompt("Nom du point :");
+    if (!name) {
+        addingPoint = false;
+        return;
+    }
 
-    offsetX = mouseX - worldX * zoom;
-    offsetY = mouseY - worldY * zoom;
+    const icon = prompt("Nom du fichier icône (ex: weed.png) :");
+    if (!icon) {
+        addingPoint = false;
+        return;
+    }
 
-    updateTransform();
-}, { passive: false });
+    saveMarkerToFirebase(x, y, name, icon);
 
-//----------------------------------------
-// MARQUEURS
-//----------------------------------------
-let markers = [];
-
-// calque déjà présent dans HTML
-const markerLayer = document.getElementById("marker-layer");
-
-function addMarker(x, y) {
-    const marker = document.createElement("img");
-    marker.src = "icons/weed.png"; // TEMPORAIRE
-    marker.className = "marker";
-
-    marker.style.left = x + "px";
-    marker.style.top = y + "px";
-
-    markerLayer.appendChild(marker);
-
-    markers.push({ x, y, element: marker });
-    updateMarkers();
+    addingPoint = false;
 }
 
-function updateMarkers() {
-    markers.forEach(m => {
-        m.element.style.transform =
-            `translate(-50%, -50%) scale(${zoom})`;
+/* -------------------------
+   SAUVEGARDE FIREBASE
+---------------------------*/
+function saveMarkerToFirebase(x, y, name, icon) {
+    db.collection("markers").add({
+        x, y, name, icon
     });
 }
 
-//----------------------------------------
-// NOUVEAU POINT (clic)
-//----------------------------------------
-let addingPoint = false;
+/* -------------------------
+   AFFICHAGE DES MARQUEURS
+---------------------------*/
+function displayMarker(id, data) {
+    const marker = document.createElement("img");
+    marker.classList.add("marker");
+    marker.src = `icons/${data.icon}`;
+    marker.style.left = data.x + "px";
+    marker.style.top = data.y + "px";
+    marker.title = data.name;
 
-const newPointBtn = document.getElementById("new-point-btn");
-newPointBtn.addEventListener("click", () => {
-    addingPoint = true;
-    mapContainer.style.cursor = "crosshair";
+    // clic droit → menu
+    marker.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        const choice = prompt("1 = Modifier\n2 = Supprimer\n3 = Déplacer");
+
+        if (choice == "2") {
+            db.collection("markers").doc(id).delete();
+        }
+
+        if (choice == "1") {
+            const newName = prompt("Nouveau nom :", data.name);
+            if (newName) {
+                db.collection("markers").doc(id).update({ name: newName });
+            }
+        }
+
+        if (choice == "3") {
+            alert("Clique pour choisir la nouvelle position...");
+            addingPoint = true;
+
+            mapContainer.addEventListener("click", function move(e2) {
+                const rect = mapContainer.getBoundingClientRect();
+                const newX = (e2.clientX - rect.left - posX) / scale;
+                const newY = (e2.clientY - rect.top - posY) / scale;
+
+                db.collection("markers").doc(id).update({
+                    x: newX,
+                    y: newY
+                });
+
+                addingPoint = false;
+                mapContainer.removeEventListener("click", move);
+            });
+        }
+    });
+
+    markerLayer.appendChild(marker);
+}
+
+/* -------------------------
+   SYNCHRONISATION LIVE
+---------------------------*/
+db.collection("markers").onSnapshot(snapshot => {
+    markerLayer.innerHTML = "";
+    snapshot.forEach(doc => displayMarker(doc.id, doc.data()));
 });
 
-mapContainer.addEventListener("click", (e) => {
-    if (!addingPoint) return;
-    if (isDragging) return;
-
-    const rect = mapContainer.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-
-    const x = (mx - offsetX) / zoom;
-    const y = (my - offsetY) / zoom;
-
-    addMarker(x, y);
-
-    addingPoint = false;
-    mapContainer.style.cursor = "grab";
-});
-
-//----------------------------------------
-updateTransform();
 
 
 

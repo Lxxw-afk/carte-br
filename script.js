@@ -441,6 +441,7 @@ addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
 
 pointMenu.classList.add("hidden");
 
+}); 
 
 /* ============================================================
    ANNULER

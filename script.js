@@ -614,12 +614,7 @@ function listenMarkersRealtime() {
 // ACTIVATION DU MODE TEMPS RÉEL
 listenMarkersRealtime();
 
-window.addEventListener("click", (e) => {
-  if (!e.target.classList.contains("marker") &&
-      !e.target.classList.contains("popup-img")) {
-    markerPopup.classList.add("hidden");
-  }
-});
+
 
 
 

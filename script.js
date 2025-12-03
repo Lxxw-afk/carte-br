@@ -24,6 +24,20 @@ try {
 }
 
 /* ============================================================
+   TEXTES POUR LES IMAGES (MODIFIABLES ICI)
+============================================================ */
+const POPUP_TEXT_1 = "POINT";      // texte au-dessus de l'image 1
+const POPUP_TEXT_2 = "ENTRÉE";     // texte au-dessus de l'image 2
+
+const FORM_LABEL_1 = "Image 1 (popup)"; // label dans le menu
+const FORM_LABEL_2 = "Image 2 (popup)"; // label dans le menu
+
+// Contenu des deux images (base64)
+let img1DataUrl = null;
+let img2DataUrl = null;
+
+
+/* ============================================================
    VARIABLES DOM
 ============================================================ */
 const mapContainer = document.getElementById("map-container");
@@ -35,8 +49,17 @@ const pointMenu = document.getElementById("point-menu");
 const pointName = document.getElementById("point-name");
 const pointIcon = document.getElementById("point-icon");
 const iconPreview = document.getElementById("icon-preview");
-const img1Select = document.getElementById("img1-select");
-const img2Select = document.getElementById("img2-select");
+const labelImg1 = document.getElementById("label-img1");
+const labelImg2 = document.getElementById("label-img2");
+const dropImg1 = document.getElementById("drop-img1");
+const dropImg2 = document.getElementById("drop-img2");
+const previewImg1 = document.getElementById("preview-img1");
+const previewImg2 = document.getElementById("preview-img2");
+
+// appliquer les textes configurables du formulaire
+labelImg1.textContent = FORM_LABEL_1 + " :";
+labelImg2.textContent = FORM_LABEL_2 + " :";
+
 
 
 
@@ -56,6 +79,62 @@ const popupImg2 = document.getElementById("popup-img2");
 // Textes configurables pour le popup
 const TEXT_1 = "Texte 1"; // tu changes ici
 const TEXT_2 = "Texte 2"; // tu changes ici
+
+/* ============================================================
+   DRAG & DROP IMAGES (IMG1 / IMG2)
+============================================================ */
+function setupDropZone(zoneEl, previewEl, assignFn) {
+  zoneEl.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    zoneEl.classList.add("drop-over");
+  });
+
+  zoneEl.addEventListener("dragleave", () => {
+    zoneEl.classList.remove("drop-over");
+  });
+
+  zoneEl.addEventListener("drop", (e) => {
+    e.preventDefault();
+    zoneEl.classList.remove("drop-over");
+
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      previewEl.src = dataUrl;
+      previewEl.classList.remove("hidden");
+      assignFn(dataUrl);  // on stocke le base64 dans img1DataUrl ou img2DataUrl
+    };
+    reader.readAsDataURL(file);
+  });
+
+  zoneEl.addEventListener("click", () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result;
+        previewEl.src = dataUrl;
+        previewEl.classList.remove("hidden");
+        assignFn(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  });
+}
+
+// activation des 2 zones
+setupDropZone(dropImg1, previewImg1, (dataUrl) => img1DataUrl = dataUrl);
+setupDropZone(dropImg2, previewImg2, (dataUrl) => img2DataUrl = dataUrl);
+
 
 /* ============================================================
    LISTE DES ICONES
@@ -169,9 +248,17 @@ function updateMarkerDisplay() {
 ============================================================ */
 async function createMarkerInFirebase(x, y, icon, name, img1, img2) {
   if (!firebaseReady) return null;
-  const docRef = await db.collection("markers").add({ x, y, icon, name, img1, img2 });
+  const docRef = await db.collection("markers").add({
+    x,
+    y,
+    icon,
+    name,
+    img1: img1 || null,
+    img2: img2 || null
+  });
   return docRef.id;
 }
+
 
 
 async function updateMarkerInFirebase(marker, data) {
@@ -195,7 +282,7 @@ function listenMarkersRealtime() {
 
     snapshot.forEach(doc => {
       const d = doc.data();
-     addMarker(d.x, d.y, d.icon, d.name, doc.id, d.img1, d.img2);
+    addMarker(d.x, d.y, d.icon, d.name, doc.id, d.img1, d.img2);
 
     });
   });
@@ -212,14 +299,16 @@ function addMarker(x, y, icon, name, id = null, img1 = null, img2 = null) {
   img.className = "marker";
   img.title = name;
 
-  img.dataset.x = x;
+img.dataset.x = x;
 img.dataset.y = y;
 img.dataset.icon = icon;
 if (id) img.dataset.id = id;
 if (img1) img.dataset.img1 = img1;
 if (img2) img.dataset.img2 = img2;
 
-// TOOLTIP SOUS LE POINT
+
+
+// TOOLTIP sous le point (nom)
 img.addEventListener("mouseenter", () => {
   const rect = img.getBoundingClientRect();
   const markerHeight = rect.height;
@@ -235,20 +324,20 @@ img.addEventListener("mouseleave", () => {
   tooltip.classList.add("hidden");
 });
 
-// CLICK GAUCHE = POPUP IMAGES
+// CLICK GAUCHE = ouvrir popup avec les 2 images
 img.addEventListener("click", (e) => {
   e.stopPropagation();
 
   const rect = img.getBoundingClientRect();
+  const img1 = img.dataset.img1 || "";
+  const img2 = img.dataset.img2 || "";
 
-  popupText1.textContent = TEXT_1;
-  popupText2.textContent = TEXT_2;
+  // textes au-dessus des images (modifiables en haut du fichier)
+  popupText1.textContent = POPUP_TEXT_1;
+  popupText2.textContent = POPUP_TEXT_2;
 
-  const img1Name = img.dataset.img1;
-  const img2Name = img.dataset.img2;
-
-  popupImg1.src = img1Name ? ("icons/" + img1Name) : "";
-  popupImg2.src = img2Name ? ("icons/" + img2Name) : "";
+  popupImg1.src = img1;
+  popupImg2.src = img2;
 
   markerPopup.style.left = (rect.left + rect.width / 2) + "px";
   markerPopup.style.top = (rect.top - 220) + "px";
@@ -260,6 +349,7 @@ img.addEventListener("click", (e) => {
     markerPopup.classList.add("hidden");
   }
 });
+
 
   /* ============================================================
      TOOLTIP AUTO-ADAPTÉ SELON TAILLE ET ZOOM

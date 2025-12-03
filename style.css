@@ -205,21 +205,3 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2); /* léger contour transparent */
   z-index: 10000;
 }
-
-#tooltip {
-    position: fixed;
-    padding: 6px 10px;
-    background: rgba(0, 0, 0, 0.35);
-    color: white;
-    border-radius: 6px;
-    font-weight: bold;
-    font-size: 14px;
-    pointer-events: none;
-    white-space: nowrap;
-    transform: translate(-50%, 0);
-    z-index: 99999;
-}
-
-#tooltip.hidden {
-    display: none;
-}

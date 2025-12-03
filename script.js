@@ -200,9 +200,19 @@ function addMarker(x, y, icon, name, id = null) {
   img.dataset.icon = icon;
   if (id) img.dataset.id = id;
 
-  // Tooltip
+  /* ============================================================
+     TOOLTIP SOUS LE POINT
+  ============================================================ */
   img.addEventListener("mouseenter", () => {
+    const rect = img.getBoundingClientRect();
+
     tooltip.textContent = img.title;
+    tooltip.className = "marker-tooltip";  // class CSS spéciale
+
+    // Centré horizontalement + positionné juste sous le marker
+    tooltip.style.left = (rect.left + rect.width / 2) + "px";
+    tooltip.style.top = (rect.bottom + 4) + "px";
+
     tooltip.classList.remove("hidden");
   });
 
@@ -210,12 +220,9 @@ function addMarker(x, y, icon, name, id = null) {
     tooltip.classList.add("hidden");
   });
 
-  img.addEventListener("mousemove", (e) => {
-    tooltip.style.left = e.pageX + "px";
-    tooltip.style.top = (e.pageY - 25) + "px";
-  });
-
-  // Menu clic droit
+  /* ============================================================
+     MENU CLIC DROIT EXISTANT
+  ============================================================ */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     selectedMarker = img;
@@ -231,6 +238,7 @@ function addMarker(x, y, icon, name, id = null) {
 
   updateMarkerDisplay();
 }
+
 
 /* ============================================================
    BOUTON NOUVEAU POINT

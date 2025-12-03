@@ -8,34 +8,60 @@
 
 <body>
 
-    <!-- ░░░ BARRE DU HAUT ░░░ -->
+    <!-- BARRE DU HAUT -->
     <div id="topbar">
-
         <h1>CARTE BR</h1>
 
-        <!-- Message d'information pendant la création du point -->
-        <p id="place-info" style="display:none;">👉 Cliquez sur la carte pour placer votre point.</p>
+        <p id="click-hint" class="hidden">
+            👉 Cliquez sur la carte pour placer votre point.
+        </p>
 
         <button id="new-point-btn">Nouveau point</button>
     </div>
 
-
-    <!-- ░░░ CONTENEUR PRINCIPAL ░░░ -->
+    <!-- CONTENEUR PRINCIPAL -->
     <div id="map-container">
-
-        <!-- Image de la carte -->
         <div id="map-inner">
             <img id="map" src="images/map.png" alt="Carte RP">
         </div>
 
         <!-- Calque des marqueurs -->
         <div id="marker-layer"></div>
-
     </div>
 
-    <!-- ░░░ SCRIPT PRINCIPAL ░░░ -->
-    <script src="script.js"></script>
+    <!-- MENU AJOUT POINT -->
+    <div id="point-menu" class="hidden">
+        <div class="point-box">
+            <h3>Nouveau point</h3>
 
+            <label>Nom :</label>
+            <input type="text" id="point-name">
+
+            <label>Icône :</label>
+            <select id="point-icon">
+                <option value="">Choisir...</option>
+                <option value="Meth.png">Meth</option>
+                <option value="cocaine.png">Cocaïne</option>
+                <option value="munitions.png">Munitions</option>
+                <option value="organes.png">Organes</option>
+                <option value="weed.png">Weed</option>
+            </select>
+
+            <img id="icon-preview" class="preview hidden" src="">
+
+            <button id="validate-point">Valider</button>
+            <button id="cancel-point">Annuler</button>
+        </div>
+    </div>
+
+    <!-- MENU CLIC DROIT -->
+    <div id="marker-menu" class="hidden">
+        <button id="edit-marker">Modifier</button>
+        <button id="move-marker">Déplacer</button>
+        <button id="delete-marker">Supprimer</button>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
 

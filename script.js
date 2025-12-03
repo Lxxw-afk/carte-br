@@ -143,17 +143,16 @@ function updateMarkerDisplay() {
     marker.style.left = (x * scale) + "px";
     marker.style.top = (y * scale) + "px";
 
-   // Taille dynamique qui devient très petite quand on dézoom
-let size = 12 + (scale * 10);
+ // Taille dynamique inversée : dézoom = grand, zoom = petit
+let size = 60 / scale;
 
-// Taille minimum (dézoom max)
-size = Math.max(45, size);
-
-// Taille maximum (zoom max)
-size = Math.min(55, size);
+// Limite min/max
+size = Math.max(20, size);  // taille mini quand très zoomé
+size = Math.min(70, size);  // taille maxi quand dézoomé
 
 marker.style.width = size + "px";
 marker.style.height = size + "px";
+
      
   });
 }

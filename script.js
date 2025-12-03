@@ -22,12 +22,13 @@ const deleteBtn = document.getElementById("delete-marker");
 const iconList = [
     "Meth.png",
     "cocaine.png",
-    "Munitions.png",
+    "munitions.png",
     "organes.png",
-    "Weed.png"
+    "weed.png"
 ];
 
-// Remplir dropdown d’icônes
+// remplir le dropdown
+pointIcon.innerHTML = '<option value="">Choisir...</option>';
 iconList.forEach(icon => {
     const op = document.createElement("option");
     op.value = icon;
@@ -44,11 +45,13 @@ let isDragging = false;
 let dragStartX = 0, dragStartY = 0;
 
 let markers = [];
+
 let waitingForPlacement = false;
 let tempX = 0, tempY = 0;
 
 let selectedMarker = null;
 let moveMode = false;
+let editMode = false;
 
 /* ============================================================
    DRAG
@@ -77,13 +80,14 @@ window.addEventListener("mousemove", (e) => {
 });
 
 /* ============================================================
-   ZOOM (centré sur la souris)
+   ZOOM CENTRÉ SUR LA SOURIS
 ============================================================ */
 mapContainer.addEventListener("wheel", (e) => {
     e.preventDefault();
 
-    const mx = e.clientX;
-    const my = e.clientY;
+    const rect = mapContainer.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
 
     const oldScale = scale;
     const zoomSpeed = 0.1;
@@ -91,17 +95,14 @@ mapContainer.addEventListener("wheel", (e) => {
     scale += (e.deltaY < 0 ? zoomSpeed : -zoomSpeed);
     scale = Math.max(0.5, Math.min(4, scale));
 
-    const dx = mx - posX;
-    const dy = my - posY;
-
-    posX -= (dx / oldScale) * (scale - oldScale);
-    posY -= (dy / oldScale) * (scale - oldScale);
+    posX -= (mx / oldScale) * (scale - oldScale);
+    posY -= (my / oldScale) * (scale - oldScale);
 
     updateMap();
 });
 
 /* ============================================================
-   METTRE À JOUR CARTE + MARKERS
+   UPDATE CARTE + MARKERS
 ============================================================ */
 function updateMap() {
     mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
@@ -111,8 +112,8 @@ function updateMap() {
 
 function updateMarkerDisplay() {
     markers.forEach(marker => {
-        const x = marker.dataset.x;
-        const y = marker.dataset.y;
+        const x = parseFloat(marker.dataset.x);
+        const y = parseFloat(marker.dataset.y);
 
         marker.style.left = (x * scale) + "px";
         marker.style.top = (y * scale) + "px";
@@ -133,8 +134,8 @@ function addMarker(x, y, icon, name) {
 
     img.dataset.x = x;
     img.dataset.y = y;
+    img.dataset.icon = icon;
 
-    // clic droit sur un marqueur
     img.addEventListener("contextmenu", (e) => {
         e.preventDefault();
         selectedMarker = img;
@@ -155,6 +156,7 @@ function addMarker(x, y, icon, name) {
    BOUTON : NOUVEAU POINT
 ============================================================ */
 document.getElementById("new-point-btn").addEventListener("click", () => {
+    editMode = false;
     waitingForPlacement = true;
     step1.classList.remove("hidden");
 });
@@ -165,7 +167,7 @@ document.getElementById("new-point-btn").addEventListener("click", () => {
 mapContainer.addEventListener("click", (e) => {
     if (isDragging) return;
 
-    // mode déplacement
+    // déplacer un marqueur
     if (moveMode && selectedMarker) {
         const rect = mapContainer.getBoundingClientRect();
         const x = (e.clientX - rect.left - posX) / scale;
@@ -180,7 +182,7 @@ mapContainer.addEventListener("click", (e) => {
         return;
     }
 
-    // mode ajout
+    // placer un nouveau marqueur
     if (!waitingForPlacement) return;
 
     const rect = mapContainer.getBoundingClientRect();
@@ -189,11 +191,18 @@ mapContainer.addEventListener("click", (e) => {
 
     waitingForPlacement = false;
     step1.classList.add("hidden");
+
+    // ouverture du menu
+    editMode = false;
+    pointName.value = "";
+    pointIcon.value = "";
+    iconPreview.classList.add("hidden");
+
     pointMenu.classList.remove("hidden");
 });
 
 /* ============================================================
-   PREVIEW ICÔNE
+   PREVIEW ICONE
 ============================================================ */
 pointIcon.addEventListener("change", () => {
     if (!pointIcon.value) return iconPreview.classList.add("hidden");
@@ -202,38 +211,38 @@ pointIcon.addEventListener("change", () => {
 });
 
 /* ============================================================
-   VALIDER AJOUT POINT
+   VALIDER AJOUT / MODIFICATION
 ============================================================ */
 document.getElementById("save-point").addEventListener("click", () => {
+
     if (!pointName.value || !pointIcon.value) {
         alert("Nom + icône obligatoires !");
         return;
     }
 
-    // MODE MODIFICATION
+    // === MODE MODIFICATION ===
     if (editMode && selectedMarker) {
 
         selectedMarker.title = pointName.value;
         selectedMarker.src = "icons/" + pointIcon.value;
-
-        // mettre à jour dataset si icône ou nom change
         selectedMarker.dataset.icon = pointIcon.value;
 
         editMode = false;
         selectedMarker = null;
-
         pointMenu.classList.add("hidden");
         return;
     }
 
-    // MODE CREATION
+    // === MODE CREATION ===
     addMarker(tempX, tempY, pointIcon.value, pointName.value);
 
+    waitingForPlacement = false;
     pointMenu.classList.add("hidden");
 });
 
-
-/* ANNULER */
+/* ============================================================
+   ANNULER
+============================================================ */
 document.getElementById("cancel-point").addEventListener("click", () => {
     pointMenu.classList.add("hidden");
     step1.classList.add("hidden");
@@ -241,7 +250,6 @@ document.getElementById("cancel-point").addEventListener("click", () => {
     editMode = false;
     selectedMarker = null;
 });
-
 
 /* ============================================================
    MENU CLIC DROIT : ACTIONS
@@ -261,24 +269,20 @@ deleteBtn.addEventListener("click", () => {
 editBtn.addEventListener("click", () => {
     if (!selectedMarker) return;
 
-    // activer mode édition
     editMode = true;
+    moveMode = false;
 
-    // cacher le menu clic droit
     markerMenu.style.display = "none";
 
-    // pré-remplir le formulaire
+    // pré-remplir le menu
     pointName.value = selectedMarker.title;
-    pointIcon.value = selectedMarker.src.split("/").pop();
+    pointIcon.value = selectedMarker.dataset.icon;
 
-    // afficher l’aperçu
     iconPreview.src = selectedMarker.src;
     iconPreview.classList.remove("hidden");
 
-    // afficher le menu de point
     pointMenu.classList.remove("hidden");
 });
-
 
 // DEPLACER
 moveBtn.addEventListener("click", () => {
@@ -286,10 +290,11 @@ moveBtn.addEventListener("click", () => {
     markerMenu.style.display = "none";
 });
 
-/* Fermer menu clic droit si on clique ailleurs */
+/* Fermer le menu si on clique ailleurs */
 window.addEventListener("click", () => {
     if (!moveMode) markerMenu.style.display = "none";
 });
+
 
 
 

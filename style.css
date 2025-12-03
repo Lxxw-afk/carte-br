@@ -146,4 +146,21 @@ body {
     background: #666;
 }
 
+#credit-btn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: default; /* pas cliquable */
+    z-index: 9999;
+}
+
+#credit-btn:hover {
+    background: rgba(0,0,0,0.8);
+}
 

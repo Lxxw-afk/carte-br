@@ -141,19 +141,7 @@ function addMarker(x, y, icon, name) {
     const img = document.createElement("img");
     img.src = "icons/" + icon;
     img.className = "marker";
-   // tooltip au survol
-img.addEventListener("mouseenter", (e) => {
-    tooltip.textContent = img.title;
-    tooltip.classList.remove("hidden");
-});
-
-img.addEventListener("mouseleave", () => {
-    tooltip.classList.add("hidden");
-});
-
-img.addEventListener("mousemove", (e) => {
-    tooltip.style.left = e.pageX + "px";
-    tooltip.style.top = (e.pageY - 25) + "px";
+  
 });
 
     img.title = name;
@@ -170,6 +158,19 @@ img.addEventListener("mousemove", (e) => {
         markerMenu.style.left = e.pageX + "px";
         markerMenu.style.top = e.pageY + "px";
         markerMenu.style.display = "flex";
+        // tooltip au survol
+img.addEventListener("mouseenter", (e) => {
+    tooltip.textContent = img.title;
+    tooltip.classList.remove("hidden");
+});
+
+img.addEventListener("mouseleave", () => {
+    tooltip.classList.add("hidden");
+});
+
+img.addEventListener("mousemove", (e) => {
+    tooltip.style.left = e.pageX + "px";
+    tooltip.style.top = (e.pageY - 25) + "px";
     });
 
     markerLayer.appendChild(img);

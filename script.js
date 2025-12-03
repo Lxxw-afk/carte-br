@@ -147,7 +147,7 @@ function updateMarkerDisplay() {
 let size = 12 + (scale * 10);
 
 // Taille minimum (dézoom max)
-size = Math.max(12, size);
+size = Math.max(45, size);
 
 // Taille maximum (zoom max)
 size = Math.min(55, size);

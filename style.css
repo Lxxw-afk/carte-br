@@ -2,17 +2,34 @@ body {
     margin: 0;
     overflow: hidden;
     background-color: #003F87;
+    font-family: Arial, sans-serif;
 }
 
+/* ===== TOPBAR ===== */
 #topbar {
-    background: rgba(0,0,0,0.6);
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 5000;
+    background: rgba(0, 0, 0, 0.7);
     color: white;
-    padding: 10px;
+    padding: 10px 15px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
 }
 
+#new-point-btn {
+    padding: 5px 10px;
+    border: none;
+    background: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* ===== MAP ===== */
 #map-container {
     width: 100vw;
     height: 100vh;
@@ -22,83 +39,46 @@ body {
 
 #map-inner {
     position: absolute;
-    transform-origin: 0 0;
+    top: 0;
+    left: 0;
 }
 
 #map {
-    user-select: none;
-    -webkit-user-drag: none;
+    width: 100%;
+    height: auto;
+    display: block;
     pointer-events: none;
 }
 
+/* ===== MARQUEURS ===== */
 #marker-layer {
     position: absolute;
     top: 0;
     left: 0;
-    transform-origin: 0 0;
+    width: 100%;
+    height: 100%;
 }
 
 .marker {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    cursor: pointer;
+    z-index: 3000;
+}
+
+.marker img {
     width: 40px;
     height: 40px;
-    position: absolute;
-    pointer-events: auto;
-    cursor: pointer;
+    object-fit: contain;
 }
 
-/* ---- MENU POUR CRÉER UN MARQUEUR ---- */
-#marker-menu.hidden {
-    display: none;
-}
-
-#marker-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#menu-box {
-    background: white;
-    padding: 20px;
-    width: 350px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-#icon-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    max-height: 200px;
-    overflow-y: auto;
-    margin: 10px 0;
-}
-
-.icon-option {
-    width: 50px;
-    height: 50px;
-    border: 2px solid transparent;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.icon-option.selected {
-    border-color: blue;
-}
-
-/* ----- MENU COMPACT ----- */
+/* ===== MENU MARQUEUR (COMPACT) ===== */
 #point-menu {
     position: fixed;
     bottom: 15px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0,0,0,0.85);
+    background: rgba(0, 0, 0, 0.85);
     padding: 15px;
     border-radius: 10px;
     color: white;
@@ -106,7 +86,9 @@ body {
     z-index: 5000;
 }
 
-#point-menu.hidden { display: none; }
+#point-menu.hidden {
+    display: none;
+}
 
 .point-box {
     display: flex;
@@ -123,21 +105,32 @@ body {
 
 #validate-point,
 #cancel-point {
-    padding: 5px 10px;
-    cursor: pointer;
+    padding: 6px 10px;
     border: none;
     border-radius: 5px;
+    cursor: pointer;
 }
 
-#validate-point { background: #4CAF50; color: white; }
-#cancel-point { background: #a11; color: white; }
+#validate-point {
+    background: #4CAF50;
+    color: white;
+}
+
+#cancel-point {
+    background: #a00;
+    color: white;
+}
 
 .preview {
     width: 40px;
     height: 40px;
-    object-fit: contain;
+    margin-top: 5px;
 }
-.hidden { display: none; }
+
+.hidden {
+    display: none;
+}
+
 
 
 

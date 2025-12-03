@@ -477,26 +477,35 @@ document.getElementById("validate-point").addEventListener("click", async () => 
   }
 
   // CREATION
-const img1 = img1Select.value || null;
-const img2 = img2Select.value || null;
-
 const id = await createMarkerInFirebase(
   tempX,
   tempY,
   pointIcon.value,
   pointName.value,
-  img1,
-  img2
+  img1DataUrl,
+  img2DataUrl
 );
 
-addMarker(tempX, tempY, pointIcon.value, pointName.value, id, img1, img2);
+addMarker(
+  tempX,
+  tempY,
+  pointIcon.value,
+  pointName.value,
+  id,
+  img1DataUrl,
+  img2DataUrl
+);
 
 pointMenu.classList.add("hidden");
 step1.classList.add("hidden");
 waitingForPlacement = false;
 
+// on reset les images pour le prochain point
+img1DataUrl = null;
+img2DataUrl = null;
+previewImg1.classList.add("hidden");
+previewImg2.classList.add("hidden");
 
-  pointMenu.classList.add("hidden");
 });
 
 /* ============================================================
@@ -605,6 +614,12 @@ function listenMarkersRealtime() {
 // ACTIVATION DU MODE TEMPS RÉEL
 listenMarkersRealtime();
 
+window.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("marker") &&
+      !e.target.classList.contains("popup-img")) {
+    markerPopup.classList.add("hidden");
+  }
+});
 
 
 

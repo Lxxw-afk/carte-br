@@ -1,67 +1,182 @@
+/* Fond de page */
 body {
-    margin: 0;
-    background-color: #003F87;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  background-color: #003F87;
+  font-family: Arial, sans-serif;
 }
 
-header {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.3);
-    color: white;
+/* Barre du haut */
+#topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.35);
 }
 
-#addPointBtn {
-    padding: 8px 12px;
-    background: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+#topbar h1 {
+  margin: 0;
+  font-size: 20px;
 }
-#addPointBtn:hover { background: #218838; }
 
+#hint {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Bouton nouveau point */
+#new-point-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 999px;
+  background: #ff9800;
+  color: #222;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#new-point-btn:hover {
+  background: #ffa726;
+}
+
+/* Conteneur carte */
 #map-container {
-    position: relative;
-    width: 100%;
-    height: calc(100vh - 60px);
-    overflow: hidden;
+  position: relative;
+  width: 100vw;
+  height: calc(100vh - 52px);
+  overflow: hidden;
+  cursor: grab;
 }
 
+#map-container.dragging {
+  cursor: grabbing;
+}
+
+/* Carte */
 #map-inner {
-    position: absolute;
-    top: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
+#map {
+  display: block;
+  max-width: none; /* important pour garder la taille réelle */
+}
+
+/* Calque des marqueurs */
 #marker-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none; /* les clics passent au conteneur, sauf sur les marqueurs */
 }
 
+/* Marqueur */
 .marker {
-    position: absolute;
-    width: 40px;
-    transform: translate(-50%, -100%);
-    pointer-events: auto;
+  position: absolute;
+  transform: translate(-50%, -100%);
+  pointer-events: auto; /* pour pouvoir clic droit dessus */
 }
 
-/* MENU */
-#markerMenu {
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.marker img {
+  width: 40px;
+  height: 40px;
 }
-.hidden { display: none; }
+
+.marker-default {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: red;
+  border: 2px solid #fff;
+  box-shadow: 0 0 4px #000;
+  display: block;
+}
+
+/* Label du marqueur */
+.marker-label {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* Fenêtre modale */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-content h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.modal-content input,
+.modal-content select {
+  padding: 4px 6px;
+  font-size: 14px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.modal-buttons button {
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Menu clic droit */
+.marker-menu {
+  position: fixed;
+  background: #222;
+  color: #fff;
+  border-radius: 4px;
+  min-width: 150px;
+  font-size: 14px;
+  z-index: 1100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.marker-menu .item {
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.marker-menu .item:hover {
+  background: #444;
+}
 
 

@@ -20,12 +20,22 @@ body {
 }
 
 #new-point-btn {
-    padding: 8px 15px;
-    background: orange;
-    border: none;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.15); /* léger transparent */
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 6px;
     cursor: pointer;
+    color: white;
+    font-weight: 700;     /* GRAS */
+    text-transform: uppercase; /* MAJUSCULE */
+    transition: 0.2s;
+    backdrop-filter: blur(4px); /* flou léger, très propre */
 }
+
+#new-point-btn:hover {
+    background: rgba(255, 255, 255, 0.25); /* un peu plus clair au survol */
+}
+
 
 /* MESSAGE ÉTAPE 1 */
 #step1 {

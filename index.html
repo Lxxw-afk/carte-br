@@ -23,21 +23,31 @@
 </div>
 
 <script src="script.js"></script>
-    <!-- MENU CREATION MARQUEUR -->
-<div id="marker-menu" class="hidden">
-    <div id="menu-box">
-        <h2>Créer un point</h2>
+<!-- MENU AJOUT MARQUEUR (COMPACT) -->
+<div id="point-menu" class="hidden">
+    <div class="point-box">
+        <h3>Nouveau point</h3>
 
-        <label>Nom du point :</label>
-        <input type="text" id="marker-name">
+        <label>Nom :</label>
+        <input type="text" id="point-name">
 
-        <label>Choisir une icône :</label>
-        <div id="icon-list"></div>
+        <label>Icône :</label>
+        <select id="point-icon">
+            <option value="">Choisir...</option>
+            <option value="Meth.png">Meth</option>
+            <option value="cocaine.png">Cocaïne</option>
+            <option value="munitions.png">Munitions</option>
+            <option value="organes.png">Organes</option>
+            <option value="weed.png">Weed</option>
+        </select>
 
-        <button id="confirm-marker">Valider</button>
-        <button id="cancel-marker">Annuler</button>
+        <img id="icon-preview" src="" class="preview hidden">
+
+        <button id="validate-point">Valider</button>
+        <button id="cancel-point">Annuler</button>
     </div>
 </div>
+
 
 </body>
 </html>

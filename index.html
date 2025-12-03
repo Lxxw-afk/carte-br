@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <title>CARTE BR</title>
+    <title>TEST</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -10,29 +10,28 @@
 
     <!-- BARRE DU HAUT -->
     <div id="topbar">
-        <h1>CARTE BR</h1>
-
-        <p id="click-hint" class="hidden">
-            👉 Cliquez sur la carte pour placer votre point.
-        </p>
-
+        <h1>TEST</h1>
         <button id="new-point-btn">Nouveau point</button>
     </div>
 
-    <!-- CONTENEUR PRINCIPAL -->
+    <!-- MESSAGE : étape 1 -->
+    <div id="step1" class="hidden">
+        👉 Cliquez sur la carte pour placer votre point.
+    </div>
+
+    <!-- CONTENEUR CARTE -->
     <div id="map-container">
         <div id="map-inner">
             <img id="map" src="images/map.png" alt="Carte RP">
         </div>
 
-        <!-- Calque des marqueurs -->
         <div id="marker-layer"></div>
     </div>
 
-    <!-- MENU AJOUT POINT -->
+    <!-- MENU ÉTAPE 2 : NOM + ICÔNE -->
     <div id="point-menu" class="hidden">
         <div class="point-box">
-            <h3>Nouveau point</h3>
+            <h3>Configurer le point</h3>
 
             <label>Nom :</label>
             <input type="text" id="point-name">
@@ -40,30 +39,20 @@
             <label>Icône :</label>
             <select id="point-icon">
                 <option value="">Choisir...</option>
-                <option value="Meth.png">Meth</option>
-                <option value="cocaine.png">Cocaïne</option>
-                <option value="munitions.png">Munitions</option>
-                <option value="organes.png">Organes</option>
-                <option value="weed.png">Weed</option>
             </select>
 
             <img id="icon-preview" class="preview hidden" src="">
 
-            <button id="validate-point">Valider</button>
+            <button id="save-point">Valider</button>
             <button id="cancel-point">Annuler</button>
         </div>
     </div>
 
-    <!-- MENU CLIC DROIT -->
-    <div id="marker-menu" class="hidden">
-        <button id="edit-marker">Modifier</button>
-        <button id="move-marker">Déplacer</button>
-        <button id="delete-marker">Supprimer</button>
-    </div>
-
     <script src="script.js"></script>
+
 </body>
 </html>
+
 
 
 

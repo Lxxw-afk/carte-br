@@ -18,12 +18,12 @@ const modalSave     = document.getElementById("marker-save-btn");
 
 const markerMenu    = document.getElementById("marker-menu");
 
-// Référence Firebase (db définie dans index.html)
+// Référence Firebase
 const markersRef    = db.ref("markers");
 
 
 // ============================
-// LISTE D'ICÔNES DISPONIBLES
+// ICONES DISPONIBLES
 // ============================
 
 const ICONS = [
@@ -32,7 +32,7 @@ const ICONS = [
   { id: "cocaine",  label: "Cocaïne",   url: "icons/cocaine.png" },
   { id: "munitions",label: "Munitions", url: "icons/munitions.png" },
   { id: "organes",  label: "Organes",   url: "icons/organes.png" },
-  { id: "weed",     label: "Weed",      url: "icons/weed.png" },
+  { id: "weed",     label: "Weed",      url: "icons/weed.png" }
 ];
 
 function populateIconSelect() {
@@ -47,29 +47,28 @@ function populateIconSelect() {
 
 
 // ============================
-// ÉTAT DE LA CARTE (DÉPLACEMENT / ZOOM)
+// ÉTAT CARTE
 // ============================
 
-let isDragging      = false;
-let wasDragging     = false;
-let startMouseX     = 0;
-let startMouseY     = 0;
-let startOffsetX    = 0;
-let startOffsetY    = 0;
+let offsetX = 0;
+let offsetY = 0;
+let zoom    = 1;
+const MIN_ZOOM = 0.4;
+const MAX_ZOOM = 3;
 
-let offsetX         = 0;
-let offsetY         = 0;
-let zoom            = 1;
-const MIN_ZOOM      = 0.4;
-const MAX_ZOOM      = 3;
+let isDragging   = false;
+let wasDragging  = false;
+let startMouseX  = 0;
+let startMouseY  = 0;
+let startOffsetX = 0;
+let startOffsetY = 0;
 
 
 // ============================
-// ÉTAT DES MARQUEURS
+// ÉTAT MARQUEURS
 // ============================
 
-const markersData   = {}; // id Firebase -> { x, y, name, iconId }
-
+const markersData   = {}; // idFirebase -> data
 let addingPoint     = false;
 let pendingPos      = null;
 let movingMarkerId  = null;
@@ -77,7 +76,7 @@ let contextMarkerId = null;
 
 
 // ============================
-// TRANSFORM : DÉPLACEMENT + ZOOM
+// TRANSFORM (déplacement + zoom)
 // ============================
 
 function updateTransform() {
@@ -89,32 +88,21 @@ function updateTransform() {
   mapInner.style.transform    = transform;
   markerLayer.style.transform = transform;
 
-  // pour que les marqueurs gardent une taille correcte
+  // les marqueurs gardent une taille correcte
   const markerScale = 1 / zoom;
   markerLayer.style.setProperty("--markerScale", markerScale);
 }
 
 
+// ------- DÉPLACEMENT : clic gauche maintenu -------
 
-// ============================
-// DÉPLACEMENT "COMME GOOGLE MAPS"
-// ============================
-
-let isDragging      = false;
-let wasDragging     = false;
-let startMouseX     = 0;
-let startMouseY     = 0;
-let startOffsetX    = 0;
-let startOffsetY    = 0;
-
-// Quand on APPUIE sur clic gauche sur la carte → on commence à suivre la souris
 mapContainer.addEventListener("mousedown", (e) => {
-  // Pas de drag si on clique sur l'UI
+  if (e.button !== 0) return; // uniquement clic gauche
+  // on ne drag pas si on clique sur l'UI
   if (e.target.closest("#topbar, #marker-create-modal, #marker-menu")) return;
-  if (e.button !== 0) return; // seulement clic gauche
 
-  isDragging   = true;
-  wasDragging  = false;
+  isDragging  = true;
+  wasDragging = false;
 
   startMouseX  = e.clientX;
   startMouseY  = e.clientY;
@@ -124,7 +112,6 @@ mapContainer.addEventListener("mousedown", (e) => {
   mapContainer.classList.add("dragging");
 });
 
-// Tant qu'on MAINTIENT le clic → la carte se déplace
 document.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
 
@@ -141,19 +128,17 @@ document.addEventListener("mousemove", (e) => {
   updateTransform();
 });
 
-// Quand on RELÂCHE le clic → on arrête le déplacement
 document.addEventListener("mouseup", () => {
   isDragging = false;
   mapContainer.classList.remove("dragging");
 });
 
 
-
 // ------- ZOOM MOLETTE -------
 
 mapContainer.addEventListener("wheel", (e) => {
-  const overTopbar = e.target.closest("#topbar");
-  if (overTopbar) return;
+  // si souris sur la barre du haut, on ignore
+  if (e.target.closest("#topbar")) return;
 
   e.preventDefault();
 
@@ -164,10 +149,10 @@ mapContainer.addEventListener("wheel", (e) => {
   const worldXBefore = (mouseX - offsetX) / zoom;
   const worldYBefore = (mouseY - offsetY) / zoom;
 
-  const delta  = e.deltaY < 0 ? 0.1 : -0.1;
-  let newZoom  = zoom + delta;
-  newZoom      = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
-  zoom         = newZoom;
+  const delta = e.deltaY < 0 ? 0.1 : -0.1;
+  let newZoom = zoom + delta;
+  newZoom     = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
+  zoom        = newZoom;
 
   offsetX = mouseX - worldXBefore * zoom;
   offsetY = mouseY - worldYBefore * zoom;
@@ -196,9 +181,9 @@ function createOrUpdateMarkerElement(id, data) {
     markerLayer.appendChild(marker);
   }
 
-  marker.innerHTML = "";
-  marker.style.left = data.x + "px";
-  marker.style.top  = data.y + "px";
+  marker.innerHTML   = "";
+  marker.style.left  = data.x + "px";
+  marker.style.top   = data.y + "px";
 
   const iconDef = ICONS.find(i => i.id === data.iconId);
 
@@ -214,18 +199,17 @@ function createOrUpdateMarkerElement(id, data) {
   }
 
   const label = document.createElement("div");
-  label.className = "marker-label";
+  label.className   = "marker-label";
   label.textContent = data.name || "";
   marker.appendChild(label);
 }
 
 
 // ============================
-// FIREBASE : SYNC TEMPS RÉEL
+// FIREBASE SYNC
 // ============================
 
 function initFirebaseSync() {
-  // quand un marqueur est ajouté
   markersRef.on("child_added", (snap) => {
     const id   = snap.key;
     const data = snap.val();
@@ -233,7 +217,6 @@ function initFirebaseSync() {
     createOrUpdateMarkerElement(id, data);
   });
 
-  // quand un marqueur est modifié
   markersRef.on("child_changed", (snap) => {
     const id   = snap.key;
     const data = snap.val();
@@ -241,7 +224,6 @@ function initFirebaseSync() {
     createOrUpdateMarkerElement(id, data);
   });
 
-  // quand un marqueur est supprimé
   markersRef.on("child_removed", (snap) => {
     const id = snap.key;
     delete markersData[id];
@@ -252,7 +234,7 @@ function initFirebaseSync() {
 
 
 // ============================
-// ACTIONS MARQUEURS (CRUD)
+// ACTIONS MARQUEURS
 // ============================
 
 function addMarkerToDB(x, y, name, iconId) {
@@ -374,7 +356,7 @@ newPointBtn.addEventListener("click", () => {
 // ============================
 
 mapContainer.addEventListener("click", (e) => {
-  // Si on vient de faire un drag, on ignore ce clic (classique Google Maps)
+  // si on vient de drag, on ignore ce clic
   if (wasDragging) {
     wasDragging = false;
     return;
@@ -384,7 +366,7 @@ mapContainer.addEventListener("click", (e) => {
   const x = (e.clientX - rect.left) / zoom;
   const y = (e.clientY - rect.top)  / zoom;
 
-  // Déplacement d'un marqueur existant
+  // déplacement d’un marqueur
   if (movingMarkerId) {
     markersRef.child(movingMarkerId).update({ x, y });
     movingMarkerId = null;
@@ -392,7 +374,7 @@ mapContainer.addEventListener("click", (e) => {
     return;
   }
 
-  // Création d'un nouveau point
+  // création d’un nouveau point
   if (!addingPoint) return;
   openCreateModal({ x, y });
 });
@@ -405,6 +387,7 @@ mapContainer.addEventListener("click", (e) => {
 populateIconSelect();
 updateTransform();
 initFirebaseSync();
+
 
 
 

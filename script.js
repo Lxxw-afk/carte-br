@@ -30,7 +30,7 @@ const TEXT_1 = "Entrée";
 const TEXT_2 = "Sortie";
 
 /* ============================
-   DRAG & DROP
+   DRAG & DROP POUR LES 2 IMAGES
 ============================ */
 let uploadedImg1 = null;
 let uploadedImg2 = null;
@@ -88,6 +88,7 @@ function setupDropZone(zoneId, previewId, callback) {
    FIREBASE STORAGE UPLOAD
 ============================================================ */
 async function uploadImageToStorage(file, path) {
+  if (!file) return null; // si aucune image envoyée, on retourne null
   const ref = firebase.storage().ref().child(path);
   await ref.put(file);
   return await ref.getDownloadURL();
@@ -114,6 +115,7 @@ const deleteBtn = document.getElementById("delete-marker");
 
 const tooltip = document.getElementById("tooltip");
 
+// Drop zones
 setupDropZone("drop-img1", "preview-img1", (file) => uploadedImg1 = file);
 setupDropZone("drop-img2", "preview-img2", (file) => uploadedImg2 = file);
 
@@ -249,19 +251,6 @@ async function deleteMarkerInFirebase(marker) {
   await db.collection("markers").doc(id).delete();
 }
 
-function listenMarkersRealtime() {
-  db.collection("markers").onSnapshot(snapshot => {
-    markers.forEach(m => m.remove());  // clear DOM
-    markers = [];
-
-    snapshot.forEach(doc => {
-      const d = doc.data();
-      addMarker(d.x, d.y, d.icon, d.name, doc.id);
-    });
-  });
-}
-
-
 /* ============================================================
    AJOUT DOM DU MARQUEUR
 ============================================================ */
@@ -280,19 +269,13 @@ function addMarker(x, y, icon, name, id = null) {
      TOOLTIP AUTO-ADAPTÉ SELON TAILLE ET ZOOM
   ============================================================ */
   img.addEventListener("mouseenter", () => {
-
     const rect = img.getBoundingClientRect();
     const markerHeight = rect.height;
 
     tooltip.textContent = img.title;
     tooltip.className = "marker-tooltip";
-    tooltip.style.fontWeight = "bold"; // TEXTE EN GRAS
-     
-    // Position : centré + juste sous le marker selon sa taille réelle
     tooltip.style.left = (rect.left + rect.width / 2) + "px";
-    tooltip.style.top = (rect.top + markerHeight + 6) + "px"; 
-    // +6 pour un petit espace, tu peux ajuster
-
+    tooltip.style.top = (rect.top + markerHeight + 6) + "px";
     tooltip.classList.remove("hidden");
   });
 
@@ -300,39 +283,44 @@ function addMarker(x, y, icon, name, id = null) {
     tooltip.classList.add("hidden");
   });
 
-/* ============================================================
-   CLIC GAUCHE = POPUP AVEC 2 IMAGES + 2 TEXTES
-============================================================ */
-img.addEventListener("click", async (e) => {
-  e.stopPropagation();
+  /* ============================================================
+     CLIC GAUCHE = POPUP AVEC 2 IMAGES + 2 TEXTES
+  ============================================================ */
+  img.addEventListener("click", async (e) => {
+    e.stopPropagation();
 
-  const docSnap = await db.collection("markers").doc(id).get();
-  const data = docSnap.data();
+    const idFromMarker = img.dataset.id;
+    if (!idFromMarker) return;
 
-  const rect = img.getBoundingClientRect();
-  const popup = document.getElementById("marker-popup");
+    const docSnap = await db.collection("markers").doc(idFromMarker).get();
+    const data = docSnap.data();
+    if (!data) return;
 
-  document.getElementById("popup-text1").textContent = TEXT_1;
-  document.getElementById("popup-text2").textContent = TEXT_2;
+    const popup = document.getElementById("marker-popup");
+    const rect = img.getBoundingClientRect();
 
-  document.getElementById("popup-img1").src = data.img1;
-  document.getElementById("popup-img2").src = data.img2;
+    // Textes
+    document.getElementById("popup-text1").textContent = TEXT_1;
+    document.getElementById("popup-text2").textContent = TEXT_2;
 
-  popup.style.left = (rect.left + rect.width / 2) + "px";
-  popup.style.top = (rect.top - 220) + "px";
+    // Images
+    document.getElementById("popup-img1").src = data.img1 || "";
+    document.getElementById("popup-img2").src = data.img2 || "";
 
-  // Si popup déjà visible → toggle fermer
-  if (!popup.classList.contains("hidden")) {
-    popup.classList.add("hidden");
-    return;
-  }
+    popup.style.left = (rect.left + rect.width / 2) + "px";
+    popup.style.top = (rect.top - 220) + "px";
 
-  popup.classList.remove("hidden");
-});
+    // Toggle : si déjà visible et même marker → fermer
+    if (!popup.classList.contains("hidden") && popup.dataset.forId === idFromMarker) {
+      popup.classList.add("hidden");
+      popup.dataset.forId = "";
+      return;
+    }
 
+    popup.dataset.forId = idFromMarker;
+    popup.classList.remove("hidden");
+  });
 
-
-   
   /* ============================================================
      MENU CLIC DROIT (inchangé)
   ============================================================ */
@@ -351,8 +339,6 @@ img.addEventListener("click", async (e) => {
 
   updateMarkerDisplay();
 }
-
-
 
 /* ============================================================
    BOUTON NOUVEAU POINT
@@ -409,7 +395,7 @@ pointIcon.addEventListener("change", () => {
 });
 
 /* ============================================================
-   VALIDATION POINT (ICI LE BOUTON EST BIEN validate-point)
+   VALIDATION POINT
 ============================================================ */
 document.getElementById("validate-point").addEventListener("click", async () => {
 
@@ -439,7 +425,6 @@ document.getElementById("validate-point").addEventListener("click", async () => 
   // -----------------------
   // CREATION D’UN NOUVEAU POINT
   // -----------------------
-
   const id = await createMarkerInFirebase(
     tempX,
     tempY,
@@ -447,6 +432,7 @@ document.getElementById("validate-point").addEventListener("click", async () => 
     pointName.value
   );
 
+  // Upload des deux images (si présentes)
   const img1URL = await uploadImageToStorage(uploadedImg1, "markers/" + id + "_1.png");
   const img2URL = await uploadImageToStorage(uploadedImg2, "markers/" + id + "_2.png");
 
@@ -457,17 +443,14 @@ document.getElementById("validate-point").addEventListener("click", async () => 
 
   addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
 
-  // ✔ Fermeture du menu
+  // Fermeture du menu + reset
   pointMenu.classList.add("hidden");
   step1.classList.add("hidden");
   waitingForPlacement = false;
 
-  // reset des fichiers
   uploadedImg1 = null;
   uploadedImg2 = null;
-
   selectedMarker = null;
-
 });
 
 /* ============================================================
@@ -517,30 +500,30 @@ moveBtn.addEventListener("click", () => {
   markerMenu.style.display = "none";
 });
 
-/* Fermer menu clic droit si on clique ailleurs */
+/* ============================================================
+   FERMETURE POPUP & MENU AU CLIC GLOBAL
+============================================================ */
 window.addEventListener("click", (e) => {
   const popup = document.getElementById("marker-popup");
 
-  // Si on clique sur un marker → NE PAS fermer
+  // Si clic sur un marker ou une image du popup → ne pas fermer
   if (e.target.classList.contains("marker")) return;
-
-  // Si on clique sur les images du popup → NE PAS fermer
   if (e.target.classList.contains("popup-img")) return;
 
-  // Sinon → fermer
+  // Fermer popup
   popup.classList.add("hidden");
-});
+  popup.dataset.forId = "";
 
+  // Fermer le menu clic droit si on clique ailleurs
+  if (!moveMode) markerMenu.style.display = "none";
+});
 
 /* ============================================================
    🔥 LISTENER TEMPS RÉEL FIRESTORE
-   (affiche les markers, les met à jour, et les supprime en live)
 ============================================================ */
 function listenMarkersRealtime() {
   db.collection("markers").onSnapshot(snapshot => {
-
     snapshot.docChanges().forEach(change => {
-
       const doc = change.doc;
       const d = doc.data();
 
@@ -570,14 +553,12 @@ function listenMarkersRealtime() {
           markers = markers.filter(m => m !== marker);
         }
       }
-
     });
   });
 }
 
 // ACTIVATION DU MODE TEMPS RÉEL
 listenMarkersRealtime();
-
 
 
 

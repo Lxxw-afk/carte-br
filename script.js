@@ -143,9 +143,15 @@ function updateMarkerDisplay() {
     marker.style.left = (x * scale) + "px";
     marker.style.top = (y * scale) + "px";
 
-    let size = 45 / scale;
-    size = Math.max(25, size);
-    size = Math.min(60, size);
+    let size = 20 * scale;  // taille augmente avec le zoom
+
+// Limites
+size = Math.max(15, size);  // taille minimum quand dézoomé
+size = Math.min(55, size);  // taille max quand zoomé
+
+marker.style.width = size + "px";
+marker.style.height = size + "px";
+
 
     marker.style.width = size + "px";
     marker.style.height = size + "px";

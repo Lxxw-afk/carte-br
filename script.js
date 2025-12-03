@@ -16,17 +16,15 @@ const editBtn = document.getElementById("edit-marker");
 const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
-const tooltip = document.getElementById("marker-tooltip");
-
 /* ============================================================
    LISTE DES ICONES
 ============================================================ */
 const iconList = [
     "Meth.png",
     "cocaine.png",
-    "Munitions.png",
+    "munitions.png",
     "organes.png",
-    "Weed.png"
+    "weed.png"
 ];
 
 // remplir le dropdown
@@ -87,24 +85,21 @@ window.addEventListener("mousemove", (e) => {
 mapContainer.addEventListener("wheel", (e) => {
     e.preventDefault();
 
+    const rect = mapContainer.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
     const oldScale = scale;
     const zoomSpeed = 0.1;
 
-    // zoom droit (sans utiliser la souris comme pivot)
     scale += (e.deltaY < 0 ? zoomSpeed : -zoomSpeed);
     scale = Math.max(0.5, Math.min(4, scale));
 
-    // compensation pour garder l’image centrée
-    const rect = mapContainer.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    posX -= (centerX / oldScale) * (scale - oldScale);
-    posY -= (centerY / oldScale) * (scale - oldScale);
+    posX -= (mx / oldScale) * (scale - oldScale);
+    posY -= (my / oldScale) * (scale - oldScale);
 
     updateMap();
 });
-
 
 /* ============================================================
    UPDATE CARTE + MARKERS
@@ -123,14 +118,8 @@ function updateMarkerDisplay() {
         marker.style.left = (x * scale) + "px";
         marker.style.top = (y * scale) + "px";
 
-// --- Taille intelligente ---
-let size = 45 / scale;   // taille idéale
-size = Math.max(25, size); // jamais plus petit que 25px
-size = Math.min(60, size); // jamais plus grand que 60px
-
-marker.style.width = size + "px";
-marker.style.height = size + "px";
-
+        marker.style.width = (40 / scale) + "px";
+        marker.style.height = (40 / scale) + "px";
     });
 }
 
@@ -141,9 +130,6 @@ function addMarker(x, y, icon, name) {
     const img = document.createElement("img");
     img.src = "icons/" + icon;
     img.className = "marker";
-  
-});
-
     img.title = name;
 
     img.dataset.x = x;
@@ -158,19 +144,6 @@ function addMarker(x, y, icon, name) {
         markerMenu.style.left = e.pageX + "px";
         markerMenu.style.top = e.pageY + "px";
         markerMenu.style.display = "flex";
-        // tooltip au survol
-img.addEventListener("mouseenter", (e) => {
-    tooltip.textContent = img.title;
-    tooltip.classList.remove("hidden");
-});
-
-img.addEventListener("mouseleave", () => {
-    tooltip.classList.add("hidden");
-});
-
-img.addEventListener("mousemove", (e) => {
-    tooltip.style.left = e.pageX + "px";
-    tooltip.style.top = (e.pageY - 25) + "px";
     });
 
     markerLayer.appendChild(img);
@@ -321,6 +294,7 @@ moveBtn.addEventListener("click", () => {
 window.addEventListener("click", () => {
     if (!moveMode) markerMenu.style.display = "none";
 });
+
 
 
 

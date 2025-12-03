@@ -1,222 +1,68 @@
-/* Fond général */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-  background-color: #003F87; /* même bleu que l'image */
+body {
+    margin: 0;
+    background-color: #003F87;
+    font-family: Arial, sans-serif;
 }
 
-/* Barre du haut : titre + bouton */
-#topbar {
-  position: absolute;
-  z-index: 1000;
-  left: 10px;
-  top: 10px;
-  padding: 6px 10px;
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 6px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
 }
 
-#topbar h1 {
-  margin: 0;
-  font-size: 18px;
+#addPointBtn {
+    padding: 8px 12px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
+#addPointBtn:hover { background: #218838; }
 
-#topbar button {
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: none;
-  background: #1e90ff;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-#topbar button:hover {
-  background: #63b3ff;
-}
-
-#hint {
-  font-size: 13px;
-  opacity: 0.8;
-}
-
-/* Conteneur de la carte */
 #map-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  cursor: grab;
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 60px);
+    overflow: hidden;
 }
 
-/* Wrapper qui contient l'image + les marqueurs */
 #map-inner {
-  position: absolute;
-  left: 0;
-  top: 0;
-  transform-origin: 0 0; /* important pour le zoom */
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-/* Image de la carte */
-#map {
-  display: block;
-  user-select: none;
-  -webkit-user-drag: none;
+#marker-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-/* Marqueurs */
 .marker {
-  position: absolute;
-  transform: translate(-50%, -100%); /* pointe bien sur le clic */
-  cursor: pointer;
-  text-align: center;
-  white-space: nowrap;
+    position: absolute;
+    width: 40px;
+    transform: translate(-50%, -100%);
+    pointer-events: auto;
 }
 
-/* Icône du marqueur */
-.marker img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 0 4px rgba(0,0,0,0.8);
-  object-fit: cover;
+/* MENU */
+#markerMenu {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
-
-/* Point par défaut */
-.marker-default {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #ff4757;
-  border: 2px solid #fff;
-  box-shadow: 0 0 4px rgba(0,0,0,0.8);
-  display: inline-block;
-}
-
-/* Label du marqueur : caché par défaut, visible au survol */
-.marker-label {
-  margin-top: 2px;
-  padding: 2px 4px;
-  border-radius: 4px;
-  background: rgba(0,0,0,0.7);
-  color: #fff;
-  font-size: 11px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s;
-}
-
-/* Quand la souris est sur le marqueur → on voit le nom */
-.marker:hover .marker-label {
-  opacity: 1;
-}
-
-/* Curseur pendant le drag */
-.dragging {
-  cursor: grabbing !important;
-}
-
-/* Menu clic droit sur marqueur */
-#marker-menu {
-  position: fixed;
-  z-index: 2000;
-  background: #222;
-  color: #fff;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  padding: 4px 0;
-  font-size: 13px;
-  display: none;
-  min-width: 150px;
-}
-
-#marker-menu .item {
-  padding: 6px 12px;
-  cursor: pointer;
-}
-
-#marker-menu .item:hover {
-  background: #444;
-}
-
-/* Modal création de marqueur */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3000;
-}
-
-.modal.hidden {
-  display: none;
-}
-
-.modal-content {
-  background: #222;
-  padding: 16px 20px;
-  border-radius: 8px;
-  min-width: 260px;
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
-}
-
-.modal-content h2 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  font-size: 18px;
-}
-
-.modal-content label {
-  display: block;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.modal-content input,
-.modal-content select {
-  width: 100%;
-  margin-top: 4px;
-  padding: 4px 6px;
-  border-radius: 4px;
-  border: 1px solid #555;
-  background: #111;
-  color: #fff;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.modal-actions button {
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-}
-
-#marker-cancel-btn {
-  background: #555;
-  color: #fff;
-}
-
-#marker-save-btn {
-  background: #1e90ff;
-  color: #fff;
-}
+.hidden { display: none; }
 
 
 

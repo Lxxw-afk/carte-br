@@ -28,6 +28,21 @@
 
         <div id="marker-layer"></div>
     </div>
+    
+     <!-- TOOLTIP NOM DU POINT -->
+<div id="tooltip" class="marker-tooltip hidden"></div>
+
+<!-- POPUP IMAGES LORS DU CLIC SUR UN POINT -->
+<div id="marker-popup" class="hidden">
+  <div class="popup-block">
+    <span id="popup-text1" class="popup-text"></span>
+    <img id="popup-img1" class="popup-img">
+  </div>
+  <div class="popup-block">
+    <span id="popup-text2" class="popup-text"></span>
+    <img id="popup-img2" class="popup-img">
+  </div>
+</div>
 
     <!-- MENU ÉTAPE 2 : NOM + ICÔNE -->
     <div id="point-menu" class="hidden">
@@ -41,6 +56,20 @@
             <select id="point-icon">
                 <option value="">Choisir...</option>
             </select>
+<label>Image 1 (popup) :</label>
+<select id="img1-select">
+  <option value="">-- Aucune --</option>
+  <option value="img1.png">Image 1</option>
+  <option value="img2.png">Image 2</option>
+  <!-- tu ajoutes ici tes propres images -->
+</select>
+
+<label>Image 2 (popup) :</label>
+<select id="img2-select">
+  <option value="">-- Aucune --</option>
+  <option value="img3.png">Image 3</option>
+  <option value="img4.png">Image 4</option>
+</select>
 
             <img id="icon-preview" class="preview hidden" src="">
 

@@ -89,17 +89,27 @@ function updateTransform() {
   mapInner.style.transform    = transform;
   markerLayer.style.transform = transform;
 
-  // compensation de taille pour les marqueurs (pour qu’ils restent lisibles)
+  // pour que les marqueurs gardent une taille correcte
   const markerScale = 1 / zoom;
   markerLayer.style.setProperty("--markerScale", markerScale);
 }
 
 
-// ------- DÉPLACEMENT : comme Google Maps (clic maintenu) -------
 
-// Quand on APPUIE sur clic gauche → on se prépare à drag
+// ============================
+// DÉPLACEMENT "COMME GOOGLE MAPS"
+// ============================
+
+let isDragging      = false;
+let wasDragging     = false;
+let startMouseX     = 0;
+let startMouseY     = 0;
+let startOffsetX    = 0;
+let startOffsetY    = 0;
+
+// Quand on APPUIE sur clic gauche sur la carte → on commence à suivre la souris
 mapContainer.addEventListener("mousedown", (e) => {
-  // Pas de drag si on clique sur l'UI (topbar, modale, menu)
+  // Pas de drag si on clique sur l'UI
   if (e.target.closest("#topbar, #marker-create-modal, #marker-menu")) return;
   if (e.button !== 0) return; // seulement clic gauche
 
@@ -114,7 +124,7 @@ mapContainer.addEventListener("mousedown", (e) => {
   mapContainer.classList.add("dragging");
 });
 
-// Pendant que le bouton est MAINTENU → on déplace
+// Tant qu'on MAINTIENT le clic → la carte se déplace
 document.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
 
@@ -131,7 +141,7 @@ document.addEventListener("mousemove", (e) => {
   updateTransform();
 });
 
-// Quand on RELÂCHE → on arrête de déplacer
+// Quand on RELÂCHE le clic → on arrête le déplacement
 document.addEventListener("mouseup", () => {
   isDragging = false;
   mapContainer.classList.remove("dragging");

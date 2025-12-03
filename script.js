@@ -153,7 +153,7 @@ let markers = [];
 let tempX = 0, tempY = 0;
 
 /* ============================================================
-   DRAG
+   DRAG GOOGLE MAPS
 ============================================================ */
 mapContainer.addEventListener("mousedown", (e) => {
   if (waitingForPlacement || moveMode) return;
@@ -164,11 +164,6 @@ mapContainer.addEventListener("mousedown", (e) => {
   mapContainer.style.cursor = "grabbing";
 });
 
-window.addEventListener("mouseup", () => {
-  isDragging = false;
-  mapContainer.style.cursor = "grab";
-});
-
 window.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
 
@@ -177,6 +172,12 @@ window.addEventListener("mousemove", (e) => {
 
   updateMap();
 });
+
+window.addEventListener("mouseup", () => {
+  isDragging = false;
+  mapContainer.style.cursor = "grab";
+});
+
 
 /* ============================================================
    ZOOM CENTRÉ SUR LA SOURIS
@@ -431,14 +432,14 @@ document.getElementById("validate-point").addEventListener("click", async () => 
     editMode = false;
     selectedMarker = null;
     pointMenu.classList.add("hidden");
+    waitingForPlacement = false;
     return;
   }
 
   // -----------------------
-  // CREATION NOUVEAU POINT
+  // CREATION D’UN NOUVEAU POINT
   // -----------------------
 
-  // 1. Création du doc Firestore
   const id = await createMarkerInFirebase(
     tempX,
     tempY,
@@ -446,29 +447,28 @@ document.getElementById("validate-point").addEventListener("click", async () => 
     pointName.value
   );
 
-  // 2. Upload des deux images
   const img1URL = await uploadImageToStorage(uploadedImg1, "markers/" + id + "_1.png");
   const img2URL = await uploadImageToStorage(uploadedImg2, "markers/" + id + "_2.png");
 
-  // 3. Mise à jour du document Firestore avec les URLs
   await db.collection("markers").doc(id).update({
     img1: img1URL,
     img2: img2URL
   });
 
-  // 4. Affichage du marker sur la map
   addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
 
-  // 5. Fermeture du menu
+  // ✔ Fermeture du menu
   pointMenu.classList.add("hidden");
   step1.classList.add("hidden");
+  waitingForPlacement = false;
 
-  // 6. Reset des images temp
+  // reset des fichiers
   uploadedImg1 = null;
   uploadedImg2 = null;
 
-}); // <<< CECI EST LA FERMETURE CORRECTE ! LE CODE ÉTAIT CASSÉ ICI AVANT
+  selectedMarker = null;
 
+});
 
 /* ============================================================
    ANNULER

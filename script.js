@@ -200,6 +200,31 @@ function addMarker(x, y, icon, name, id = null) {
   img.dataset.icon = icon;
   if (id) img.dataset.id = id;
 
+ // === TOOLTIP AFFICHÉ SOUS LE POINT ===
+img.addEventListener("mouseenter", () => {
+    const rect = img.getBoundingClientRect();
+    const markerHeight = rect.height;
+
+    tooltip.textContent = img.title;
+    tooltip.classList.remove("hidden");
+
+    tooltip.style.left = (rect.left + rect.width / 2) + "px";
+    tooltip.style.top = (rect.top + markerHeight + 6) + "px";
+});
+
+img.addEventListener("mousemove", () => {
+    const rect = img.getBoundingClientRect();
+    const markerHeight = rect.height;
+
+    tooltip.style.left = (rect.left + rect.width / 2) + "px";
+    tooltip.style.top = (rect.top + markerHeight + 6) + "px";
+});
+
+img.addEventListener("mouseleave", () => {
+    tooltip.classList.add("hidden");
+});
+
+   
   /* ============================================================
      TOOLTIP AUTO-ADAPTÉ SELON TAILLE ET ZOOM
   ============================================================ */

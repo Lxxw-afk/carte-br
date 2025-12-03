@@ -210,7 +210,8 @@ function addMarker(x, y, icon, name, id = null) {
 
     tooltip.textContent = img.title;
     tooltip.className = "marker-tooltip";
-
+    tooltip.style.fontWeight = "bold"; // TEXTE EN GRAS
+     
     // Position : centré + juste sous le marker selon sa taille réelle
     tooltip.style.left = (rect.left + rect.width / 2) + "px";
     tooltip.style.top = (rect.top + markerHeight + 6) + "px"; 

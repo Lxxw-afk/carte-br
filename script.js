@@ -312,8 +312,8 @@ img.addEventListener("click", async (e) => {
   const rect = img.getBoundingClientRect();
   const popup = document.getElementById("marker-popup");
 
-  document.getElementById("popup-text1").textContent = POINT;
-  document.getElementById("popup-text2").textContent = ENTRE;
+  document.getElementById("popup-text1").textContent = TEXT_1;
+  document.getElementById("popup-text2").textContent = TEXT_2;
 
   document.getElementById("popup-img1").src = data.img1;
   document.getElementById("popup-img2").src = data.img2;
@@ -578,12 +578,6 @@ function listenMarkersRealtime() {
 // ACTIVATION DU MODE TEMPS RÉEL
 listenMarkersRealtime();
 
-window.addEventListener("click", (e) => {
-  if (!e.target.classList.contains("marker") &&
-      !e.target.classList.contains("popup-img")) {
-    document.getElementById("marker-popup").classList.add("hidden");
-  }
-});
 
 
 

@@ -22,9 +22,9 @@ const deleteBtn = document.getElementById("delete-marker");
 const iconList = [
     "Meth.png",
     "cocaine.png",
-    "munitions.png",
+    "Munitions.png",
     "organes.png",
-    "weed.png"
+    "Weed.png"
 ];
 
 // remplir le dropdown

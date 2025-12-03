@@ -16,6 +16,8 @@ const editBtn = document.getElementById("edit-marker");
 const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
+const tooltip = document.getElementById("marker-tooltip");
+
 /* ============================================================
    LISTE DES ICONES
 ============================================================ */
@@ -133,6 +135,21 @@ function addMarker(x, y, icon, name) {
     const img = document.createElement("img");
     img.src = "icons/" + icon;
     img.className = "marker";
+   // tooltip au survol
+img.addEventListener("mouseenter", (e) => {
+    tooltip.textContent = img.title;
+    tooltip.classList.remove("hidden");
+});
+
+img.addEventListener("mouseleave", () => {
+    tooltip.classList.add("hidden");
+});
+
+img.addEventListener("mousemove", (e) => {
+    tooltip.style.left = e.pageX + "px";
+    tooltip.style.top = (e.pageY - 25) + "px";
+});
+
     img.title = name;
 
     img.dataset.x = x;

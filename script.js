@@ -140,5 +140,3 @@ function createMarkerElement(x, y, name, icon) {
 
 
 
-
-

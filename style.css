@@ -62,7 +62,7 @@ body {
 
 #map {
   display: block;
-  max-width: none; /* on garde la taille réelle */
+  max-width: none; /* taille réelle de l'image */
 }
 
 /* Calque des marqueurs */
@@ -70,15 +70,13 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  pointer-events: none; /* les clics passent sauf sur les markers eux-mêmes */
+  pointer-events: none; /* drag passe au travers, sauf sur les markers */
 }
 
 /* Marqueur */
 .marker {
   position: absolute;
   transform-origin: bottom center;
-  /* translate pour placer la "pointe" sur la position,
-     scale(var(--markerScale)) pour compenser le zoom */
   transform: translate(-50%, -100%) scale(var(--markerScale, 1));
   pointer-events: auto;
 }
@@ -181,5 +179,7 @@ body {
 .marker-menu .item:hover {
   background: #444;
 }
+
+
 
 

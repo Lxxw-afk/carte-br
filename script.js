@@ -1,4 +1,6 @@
-/* ============================ VARIABLES ============================ */
+/* ============================
+   VARIABLES
+============================ */
 
 const mapContainer = document.getElementById("map-container");
 const mapInner = document.getElementById("map-inner");
@@ -10,6 +12,30 @@ const pointName = document.getElementById("point-name");
 const pointIcon = document.getElementById("point-icon");
 const iconPreview = document.getElementById("icon-preview");
 
+/* ============================
+   LISTE DES ICONES DISPONIBLES
+============================ */
+
+const iconList = [
+    "Meth.png",
+    "cocaine.png",
+    "munitions.png",
+    "organes.png",
+    "weed.png"
+];
+
+/* Remplir le menu automatiquement */
+iconList.forEach(icon => {
+    const option = document.createElement("option");
+    option.value = icon;
+    option.textContent = icon.replace(".png", "");
+    pointIcon.appendChild(option);
+});
+
+
+/* ============================
+   VARIABLES CARTE
+============================ */
 let markers = [];
 let isDragging = false;
 let startX = 0, startY = 0;
@@ -19,30 +45,28 @@ let scale = 1;
 let waitingForPlacement = false;
 let tempX = 0, tempY = 0;
 
+
 /* ============================
-   LISTE DES ICÔNES DISPONIBLES
+   DRAG (Déplacement carte)
 ============================ */
-const iconList = [
-    "Meth.png",
-    "cocaine.png",
-    "munitions.png",
-    "organes.png",
-    "weed.png"
-];
-
-
-/* ============================ DRAG ============================ */
-
 mapContainer.addEventListener("mousedown", (e) => {
     if (waitingForPlacement) return;
+
     isDragging = true;
     startX = e.clientX - posX;
     startY = e.clientY - posY;
+
+    mapContainer.style.cursor = "grabbing";
 });
 
-window.addEventListener("mouseup", () => { isDragging = false; });
+window.addEventListener("mouseup", () => {
+    isDragging = false;
+    mapContainer.style.cursor = "grab";
+});
+
 window.addEventListener("mousemove", (e) => {
     if (!isDragging) return;
+
     posX = e.clientX - startX;
     posY = e.clientY - startY;
 
@@ -50,24 +74,35 @@ window.addEventListener("mousemove", (e) => {
     markerLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
 });
 
-/* ============================ ZOOM ============================ */
+
+/* ============================
+   ZOOM
+============================ */
 mapContainer.addEventListener("wheel", (e) => {
     e.preventDefault();
-    const speed = 0.1;
-    scale += (e.deltaY < 0 ? speed : -speed);
-    scale = Math.min(Math.max(0.5, scale), 4);
+
+    const zoomSpeed = 0.1;
+    scale += (e.deltaY < 0 ? zoomSpeed : -zoomSpeed);
+
+    scale = Math.max(0.5, Math.min(4, scale));
+
     mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
     markerLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
 });
 
-/* ============================ AJOUT MARQUEUR ============================ */
 
+/* ============================
+   BOUTON "Nouveau point"
+============================ */
 document.getElementById("new-point-btn").addEventListener("click", () => {
-    // Étape 1 → afficher le message
     step1.classList.remove("hidden");
     waitingForPlacement = true;
 });
 
+
+/* ============================
+   CLICK SUR LA CARTE POUR POSER
+============================ */
 mapContainer.addEventListener("click", (e) => {
     if (!waitingForPlacement || isDragging) return;
 
@@ -76,19 +111,26 @@ mapContainer.addEventListener("click", (e) => {
     tempY = (e.clientY - rect.top - posY) / scale;
 
     step1.classList.add("hidden");
-
-    // Étape 2 → ouvrir le menu
     pointMenu.classList.remove("hidden");
 });
 
-/* Aperçu icône */
+
+/* ============================
+   APERCU ICONE
+============================ */
 pointIcon.addEventListener("change", () => {
-    if (!pointIcon.value) return iconPreview.classList.add("hidden");
+    if (!pointIcon.value) {
+        iconPreview.classList.add("hidden");
+        return;
+    }
     iconPreview.src = "icons/" + pointIcon.value;
     iconPreview.classList.remove("hidden");
 });
 
-/* Valider le point */
+
+/* ============================
+   VALIDER LE POINT
+============================ */
 document.getElementById("save-point").addEventListener("click", () => {
     if (!pointName.value || !pointIcon.value) {
         alert("Nom + icône obligatoires !");
@@ -97,20 +139,24 @@ document.getElementById("save-point").addEventListener("click", () => {
 
     addMarker(tempX, tempY, pointIcon.value, pointName.value);
 
-    // Reset
     pointMenu.classList.add("hidden");
     waitingForPlacement = false;
 });
 
-/* Annuler */
+
+/* ============================
+   ANNULER
+============================ */
 document.getElementById("cancel-point").addEventListener("click", () => {
-    waitingForPlacement = false;
     pointMenu.classList.add("hidden");
     step1.classList.add("hidden");
+    waitingForPlacement = false;
 });
 
-/* ============================ CREATION DU MARQUEUR ============================ */
 
+/* ============================
+   CREER LE MARQUEUR
+============================ */
 function addMarker(x, y, icon, name) {
     const img = document.createElement("img");
     img.src = "icons/" + icon;
@@ -121,8 +167,9 @@ function addMarker(x, y, icon, name) {
     img.style.top = y + "px";
 
     markerLayer.appendChild(img);
-    markers.push({x, y, icon, name, element: img});
+    markers.push({ x, y, icon, name, element: img });
 }
+
 
 
 

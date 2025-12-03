@@ -435,29 +435,40 @@ document.getElementById("validate-point").addEventListener("click", async () => 
   }
 
   // -----------------------
-// CREATION NOUVEAU POINT
-// -----------------------
+  // CREATION NOUVEAU POINT
+  // -----------------------
 
-const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
+  // 1. Création du doc Firestore
+  const id = await createMarkerInFirebase(
+    tempX,
+    tempY,
+    pointIcon.value,
+    pointName.value
+  );
 
-const img1URL = await uploadImageToStorage(uploadedImg1, "markers/" + id + "_1.png");
-const img2URL = await uploadImageToStorage(uploadedImg2, "markers/" + id + "_2.png");
+  // 2. Upload des deux images
+  const img1URL = await uploadImageToStorage(uploadedImg1, "markers/" + id + "_1.png");
+  const img2URL = await uploadImageToStorage(uploadedImg2, "markers/" + id + "_2.png");
 
-await db.collection("markers").doc(id).update({
-  img1: img1URL,
-  img2: img2URL
-});
+  // 3. Mise à jour du document Firestore avec les URLs
+  await db.collection("markers").doc(id).update({
+    img1: img1URL,
+    img2: img2URL
+  });
 
-// afficher le marker sur la carte
-addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
+  // 4. Affichage du marker sur la map
+  addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
 
-pointMenu.classList.add("hidden");
-step1.classList.add("hidden");
+  // 5. Fermeture du menu
+  pointMenu.classList.add("hidden");
+  step1.classList.add("hidden");
 
-uploadedImg1 = null;
-uploadedImg2 = null;
+  // 6. Reset des images temp
+  uploadedImg1 = null;
+  uploadedImg2 = null;
 
-}); // ← FERMETURE CORRECTE DU validate-point UNIQUEMENT !!!
+}); // <<< CECI EST LA FERMETURE CORRECTE ! LE CODE ÉTAIT CASSÉ ICI AVANT
+
 
 /* ============================================================
    ANNULER

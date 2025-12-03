@@ -2,13 +2,13 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Made by Médoche</title>
+  <title>Carte interactive RP</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <div id="topbar">
-    <h1>Made by Médoche</h1>
+    <h1>Carte interactive RP</h1>
     <button id="new-point-btn">Nouveau point</button>
     <span id="hint"></span>
   </div>
@@ -19,7 +19,7 @@
       <img id="map" src="images/map.png" alt="Carte RP">
     </div>
 
-    <!-- Calque des marqueurs (suit le zoom/déplacement) -->
+    <!-- Calque des marqueurs -->
     <div id="marker-layer"></div>
   </div>
 
@@ -31,9 +31,7 @@
       <input type="text" id="marker-name-input" placeholder="Nom du lieu">
 
       <label for="marker-icon-select">Icône :</label>
-      <select id="marker-icon-select">
-        <!-- rempli en JS -->
-      </select>
+      <select id="marker-icon-select"></select>
 
       <div class="modal-buttons">
         <button id="marker-cancel-btn">Annuler</button>
@@ -54,15 +52,15 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
   <script>
-    // ⚠️ Mets ici TA vraie config Firebase
+    // ⚠️ Mets ici ta vraie config Firebase (celle de ton projet)
     const firebaseConfig = {
       apiKey: "TA_CLE_API_ICI",
-      authDomain: "ton-projet.firebaseapp.com",
-      databaseURL: "https://ton-projet-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "ton-projet",
-      storageBucket: "ton-projet.appspot.com",
-      messagingSenderId: "XXXXXXXXXXXX",
-      appId: "1:XXXXXXXXXXXX:web:YYYYYYYYYYYYYY"
+      authDomain: "carte-br.firebaseapp.com",
+      databaseURL: "https://carte-br-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "carte-br",
+      storageBucket: "carte-br.appspot.com",
+      messagingSenderId: "698417729622",
+      appId: "1:698417729622:web:4766a306741b5c71724b7"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -72,6 +70,7 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
 

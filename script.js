@@ -35,6 +35,10 @@ const pointMenu = document.getElementById("point-menu");
 const pointName = document.getElementById("point-name");
 const pointIcon = document.getElementById("point-icon");
 const iconPreview = document.getElementById("icon-preview");
+const img1Select = document.getElementById("img1-select");
+const img2Select = document.getElementById("img2-select");
+
+
 
 const markerMenu = document.getElementById("marker-menu");
 const editBtn = document.getElementById("edit-marker");
@@ -42,6 +46,16 @@ const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
 const tooltip = document.getElementById("tooltip");
+
+const markerPopup = document.getElementById("marker-popup");
+const popupText1 = document.getElementById("popup-text1");
+const popupText2 = document.getElementById("popup-text2");
+const popupImg1 = document.getElementById("popup-img1");
+const popupImg2 = document.getElementById("popup-img2");
+
+// Textes configurables pour le popup
+const TEXT_1 = "Texte 1"; // tu changes ici
+const TEXT_2 = "Texte 2"; // tu changes ici
 
 /* ============================================================
    LISTE DES ICONES
@@ -153,11 +167,12 @@ function updateMarkerDisplay() {
 /* ============================================================
    FIREBASE HELPERS
 ============================================================ */
-async function createMarkerInFirebase(x, y, icon, name) {
+async function createMarkerInFirebase(x, y, icon, name, img1, img2) {
   if (!firebaseReady) return null;
-  const docRef = await db.collection("markers").add({ x, y, icon, name });
+  const docRef = await db.collection("markers").add({ x, y, icon, name, img1, img2 });
   return docRef.id;
 }
+
 
 async function updateMarkerInFirebase(marker, data) {
   if (!firebaseReady) return;
@@ -180,7 +195,8 @@ function listenMarkersRealtime() {
 
     snapshot.forEach(doc => {
       const d = doc.data();
-      addMarker(d.x, d.y, d.icon, d.name, doc.id);
+     addMarker(d.x, d.y, d.icon, d.name, doc.id, d.img1, d.img2);
+
     });
   });
 }
@@ -189,16 +205,61 @@ function listenMarkersRealtime() {
 /* ============================================================
    AJOUT DOM DU MARQUEUR
 ============================================================ */
-function addMarker(x, y, icon, name, id = null) {
+function addMarker(x, y, icon, name, id = null, img1 = null, img2 = null) {
+
   const img = document.createElement("img");
   img.src = "icons/" + icon;
   img.className = "marker";
   img.title = name;
 
   img.dataset.x = x;
-  img.dataset.y = y;
-  img.dataset.icon = icon;
-  if (id) img.dataset.id = id;
+img.dataset.y = y;
+img.dataset.icon = icon;
+if (id) img.dataset.id = id;
+if (img1) img.dataset.img1 = img1;
+if (img2) img.dataset.img2 = img2;
+
+// TOOLTIP SOUS LE POINT
+img.addEventListener("mouseenter", () => {
+  const rect = img.getBoundingClientRect();
+  const markerHeight = rect.height;
+
+  tooltip.textContent = img.title;
+  tooltip.classList.remove("hidden");
+
+  tooltip.style.left = (rect.left + rect.width / 2) + "px";
+  tooltip.style.top = (rect.top + markerHeight + 6) + "px";
+});
+
+img.addEventListener("mouseleave", () => {
+  tooltip.classList.add("hidden");
+});
+
+// CLICK GAUCHE = POPUP IMAGES
+img.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  const rect = img.getBoundingClientRect();
+
+  popupText1.textContent = TEXT_1;
+  popupText2.textContent = TEXT_2;
+
+  const img1Name = img.dataset.img1;
+  const img2Name = img.dataset.img2;
+
+  popupImg1.src = img1Name ? ("icons/" + img1Name) : "";
+  popupImg2.src = img2Name ? ("icons/" + img2Name) : "";
+
+  markerPopup.style.left = (rect.left + rect.width / 2) + "px";
+  markerPopup.style.top = (rect.top - 220) + "px";
+
+  // toggle
+  if (markerPopup.classList.contains("hidden")) {
+    markerPopup.classList.remove("hidden");
+  } else {
+    markerPopup.classList.add("hidden");
+  }
+});
 
   /* ============================================================
      TOOLTIP AUTO-ADAPTÉ SELON TAILLE ET ZOOM
@@ -326,8 +387,24 @@ document.getElementById("validate-point").addEventListener("click", async () => 
   }
 
   // CREATION
-  const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
-  addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
+const img1 = img1Select.value || null;
+const img2 = img2Select.value || null;
+
+const id = await createMarkerInFirebase(
+  tempX,
+  tempY,
+  pointIcon.value,
+  pointName.value,
+  img1,
+  img2
+);
+
+addMarker(tempX, tempY, pointIcon.value, pointName.value, id, img1, img2);
+
+pointMenu.classList.add("hidden");
+step1.classList.add("hidden");
+waitingForPlacement = false;
+
 
   pointMenu.classList.add("hidden");
 });
@@ -382,6 +459,14 @@ moveBtn.addEventListener("click", () => {
 /* Fermer menu clic droit si on clique ailleurs */
 window.addEventListener("click", () => {
   if (!moveMode) markerMenu.style.display = "none";
+});
+
+window.addEventListener("click", (e) => {
+  // Si ce n'est pas un marker ni une image du popup → fermer
+  if (!e.target.classList.contains("marker") &&
+      !e.target.classList.contains("popup-img")) {
+    markerPopup.classList.add("hidden");
+  }
 });
 
 /* ============================================================

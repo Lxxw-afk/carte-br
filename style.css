@@ -205,3 +205,63 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2); /* léger contour transparent */
   z-index: 10000;
 }
+
+/* ============================
+   DRAG & DROP UPLOAD ZONES
+============================ */
+.drop-zone {
+  width: 220px;
+  height: 80px;
+  border: 2px dashed rgba(255,255,255,0.4);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(3px);
+  transition: 0.2s;
+}
+
+.drop-zone:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* ============================
+   POPUP AU CLIC SUR UN MARKER
+============================ */
+#marker-popup {
+  position: fixed;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 12px;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 10000;
+}
+
+.popup-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.popup-text {
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 6px;
+}
+
+.popup-img {
+  width: 160px;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+}

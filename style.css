@@ -102,6 +102,31 @@ body {
     display: none !important;
 }
 
+#marker-menu {
+    position: absolute;
+    background: #222;
+    border: 1px solid #555;
+    padding: 5px;
+    border-radius: 4px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+}
+#marker-menu.hidden {
+    display: none;
+}
+
+#marker-menu button {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 6px;
+    text-align: left;
+    cursor: pointer;
+}
+#marker-menu button:hover {
+    background: #666;
+}
 
 
 

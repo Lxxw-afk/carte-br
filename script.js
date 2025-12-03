@@ -210,17 +210,38 @@ document.getElementById("save-point").addEventListener("click", () => {
         return;
     }
 
+    // MODE MODIFICATION
+    if (editMode && selectedMarker) {
+
+        selectedMarker.title = pointName.value;
+        selectedMarker.src = "icons/" + pointIcon.value;
+
+        // mettre à jour dataset si icône ou nom change
+        selectedMarker.dataset.icon = pointIcon.value;
+
+        editMode = false;
+        selectedMarker = null;
+
+        pointMenu.classList.add("hidden");
+        return;
+    }
+
+    // MODE CREATION
     addMarker(tempX, tempY, pointIcon.value, pointName.value);
 
     pointMenu.classList.add("hidden");
 });
+
 
 /* ANNULER */
 document.getElementById("cancel-point").addEventListener("click", () => {
     pointMenu.classList.add("hidden");
     step1.classList.add("hidden");
     waitingForPlacement = false;
+    editMode = false;
+    selectedMarker = null;
 });
+
 
 /* ============================================================
    MENU CLIC DROIT : ACTIONS
@@ -240,14 +261,24 @@ deleteBtn.addEventListener("click", () => {
 editBtn.addEventListener("click", () => {
     if (!selectedMarker) return;
 
-    const newName = prompt("Nouveau nom :", selectedMarker.title);
-    if (newName) selectedMarker.title = newName;
+    // activer mode édition
+    editMode = true;
 
-    const newIcon = prompt("Nouvelle icône :", selectedMarker.src.split("/").pop());
-    if (newIcon) selectedMarker.src = "icons/" + newIcon;
-
+    // cacher le menu clic droit
     markerMenu.style.display = "none";
+
+    // pré-remplir le formulaire
+    pointName.value = selectedMarker.title;
+    pointIcon.value = selectedMarker.src.split("/").pop();
+
+    // afficher l’aperçu
+    iconPreview.src = selectedMarker.src;
+    iconPreview.classList.remove("hidden");
+
+    // afficher le menu de point
+    pointMenu.classList.remove("hidden");
 });
+
 
 // DEPLACER
 moveBtn.addEventListener("click", () => {

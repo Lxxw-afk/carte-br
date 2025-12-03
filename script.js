@@ -88,14 +88,16 @@ function updateTransform() {
 
   mapInner.style.transform    = transform;
   markerLayer.style.transform = transform;
+
+  // compensation de taille pour les marqueurs
+  const markerScale = 1 / zoom;
+  markerLayer.style.setProperty("--markerScale", markerScale);
 }
 
-// Drag (déplacement)
+// Drag (déplacement au clic gauche)
 mapContainer.addEventListener("mousedown", (e) => {
-  // On ne commence PAS à drag si on clique sur la barre du haut ou une fenêtre
   const overUI = e.target.closest("#topbar, #marker-create-modal, #marker-menu");
   if (overUI) return;
-
   if (e.button !== 0) return; // seulement clic gauche
 
   isDragging   = true;
@@ -109,14 +111,15 @@ mapContainer.addEventListener("mousedown", (e) => {
   mapContainer.classList.add("dragging");
 });
 
-
 document.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
 
-  wasDragging = true;
-
   const dx = e.clientX - startMouseX;
   const dy = e.clientY - startMouseY;
+
+  if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+    wasDragging = true;
+  }
 
   offsetX = startOffsetX + dx;
   offsetY = startOffsetY + dy;
@@ -350,6 +353,7 @@ newPointBtn.addEventListener("click", () => {
 // ============================
 
 mapContainer.addEventListener("click", (e) => {
+  // si on vient de drag, on ignore ce clic
   if (wasDragging) {
     wasDragging = false;
     return;
@@ -359,6 +363,7 @@ mapContainer.addEventListener("click", (e) => {
   const x = (e.clientX - rect.left) / zoom;
   const y = (e.clientY - rect.top)  / zoom;
 
+  // Déplacement d'un marqueur
   if (movingMarkerId) {
     markersRef.child(movingMarkerId).update({ x, y });
     movingMarkerId = null;
@@ -366,8 +371,8 @@ mapContainer.addEventListener("click", (e) => {
     return;
   }
 
+  // Création d'un nouveau point
   if (!addingPoint) return;
-
   openCreateModal({ x, y });
 });
 
@@ -379,7 +384,6 @@ mapContainer.addEventListener("click", (e) => {
 populateIconSelect();
 updateTransform();
 initFirebaseSync();
-
 
 
 

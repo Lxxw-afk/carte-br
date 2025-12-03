@@ -212,6 +212,71 @@ db.collection("markers").onSnapshot(snap => {
     snap.forEach(doc => displayMarker(doc.id, doc.data()));
 });
 
+/* ----------- MENU COMPACT ----------- */
+const pointMenu = document.getElementById("point-menu");
+const pointName = document.getElementById("point-name");
+const pointIcon = document.getElementById("point-icon");
+const preview = document.getElementById("icon-preview");
+const validateBtn = document.getElementById("validate-point");
+const cancelBtn = document.getElementById("cancel-point");
+
+let addMode = false;
+let tempX, tempY;
+
+/* Ouvrir menu */
+document.getElementById("new-point-btn").addEventListener("click", () => {
+    addMode = true;
+    alert("Clique sur la carte pour placer un nouveau point");
+});
+
+/* Clique sur la carte = position du point */
+mapContainer.addEventListener("click", (e) => {
+    if (!addMode) return;
+
+    const rect = mapContainer.getBoundingClientRect();
+    tempX = (e.clientX - rect.left - posX) / scale;
+    tempY = (e.clientY - rect.top - posY) / scale;
+
+    pointName.value = "";
+    pointIcon.value = "";
+    preview.classList.add("hidden");
+
+    pointMenu.classList.remove("hidden");
+});
+
+/* Aperçu icône */
+pointIcon.addEventListener("change", () => {
+    if (!pointIcon.value) {
+        preview.classList.add("hidden");
+        return;
+    }
+    preview.src = "icons/" + pointIcon.value;
+    preview.classList.remove("hidden");
+});
+
+/* Valider */
+validateBtn.addEventListener("click", () => {
+    if (!pointName.value || !pointIcon.value) {
+        alert("Nom + icône obligatoire");
+        return;
+    }
+
+    db.collection("markers").add({
+        x: tempX,
+        y: tempY,
+        name: pointName.value,
+        icon: pointIcon.value
+    });
+
+    pointMenu.classList.add("hidden");
+    addMode = false;
+});
+
+/* Annuler */
+cancelBtn.addEventListener("click", () => {
+    pointMenu.classList.add("hidden");
+    addMode = false;
+});
 
 
 

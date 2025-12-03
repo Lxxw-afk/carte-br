@@ -52,7 +52,8 @@ const iconList = [
   "Munitions.png",
   "organes.png",
   "Weed.png",
-  "Entrepot.png"  
+  "Entrepot.png", 
+  "Heroine.png"
 ];
 
 

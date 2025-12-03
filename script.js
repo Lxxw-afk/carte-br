@@ -117,8 +117,9 @@ document.getElementById("validate-point").addEventListener("click", () => {
 
     pointMenu.classList.add("hidden");
 
-    waitingForClick = true; // <----- activate placement mode
-    alert("Clique sur la carte pour placer le point.");
+    waitingForClick = true;
+clickHint.classList.remove("hidden");
+
 });
 
 /* ANNULER */
@@ -128,17 +129,31 @@ document.getElementById("cancel-point").addEventListener("click", () => {
 
 /* CLICK CARTE = PLACEMENT FINAL */
 mapContainer.addEventListener("click", (e) => {
+    // On ne place que si on attend le clic ET si on ne glisse pas la carte
     if (!waitingForClick || isDragging) return;
 
     const rect = mapContainer.getBoundingClientRect();
-    const x = (e.clientX - rect.left - posX) / scale;
-    const y = (e.clientY - rect.top - posY) / scale;
+    const x = (e.clientX - rect.left - offsetX) / currentZoom;
+    const y = (e.clientY - rect.top - offsetY) / currentZoom;
 
-    addMarker(x, y, pointIcon.value, pointName.value);
+    // Création du marqueur
+    const marker = document.createElement("img");
+    marker.src = "icons/" + selectedIcon;  // l'image choisie
+    marker.className = "marker";
+    marker.style.left = `${x}px`;
+    marker.style.top = `${y}px`;
+    marker.style.transform = `translate(-50%, -50%) scale(${1 / currentZoom})`; // suivre le zoom
+    marker.title = selectedName; // afficher le nom au survol
 
-    waitingForClick = false; // done
+    markerLayer.appendChild(marker);
+
+    // Sauvegarde Firebase
+    saveMarkerToFirebase(x, y, selectedName, selectedIcon);
+
+    // Reset
+    waitingForClick = false;
+    clickHint.classList.add("hidden");
 });
-
 
 
 

@@ -22,7 +22,6 @@ const MAX_ZOOM = 3;
 //----------------------------------------
 function updateTransform() {
     mapInner.style.transformOrigin = "0 0";
-
     mapInner.style.transform =
         `translate(${offsetX}px, ${offsetY}px) scale(${zoom})`;
 
@@ -53,6 +52,7 @@ document.addEventListener("mousemove", (e) => {
 
 document.addEventListener("mouseup", () => {
     isDragging = false;
+    setTimeout(() => isDragging = false, 10);
     mapContainer.style.cursor = "grab";
 });
 
@@ -81,33 +81,18 @@ mapContainer.addEventListener("wheel", (e) => {
 //----------------------------------------
 // MARQUEURS
 //----------------------------------------
-
-// Calque des marqueurs
-const markerLayer = document.createElement("div");
-markerLayer.id = "marker-layer";
-markerLayer.style.position = "absolute";
-markerLayer.style.top = "0";
-markerLayer.style.left = "0";
-markerLayer.style.width = "100%";
-markerLayer.style.height = "100%";
-markerLayer.style.pointerEvents = "none";
-mapContainer.appendChild(markerLayer);
-
-// Liste des marqueurs {x,y,element}
 let markers = [];
 
-// Ajouter un marqueur
+// calque déjà présent dans HTML
+const markerLayer = document.getElementById("marker-layer");
+
 function addMarker(x, y) {
     const marker = document.createElement("img");
-    marker.src = "icons/weed.png";  // icône provisoire
+    marker.src = "icons/weed.png"; // TEMPORAIRE
     marker.className = "marker";
-    marker.style.position = "absolute";
-    marker.style.width = "40px";
-    marker.style.height = "40px";
-    marker.style.pointerEvents = "auto";
+
     marker.style.left = x + "px";
     marker.style.top = y + "px";
-    marker.style.transform = "translate(-50%, -50%)";
 
     markerLayer.appendChild(marker);
 
@@ -115,7 +100,6 @@ function addMarker(x, y) {
     updateMarkers();
 }
 
-// Met à jour la taille/position visuelle des marqueurs
 function updateMarkers() {
     markers.forEach(m => {
         m.element.style.transform =
@@ -124,9 +108,36 @@ function updateMarkers() {
 }
 
 //----------------------------------------
-// INITIALISATION
+// NOUVEAU POINT (clic)
+//----------------------------------------
+let addingPoint = false;
+
+const newPointBtn = document.getElementById("new-point-btn");
+newPointBtn.addEventListener("click", () => {
+    addingPoint = true;
+    mapContainer.style.cursor = "crosshair";
+});
+
+mapContainer.addEventListener("click", (e) => {
+    if (!addingPoint) return;
+    if (isDragging) return;
+
+    const rect = mapContainer.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    const x = (mx - offsetX) / zoom;
+    const y = (my - offsetY) / zoom;
+
+    addMarker(x, y);
+
+    addingPoint = false;
+    mapContainer.style.cursor = "grab";
+});
+
 //----------------------------------------
 updateTransform();
+
 
 
 

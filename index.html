@@ -1,77 +1,48 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Carte interactive RP</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Carte interactive RP</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div id="topbar">
+<header>
     <h1>Carte interactive RP</h1>
-    <button id="new-point-btn">Nouveau point</button>
-    <span id="hint"></span>
-  </div>
+    <button id="addPointBtn">Nouveau point</button>
+</header>
 
-  <div id="map-container">
+<div id="map-container">
     <div id="map-inner">
-      <img id="map" src="images/map.png" alt="Carte RP">
-      <!-- Les marqueurs sont ajoutés ici en JS -->
+        <img id="map" src="images/map.png" alt="Carte RP">
     </div>
-  </div>
 
-  <!-- Modal de création de marqueur -->
-  <div id="marker-create-modal" class="modal hidden">
-    <div class="modal-content">
-      <h2>Nouveau point</h2>
+    <!-- Calque pour les marqueurs -->
+    <div id="marker-layer"></div>
+</div>
 
-      <label>
-        Nom :
-        <input type="text" id="marker-name-input" placeholder="Ex : Paradise Beach Club">
-      </label>
+<!-- Menu de création de marqueur -->
+<div id="markerMenu" class="hidden">
+    <label>Nom du point :</label>
+    <input type="text" id="markerName">
 
-      <label>
-        Image :
-        <select id="marker-icon-select">
-          <!-- rempli en JS -->
-        </select>
-      </label>
+    <label>Icône :</label>
+    <select id="markerIcon">
+        <option value="icons/Meth.png">Meth</option>
+        <option value="icons/cocaine.png">Cocaïne</option>
+        <option value="icons/munitions.png">Munitions</option>
+        <option value="icons/organes.png">Organes</option>
+        <option value="icons/weed.png">Weed</option>
+    </select>
 
-      <div class="modal-actions">
-        <button id="marker-cancel-btn">Annuler</button>
-        <button id="marker-save-btn">Valider</button>
-      </div>
-    </div>
-  </div>
+    <button id="confirmMarker">Valider</button>
+</div>
 
-  <!-- Menu clic droit sur marqueur -->
-  <div id="marker-menu">
-    <div class="item" data-action="edit">Modifier le nom</div>
-    <div class="item" data-action="move">Déplacer le point</div>
-    <div class="item" data-action="delete">Supprimer le point</div>
-  </div>
-
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAoiD4sgUaamp0SGOBvx3A7FGjw4E3K4TE",
-    authDomain: "carte-br.firebaseapp.com",
-    databaseURL: "https://carte-br-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "carte-br",
-    storageBucket: "carte-br.appspot.com",
-    messagingSenderId: "698417792662",
-    appId: "1:698417792662:web:4766a306741b5c571274b7"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-</script>
-
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="script.js"></script>
 
-  <script src="script.js"></script>
 </body>
 </html>
+
 

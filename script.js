@@ -148,6 +148,7 @@ document.addEventListener("mouseup", () => {
 });
 
 
+
 // ------- ZOOM MOLETTE -------
 
 mapContainer.addEventListener("wheel", (e) => {

@@ -85,21 +85,24 @@ window.addEventListener("mousemove", (e) => {
 mapContainer.addEventListener("wheel", (e) => {
     e.preventDefault();
 
-    const rect = mapContainer.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-
     const oldScale = scale;
     const zoomSpeed = 0.1;
 
+    // zoom droit (sans utiliser la souris comme pivot)
     scale += (e.deltaY < 0 ? zoomSpeed : -zoomSpeed);
     scale = Math.max(0.5, Math.min(4, scale));
 
-    posX -= (mx / oldScale) * (scale - oldScale);
-    posY -= (my / oldScale) * (scale - oldScale);
+    // compensation pour garder l’image centrée
+    const rect = mapContainer.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    posX -= (centerX / oldScale) * (scale - oldScale);
+    posY -= (centerY / oldScale) * (scale - oldScale);
 
     updateMap();
 });
+
 
 /* ============================================================
    UPDATE CARTE + MARKERS

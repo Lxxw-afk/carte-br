@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>CARTE BR</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>CARTE BR</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-  <!-- BARRE DU HAUT -->
-  <div id="topbar">
+<div id="topbar">
     <h1>CARTE BR</h1>
     <button id="new-point-btn">Nouveau point</button>
-  </div>
+</div>
 
-  <!-- CONTAINER PRINCIPAL -->
-  <div id="map-container">
+<div id="map-container">
     <div id="map-inner">
-      <img id="map" src="images/map.png" alt="Carte RP">
+        <img id="map" src="images/map.png" alt="Carte RP">
     </div>
 
-    <!-- Calque des marqueurs -->
     <div id="marker-layer"></div>
-  </div>
+</div>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
+
 
 
 

@@ -2,75 +2,37 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Carte interactive RP</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Test Carte</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+    }
+    #map-container {
+      position: relative;
+      width: 100%; height: 100%;
+      cursor: grab;
+    }
+    #map-inner {
+      position: absolute;
+      top: 0; left: 0;
+    }
+    #map-inner img {
+      display: block;
+      user-drag: none;
+      user-select: none;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
-
-  <!-- BARRE DU HAUT -->
-  <div id="topbar">
-    <h1>Carte interactive RP</h1>
-    <button id="new-point-btn">Nouveau point</button>
-    <span id="hint"></span>
-  </div>
-
-  <!-- CONTAINER PRINCIPAL -->
   <div id="map-container">
-    <!-- Carte -->
     <div id="map-inner">
-      <img id="map" src="images/map.png" alt="Carte RP">
-    </div>
-
-    <!-- Calque des marqueurs -->
-    <div id="marker-layer"></div>
-  </div>
-
-  <!-- FENÊTRE DE CRÉATION D'UN MARQUEUR -->
-  <div id="marker-create-modal" class="modal hidden">
-    <div class="modal-content">
-      <h2>Nouveau point</h2>
-
-      <label>Nom du point :</label>
-      <input type="text" id="marker-name-input" placeholder="Nom du lieu">
-
-      <label>Icône :</label>
-      <select id="marker-icon-select"></select>
-
-      <div class="modal-buttons">
-        <button id="marker-cancel-btn">Annuler</button>
-        <button id="marker-save-btn">Valider</button>
-      </div>
+      <img id="map" src="images/map.png" alt="Carte">
     </div>
   </div>
 
-  <!-- MENU CLIC DROIT SUR UN MARQUEUR -->
-  <div id="marker-menu" class="marker-menu" style="display:none;">
-    <div class="item" data-action="edit">Modifier le nom</div>
-    <div class="item" data-action="move">Déplacer</div>
-    <div class="item" data-action="delete">Supprimer</div>
-  </div>
-
-  <!-- Firebase (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
-  <!-- Config Firebase : mets ici la tienne depuis la console Firebase -->
-  <script>
-    const firebaseConfig = {
-      apiKey: "TA_API_KEY_ICI",
-      authDomain: "carte-br.firebaseapp.com",
-      databaseURL: "https://carte-br-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "carte-br",
-      storageBucket: "carte-br.appspot.com",
-      messagingSenderId: "698417729622",
-      appId: "1:698417729622:web:4766a306741b5c71724b7"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-  </script>
-
-  <!-- Script principal -->
   <script src="script.js"></script>
 </body>
 </html>

@@ -146,7 +146,7 @@ function updateMarkerDisplay() {
     marker.style.top = (y * scale) + "px";
 
  // Taille dynamique inversée : dézoom = grand, zoom = petit
-let size = 60 / scale;
+let size = 45 / scale;
 
 // Limite min/max
 size = Math.max(20, size);  // taille mini quand très zoomé

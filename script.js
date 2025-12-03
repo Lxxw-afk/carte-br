@@ -146,7 +146,7 @@ function updateMarkerDisplay() {
     let size = 20 * scale;  // taille augmente avec le zoom
 
 // Limites
-size = Math.max(15, size);  // taille minimum quand dézoomé
+size = Math.max(35, size);  // taille minimum quand dézoomé
 size = Math.min(55, size);  // taille max quand zoomé
 
 marker.style.width = size + "px";

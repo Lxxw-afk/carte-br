@@ -123,8 +123,14 @@ function updateMarkerDisplay() {
         marker.style.left = (x * scale) + "px";
         marker.style.top = (y * scale) + "px";
 
-        marker.style.width = (40 / scale) + "px";
-        marker.style.height = (40 / scale) + "px";
+// --- Taille intelligente ---
+let size = 45 / scale;   // taille idéale
+size = Math.max(25, size); // jamais plus petit que 25px
+size = Math.min(60, size); // jamais plus grand que 60px
+
+marker.style.width = size + "px";
+marker.style.height = size + "px";
+
     });
 }
 

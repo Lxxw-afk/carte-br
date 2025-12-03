@@ -46,6 +46,51 @@ body {
     cursor: pointer;
 }
 
+/* ---- MENU POUR CRÉER UN MARQUEUR ---- */
+#marker-menu.hidden {
+    display: none;
+}
+
+#marker-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#menu-box {
+    background: white;
+    padding: 20px;
+    width: 350px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#icon-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 10px 0;
+}
+
+.icon-option {
+    width: 50px;
+    height: 50px;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.icon-option.selected {
+    border-color: blue;
+}
 
 
 

@@ -191,14 +191,17 @@ body {
 }
 
 .marker-tooltip {
-  position: absolute;
-  background: rgba(0,0,0,0.75);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 13px;
-  transform: translate(-50%, 0);
+  position: fixed;
+  background: rgba(0, 0, 0, 0.35); /* même transparence que ton bouton */
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: bold;   /* texte bien en gras */
+  transform: translate(-50%);
   pointer-events: none;
   white-space: nowrap;
-  z-index: 9999;
+  backdrop-filter: blur(4px); /* OPTIONNEL, pour un effet propre */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* léger contour transparent */
+  z-index: 10000;
 }

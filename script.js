@@ -173,14 +173,18 @@ async function deleteMarkerInFirebase(marker) {
   await db.collection("markers").doc(id).delete();
 }
 
-async function loadMarkersFromFirebase() {
-  if (!firebaseReady) return;
-  const snapshot = await db.collection("markers").get();
-  snapshot.forEach(doc => {
-    const d = doc.data();
-    addMarker(d.x, d.y, d.icon, d.name, doc.id);
+function listenMarkersRealtime() {
+  db.collection("markers").onSnapshot(snapshot => {
+    markers.forEach(m => m.remove());  // clear DOM
+    markers = [];
+
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      addMarker(d.x, d.y, d.icon, d.name, doc.id);
+    });
   });
 }
+
 
 /* ============================================================
    AJOUT DOM DU MARQUEUR

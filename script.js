@@ -24,78 +24,6 @@ try {
 }
 
 /* ============================================================
-   TEXTES MODIFIABLES POUR LE POPUP
-============================================================ */
-const TEXT_1 = "Entrée";
-const TEXT_2 = "Sortie";
-
-/* ============================
-   DRAG & DROP POUR LES 2 IMAGES
-============================ */
-let uploadedImg1 = null;
-let uploadedImg2 = null;
-
-function setupDropZone(zoneId, previewId, callback) {
-  const zone = document.getElementById(zoneId);
-  const preview = document.getElementById(previewId);
-
-  zone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    zone.style.borderColor = "white";
-  });
-
-  zone.addEventListener("dragleave", () => {
-    zone.style.borderColor = "rgba(255,255,255,0.4)";
-  });
-
-  zone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    zone.style.borderColor = "rgba(255,255,255,0.4)";
-
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      preview.src = reader.result;
-      preview.classList.remove("hidden");
-      callback(file);
-    };
-    reader.readAsDataURL(file);
-  });
-
-  zone.addEventListener("click", () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = () => {
-      const file = input.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        preview.src = reader.result;
-        preview.classList.remove("hidden");
-        callback(file);
-      };
-      reader.readAsDataURL(file);
-    };
-    input.click();
-  });
-}
-
-/* ============================================================
-   FIREBASE STORAGE UPLOAD
-============================================================ */
-async function uploadImageToStorage(file, path) {
-  if (!file) return null; // si aucune image envoyée, on retourne null
-  const ref = firebase.storage().ref().child(path);
-  await ref.put(file);
-  return await ref.getDownloadURL();
-}
-
-
-/* ============================================================
    VARIABLES DOM
 ============================================================ */
 const mapContainer = document.getElementById("map-container");
@@ -114,11 +42,6 @@ const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
 const tooltip = document.getElementById("tooltip");
-
-// Drop zones
-setupDropZone("drop-img1", "preview-img1", (file) => uploadedImg1 = file);
-setupDropZone("drop-img2", "preview-img2", (file) => uploadedImg2 = file);
-
 
 /* ============================================================
    LISTE DES ICONES
@@ -155,7 +78,7 @@ let markers = [];
 let tempX = 0, tempY = 0;
 
 /* ============================================================
-   DRAG GOOGLE MAPS
+   DRAG
 ============================================================ */
 mapContainer.addEventListener("mousedown", (e) => {
   if (waitingForPlacement || moveMode) return;
@@ -166,6 +89,11 @@ mapContainer.addEventListener("mousedown", (e) => {
   mapContainer.style.cursor = "grabbing";
 });
 
+window.addEventListener("mouseup", () => {
+  isDragging = false;
+  mapContainer.style.cursor = "grab";
+});
+
 window.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
 
@@ -174,12 +102,6 @@ window.addEventListener("mousemove", (e) => {
 
   updateMap();
 });
-
-window.addEventListener("mouseup", () => {
-  isDragging = false;
-  mapContainer.style.cursor = "grab";
-});
-
 
 /* ============================================================
    ZOOM CENTRÉ SUR LA SOURIS
@@ -251,6 +173,19 @@ async function deleteMarkerInFirebase(marker) {
   await db.collection("markers").doc(id).delete();
 }
 
+function listenMarkersRealtime() {
+  db.collection("markers").onSnapshot(snapshot => {
+    markers.forEach(m => m.remove());  // clear DOM
+    markers = [];
+
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      addMarker(d.x, d.y, d.icon, d.name, doc.id);
+    });
+  });
+}
+
+
 /* ============================================================
    AJOUT DOM DU MARQUEUR
 ============================================================ */
@@ -269,56 +204,24 @@ function addMarker(x, y, icon, name, id = null) {
      TOOLTIP AUTO-ADAPTÉ SELON TAILLE ET ZOOM
   ============================================================ */
   img.addEventListener("mouseenter", () => {
+
     const rect = img.getBoundingClientRect();
     const markerHeight = rect.height;
 
     tooltip.textContent = img.title;
     tooltip.className = "marker-tooltip";
+    tooltip.style.fontWeight = "bold"; // TEXTE EN GRAS
+     
+    // Position : centré + juste sous le marker selon sa taille réelle
     tooltip.style.left = (rect.left + rect.width / 2) + "px";
-    tooltip.style.top = (rect.top + markerHeight + 6) + "px";
+    tooltip.style.top = (rect.top + markerHeight + 6) + "px"; 
+    // +6 pour un petit espace, tu peux ajuster
+
     tooltip.classList.remove("hidden");
   });
 
   img.addEventListener("mouseleave", () => {
     tooltip.classList.add("hidden");
-  });
-
-  /* ============================================================
-     CLIC GAUCHE = POPUP AVEC 2 IMAGES + 2 TEXTES
-  ============================================================ */
-  img.addEventListener("click", async (e) => {
-    e.stopPropagation();
-
-    const idFromMarker = img.dataset.id;
-    if (!idFromMarker) return;
-
-    const docSnap = await db.collection("markers").doc(idFromMarker).get();
-    const data = docSnap.data();
-    if (!data) return;
-
-    const popup = document.getElementById("marker-popup");
-    const rect = img.getBoundingClientRect();
-
-    // Textes
-    document.getElementById("popup-text1").textContent = TEXT_1;
-    document.getElementById("popup-text2").textContent = TEXT_2;
-
-    // Images
-    document.getElementById("popup-img1").src = data.img1 || "";
-    document.getElementById("popup-img2").src = data.img2 || "";
-
-    popup.style.left = (rect.left + rect.width / 2) + "px";
-    popup.style.top = (rect.top - 220) + "px";
-
-    // Toggle : si déjà visible et même marker → fermer
-    if (!popup.classList.contains("hidden") && popup.dataset.forId === idFromMarker) {
-      popup.classList.add("hidden");
-      popup.dataset.forId = "";
-      return;
-    }
-
-    popup.dataset.forId = idFromMarker;
-    popup.classList.remove("hidden");
   });
 
   /* ============================================================
@@ -339,6 +242,8 @@ function addMarker(x, y, icon, name, id = null) {
 
   updateMarkerDisplay();
 }
+
+
 
 /* ============================================================
    BOUTON NOUVEAU POINT
@@ -395,20 +300,19 @@ pointIcon.addEventListener("change", () => {
 });
 
 /* ============================================================
-   VALIDATION POINT
+   VALIDATION POINT (ICI LE BOUTON EST BIEN validate-point)
 ============================================================ */
 document.getElementById("validate-point").addEventListener("click", async () => {
-
   if (!pointName.value || !pointIcon.value) {
     alert("Nom + Icône obligatoires !");
     return;
   }
 
-  // MODE EDIT
+  // MODIFICATION
   if (editMode && selectedMarker) {
     selectedMarker.title = pointName.value;
-    selectedMarker.dataset.icon = pointIcon.value;
     selectedMarker.src = "icons/" + pointIcon.value;
+    selectedMarker.dataset.icon = pointIcon.value;
 
     await updateMarkerInFirebase(selectedMarker, {
       name: pointName.value,
@@ -418,39 +322,14 @@ document.getElementById("validate-point").addEventListener("click", async () => 
     editMode = false;
     selectedMarker = null;
     pointMenu.classList.add("hidden");
-    waitingForPlacement = false;
     return;
   }
 
-  // -----------------------
-  // CREATION D’UN NOUVEAU POINT
-  // -----------------------
-  const id = await createMarkerInFirebase(
-    tempX,
-    tempY,
-    pointIcon.value,
-    pointName.value
-  );
-
-  // Upload des deux images (si présentes)
-  const img1URL = await uploadImageToStorage(uploadedImg1, "markers/" + id + "_1.png");
-  const img2URL = await uploadImageToStorage(uploadedImg2, "markers/" + id + "_2.png");
-
-  await db.collection("markers").doc(id).update({
-    img1: img1URL,
-    img2: img2URL
-  });
-
+  // CREATION
+  const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
   addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
 
-  // Fermeture du menu + reset
   pointMenu.classList.add("hidden");
-  step1.classList.add("hidden");
-  waitingForPlacement = false;
-
-  uploadedImg1 = null;
-  uploadedImg2 = null;
-  selectedMarker = null;
 });
 
 /* ============================================================
@@ -500,30 +379,20 @@ moveBtn.addEventListener("click", () => {
   markerMenu.style.display = "none";
 });
 
-/* ============================================================
-   FERMETURE POPUP & MENU AU CLIC GLOBAL
-============================================================ */
-window.addEventListener("click", (e) => {
-  const popup = document.getElementById("marker-popup");
-
-  // Si clic sur un marker ou une image du popup → ne pas fermer
-  if (e.target.classList.contains("marker")) return;
-  if (e.target.classList.contains("popup-img")) return;
-
-  // Fermer popup
-  popup.classList.add("hidden");
-  popup.dataset.forId = "";
-
-  // Fermer le menu clic droit si on clique ailleurs
+/* Fermer menu clic droit si on clique ailleurs */
+window.addEventListener("click", () => {
   if (!moveMode) markerMenu.style.display = "none";
 });
 
 /* ============================================================
    🔥 LISTENER TEMPS RÉEL FIRESTORE
+   (affiche les markers, les met à jour, et les supprime en live)
 ============================================================ */
 function listenMarkersRealtime() {
   db.collection("markers").onSnapshot(snapshot => {
+
     snapshot.docChanges().forEach(change => {
+
       const doc = change.doc;
       const d = doc.data();
 
@@ -553,14 +422,13 @@ function listenMarkersRealtime() {
           markers = markers.filter(m => m !== marker);
         }
       }
+
     });
   });
 }
 
 // ACTIVATION DU MODE TEMPS RÉEL
 listenMarkersRealtime();
-
-
 
 
 

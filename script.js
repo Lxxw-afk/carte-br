@@ -1,8 +1,6 @@
-/* -------------------------
-   CONFIG FIREBASE
----------------------------*/
+/* ----------- FIREBASE ----------- */
 const firebaseConfig = {
-    apiKey: "AIzaSyAOl4dbsUaqmp9S0OBvx3A7F6jw4E3K4TE",
+    apiKey: "AIzaSyA0i4Ds0gJluamp9SO0Bvx3A7GFjw4E3K4TE",
     authDomain: "carte-br.firebaseapp.com",
     projectId: "carte-br",
     storageBucket: "carte-br.firebasestorage.app",
@@ -13,223 +11,63 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* -------------------------
-   VARIABLES
----------------------------*/
+/* ----------- VARIABLES CARTE ----------- */
+let isDragging = false;
+let startX = 0, startY = 0;
+let posX = 0, posY = 0;
+let scale = 1;
+
 const mapContainer = document.getElementById("map-container");
 const mapInner = document.getElementById("map-inner");
 const markerLayer = document.getElementById("marker-layer");
-const menu = document.getElementById("marker-menu");
-const nameInput = document.getElementById("marker-name");
-const iconList = document.getElementById("icon-list");
-const confirmBtn = document.getElementById("confirm-marker");
-const cancelBtn = document.getElementById("cancel-marker");
 
-let scale = 1;
-let isDragging = false;
-let startX, startY;
-let posX = 0, posY = 0;
-
-let addingPoint = false;
-let pendingX, pendingY;
-let selectedIcon = null;
-
-/* -------------------------
-   MODE AJOUT DE POINT
----------------------------*/
-document.getElementById("new-point-btn").addEventListener("click", () => {
-    addingPoint = true;
-    alert("Clique sur la carte pour placer le point");
-});
-
-/* -------------------------
-   DEPLACEMENT CARTE
----------------------------*/
+/* ----------- DRAG MANUEL ----------- */
 mapContainer.addEventListener("mousedown", (e) => {
-    if (addingPoint) return;
+    if (e.target.closest(".marker")) return;
     isDragging = true;
     startX = e.clientX - posX;
     startY = e.clientY - posY;
 });
 
-window.addEventListener("mouseup", () => isDragging = false);
+mapContainer.addEventListener("mouseup", () => {
+    isDragging = false;
+});
 
-window.addEventListener("mousemove", (e) => {
-    if (!isDragging || addingPoint) return;
+mapContainer.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+
     posX = e.clientX - startX;
     posY = e.clientY - startY;
 
-    updateTransform();
+    mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    updateMarkerPositions();
 });
 
-/* -------------------------
-   ZOOM MOLETTE
----------------------------*/
+/* ----------- ZOOM MOLETTE ----------- */
 mapContainer.addEventListener("wheel", (e) => {
     e.preventDefault();
-    const zoomIntensity = 0.1;
 
-    scale += (e.deltaY < 0 ? zoomIntensity : -zoomIntensity);
-    if (scale < 0.2) scale = 0.2;
-    if (scale > 5) scale = 5;
+    const zoomSpeed = 0.1;
+    const delta = Math.sign(e.deltaY);
 
-    updateTransform();
-});
+    scale += delta * -zoomSpeed;
+    scale = Math.min(Math.max(scale, 0.5), 4);
 
-function updateTransform() {
     mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-    markerLayer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-}
-
-/* -------------------------
-   CLICK POUR AJOUTER LE POINT
----------------------------*/
-mapContainer.addEventListener("click", (e) => {
-    if (!addingPoint) return;
-
-    const rect = mapContainer.getBoundingClientRect();
-    pendingX = (e.clientX - rect.left - posX) / scale;
-    pendingY = (e.clientY - rect.top - posY) / scale;
-
-    openMarkerMenu();
+    updateMarkerPositions();
 });
 
-/* -------------------------
-   CHARGER LES ICONES
----------------------------*/
-const icons = [
-    "Meth.png",
-    "cocaine.png",
-    "munitions.png",
-    "organes.png",
-    "weed.png"
-];
-
-function loadIcons() {
-    iconList.innerHTML = "";
-    icons.forEach(file => {
-        const img = document.createElement("img");
-        img.src = "icons/" + file;
-        img.classList.add("icon-option");
-
-        img.addEventListener("click", () => {
-            document.querySelectorAll(".icon-option").forEach(i => i.classList.remove("selected"));
-            img.classList.add("selected");
-            selectedIcon = file;
-        });
-
-        iconList.appendChild(img);
-    });
-}
-
-loadIcons();
-
-/* -------------------------
-   MENU CREATION
----------------------------*/
-function openMarkerMenu() {
-    nameInput.value = "";
-    selectedIcon = null;
-    document.querySelectorAll(".icon-option").forEach(i => i.classList.remove("selected"));
-
-    menu.classList.remove("hidden");
-}
-
-cancelBtn.addEventListener("click", () => {
-    menu.classList.add("hidden");
-    addingPoint = false;
-});
-
-confirmBtn.addEventListener("click", () => {
-    if (!nameInput.value || !selectedIcon) {
-        alert("Nom + icône obligatoires !");
-        return;
-    }
-
-    saveMarkerToFirebase(pendingX, pendingY, nameInput.value, selectedIcon);
-
-    menu.classList.add("hidden");
-    addingPoint = false;
-});
-
-/* -------------------------
-   SAUVEGARDE FIREBASE
----------------------------*/
-function saveMarkerToFirebase(x, y, name, icon) {
-    db.collection("markers").add({ x, y, name, icon });
-}
-
-/* -------------------------
-   AFFICHER LES MARQUEURS
----------------------------*/
-function displayMarker(id, data) {
-    const marker = document.createElement("img");
-    marker.classList.add("marker");
-    marker.src = "icons/" + data.icon;
-    marker.style.left = data.x + "px";
-    marker.style.top = data.y + "px";
-    marker.title = data.name;
-
-    // clic droit : menu
-    marker.addEventListener("contextmenu", (e) => {
-        e.preventDefault();
-        const choice = prompt("1 = Renommer\n2 = Supprimer\n3 = Déplacer");
-
-        if (choice == "1") {
-            const newName = prompt("Nouveau nom :", data.name);
-            if (newName) db.collection("markers").doc(id).update({ name: newName });
-        }
-
-        if (choice == "2") {
-            db.collection("markers").doc(id).delete();
-        }
-
-        if (choice == "3") {
-            alert("Clique une nouvelle position");
-            addingPoint = true;
-
-            mapContainer.addEventListener("click", function move(ev) {
-                const rect = mapContainer.getBoundingClientRect();
-                const newX = (ev.clientX - rect.left - posX) / scale;
-                const newY = (ev.clientY - rect.top - posY) / scale;
-
-                db.collection("markers").doc(id).update({ x: newX, y: newY });
-
-                addingPoint = false;
-                mapContainer.removeEventListener("click", move);
-            });
-        }
-    });
-
-    markerLayer.appendChild(marker);
-}
-
-/* -------------------------
-   SYNCHRO FIREBASE EN LIVE
----------------------------*/
-db.collection("markers").onSnapshot(snap => {
-    markerLayer.innerHTML = "";
-    snap.forEach(doc => displayMarker(doc.id, doc.data()));
-});
-
-/* ----------- MENU COMPACT ----------- */
-const pointMenu = document.getElementById("point-menu");
-const pointName = document.getElementById("point-name");
-const pointIcon = document.getElementById("point-icon");
-const preview = document.getElementById("icon-preview");
-const validateBtn = document.getElementById("validate-point");
-const cancelBtn = document.getElementById("cancel-point");
-
+/* ----------- AJOUT DE POINT ----------- */
 let addMode = false;
 let tempX, tempY;
 
-/* Ouvrir menu */
+/* BTN NOUVEAU POINT */
 document.getElementById("new-point-btn").addEventListener("click", () => {
     addMode = true;
-    alert("Clique sur la carte pour placer un nouveau point");
+    alert("Clique sur la carte pour placer un nouveau point.");
 });
 
-/* Clique sur la carte = position du point */
+/* CLICK SUR LA CARTE */
 mapContainer.addEventListener("click", (e) => {
     if (!addMode) return;
 
@@ -237,46 +75,86 @@ mapContainer.addEventListener("click", (e) => {
     tempX = (e.clientX - rect.left - posX) / scale;
     tempY = (e.clientY - rect.top - posY) / scale;
 
-    pointName.value = "";
-    pointIcon.value = "";
-    preview.classList.add("hidden");
+    document.getElementById("point-name").value = "";
+    document.getElementById("point-icon").value = "";
+    document.getElementById("icon-preview").classList.add("hidden");
 
-    pointMenu.classList.remove("hidden");
+    document.getElementById("point-menu").classList.remove("hidden");
 });
 
-/* Aperçu icône */
-pointIcon.addEventListener("change", () => {
-    if (!pointIcon.value) {
+/* APERCU ICONE */
+document.getElementById("point-icon").addEventListener("change", () => {
+    const icon = document.getElementById("point-icon").value;
+    const preview = document.getElementById("icon-preview");
+
+    if (!icon) {
         preview.classList.add("hidden");
         return;
     }
-    preview.src = "icons/" + pointIcon.value;
+
+    preview.src = "icons/" + icon;
     preview.classList.remove("hidden");
 });
 
-/* Valider */
-validateBtn.addEventListener("click", () => {
-    if (!pointName.value || !pointIcon.value) {
-        alert("Nom + icône obligatoire");
+/* VALIDATION POINT */
+document.getElementById("validate-point").addEventListener("click", () => {
+    const name = document.getElementById("point-name").value;
+    const icon = document.getElementById("point-icon").value;
+
+    if (!name || !icon) {
+        alert("Nom + icône obligatoire !");
         return;
     }
 
     db.collection("markers").add({
         x: tempX,
         y: tempY,
-        name: pointName.value,
-        icon: pointIcon.value
+        name,
+        icon
     });
 
-    pointMenu.classList.add("hidden");
+    document.getElementById("point-menu").classList.add("hidden");
     addMode = false;
 });
 
-/* Annuler */
-cancelBtn.addEventListener("click", () => {
-    pointMenu.classList.add("hidden");
+/* ANNULER */
+document.getElementById("cancel-point").addEventListener("click", () => {
+    document.getElementById("point-menu").classList.add("hidden");
     addMode = false;
 });
+
+/* ----------- AFFICHAGE DES MARKERS ----------- */
+function updateMarkerPositions() {
+    document.querySelectorAll(".marker").forEach(marker => {
+        const data = marker.data;
+        marker.style.left = (data.x * scale + posX) + "px";
+        marker.style.top = (data.y * scale + posY) + "px";
+
+        marker.querySelector("img").style.width = (40 * scale) + "px";
+        marker.querySelector("img").style.height = (40 * scale) + "px";
+    });
+}
+
+/* CHARGER MARKERS FIREBASE */
+db.collection("markers").onSnapshot(snapshot => {
+    markerLayer.innerHTML = "";
+
+    snapshot.forEach(doc => {
+        const d = doc.data();
+
+        const marker = document.createElement("div");
+        marker.classList.add("marker");
+
+        marker.data = d;
+
+        marker.innerHTML = `<img src="icons/${d.icon}" title="${d.name}">`;
+
+        markerLayer.appendChild(marker);
+    });
+
+    updateMarkerPositions();
+});
+
 
 
 

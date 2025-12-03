@@ -94,21 +94,51 @@ function updateTransform() {
   markerLayer.style.setProperty("--markerScale", markerScale);
 }
 
-// Drag (déplacement au clic gauche)
+// ============================
+// Déplacement au vrai "clic maintenu"
+// ============================
+
+// Quand on appuie sur le clic gauche → commencer à drag
 mapContainer.addEventListener("mousedown", (e) => {
-  const overUI = e.target.closest("#topbar, #marker-create-modal, #marker-menu");
-  if (overUI) return;
-  if (e.button !== 0) return; // seulement clic gauche
+  // Pas de drag si on clique sur UI
+  if (e.target.closest("#topbar, #marker-create-modal, #marker-menu")) return;
+  if (e.button !== 0) return;
 
-  isDragging   = true;
-  wasDragging  = false;
+  isDragging = true;
+  wasDragging = false;
 
-  startMouseX  = e.clientX;
-  startMouseY  = e.clientY;
+  startMouseX = e.clientX;
+  startMouseY = e.clientY;
+
   startOffsetX = offsetX;
   startOffsetY = offsetY;
 
   mapContainer.classList.add("dragging");
+});
+
+// Tant que le clic est maintenu → déplacer
+document.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
+
+  const dx = e.clientX - startMouseX;
+  const dy = e.clientY - startMouseY;
+
+  if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+    wasDragging = true;
+  }
+
+  offsetX = startOffsetX + dx;
+  offsetY = startOffsetY + dy;
+
+  updateTransform();
+});
+
+// Quand on relâche le clic → arrêter le drag
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+  mapContainer.classList.remove("dragging");
+});
+
 });
 
 document.addEventListener("mousemove", (e) => {

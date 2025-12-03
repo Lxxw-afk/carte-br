@@ -1,85 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Carte BR</title>
+    <meta charset="UTF-8" />
+    <title>BRIGADE DE RECHERCHE</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- TOP BAR -->
+    <!-- BARRE DU HAUT -->
     <div id="topbar">
+        <h1>BRIGADE DE RECHERCHE</h1>
         <button id="new-point-btn">Nouveau point</button>
     </div>
+<button id="credit-btn">Créé par Lxxw</button>
 
-    <!-- MAP -->
+    <!-- MESSAGE : étape 1 -->
+    <div id="step1" class="hidden">
+        👉 Cliquez sur la carte pour placer votre point.
+    </div>
+
+    <!-- CONTENEUR CARTE -->
     <div id="map-container">
-        <img id="map-inner" src="images/map.png">
+        <div id="map-inner">
+            <img id="map" src="images/map.png" alt="Carte RP">
+        </div>
+
         <div id="marker-layer"></div>
     </div>
 
-    <!-- STEP 1 MESSAGE -->
-    <div id="step1" class="hidden">Cliquez sur la carte pour placer le point</div>
-
-    <!-- POINT MENU (UPLOAD IMAGES) -->
+    <!-- MENU ÉTAPE 2 : NOM + ICÔNE -->
     <div id="point-menu" class="hidden">
         <div class="point-box">
+            <h3>Configurer le point</h3>
 
-            <label>Nom du point :</label>
-            <input id="point-name" type="text">
+            <label>Nom :</label>
+            <input type="text" id="point-name">
 
-            <label>Icône du point :</label>
-            <select id="point-icon"></select>
-            <img id="icon-preview" class="preview hidden">
+            <label>Icône :</label>
+            <select id="point-icon">
+                <option value="">Choisir...</option>
+            </select>
 
-            <label>Image 1 :</label>
-            <div id="drop-img1" class="drop-zone">Glissez votre image ici</div>
-            <img id="preview-img1" class="preview hidden">
-
-            <label>Image 2 :</label>
-            <div id="drop-img2" class="drop-zone">Glissez votre image ici</div>
-            <img id="preview-img2" class="preview hidden">
+            <img id="icon-preview" class="preview hidden" src="">
 
             <button id="validate-point">Valider</button>
             <button id="cancel-point">Annuler</button>
-
         </div>
     </div>
-
-    <!-- RIGHT CLICK MENU -->
-    <div id="marker-menu">
-        <button id="edit-marker">Modifier</button>
-        <button id="move-marker">Déplacer</button>
-        <button id="delete-marker">Supprimer</button>
-    </div>
-
-    <!-- TOOLTIP -->
-    <div id="tooltip" class="marker-tooltip hidden"></div>
-
-    <!-- POPUP AU CLIC SUR UN POINT -->
-    <div id="marker-popup" class="hidden">
-        <div class="popup-block">
-            <span id="popup-text1" class="popup-text"></span>
-            <img id="popup-img1" class="popup-img">
-        </div>
-        <div class="popup-block">
-            <span id="popup-text2" class="popup-text"></span>
-            <img id="popup-img2" class="popup-img">
-        </div>
-    </div>
-
-    <button id="credit-btn">Créé par Lxxw</button>
-
-    <!-- FIREBASE -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+<!-- MENU CLIC DROIT -->
+<div id="marker-menu" class="hidden">
+    <button id="edit-marker">Modifier</button>
+    <button id="move-marker">Déplacer</button>
+    <button id="delete-marker">Supprimer</button>
+</div>
+<!-- Firebase compat (adapté à GitHub Pages) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script src="script.js"></script>
+<!-- Firebase v8 (compat) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<!-- Ton script -->
+<script src="script.js"></script>
+
+    <div id="marker-menu" class="hidden">
+    <button id="edit-marker">Modifier</button>
+    <button id="move-marker">Déplacer</button>
+    <button id="delete-marker">Supprimer</button>
+</div>
+<div id="marker-tooltip" class="hidden"></div>
+
 </body>
 </html>
-
 
 
 

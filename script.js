@@ -18,7 +18,7 @@ const modalSave     = document.getElementById("marker-save-btn");
 
 const markerMenu    = document.getElementById("marker-menu");
 
-// Référence Firebase (db est créée dans index.html)
+// Référence Firebase (db définie dans index.html)
 const markersRef    = db.ref("markers");
 
 
@@ -68,7 +68,7 @@ const MAX_ZOOM      = 3;
 // ÉTAT DES MARQUEURS
 // ============================
 
-const markersData   = {}; // id Firebase -> data
+const markersData   = {}; // id Firebase -> { x, y, name, iconId }
 
 let addingPoint     = false;
 let pendingPos      = null;
@@ -94,52 +94,24 @@ function updateTransform() {
   markerLayer.style.setProperty("--markerScale", markerScale);
 }
 
-// ============================
-// Déplacement au vrai "clic maintenu"
-// ============================
+// --- DRAG : vrai "clic maintenu" ---
 
-// Quand on appuie sur le clic gauche → commencer à drag
 mapContainer.addEventListener("mousedown", (e) => {
-  // Pas de drag si on clique sur UI
+  // pas de déplacement si on clique sur l'UI
   if (e.target.closest("#topbar, #marker-create-modal, #marker-menu")) return;
-  if (e.button !== 0) return;
+  if (e.button !== 0) return; // seulement clic gauche
 
-  isDragging = true;
-  wasDragging = false;
+  isDragging   = true;
+  wasDragging  = false;
 
-  startMouseX = e.clientX;
-  startMouseY = e.clientY;
-
+  startMouseX  = e.clientX;
+  startMouseY  = e.clientY;
   startOffsetX = offsetX;
   startOffsetY = offsetY;
 
   mapContainer.classList.add("dragging");
 });
 
-// Tant que le clic est maintenu → déplacer
-document.addEventListener("mousemove", (e) => {
-  if (!isDragging) return;
-
-  const dx = e.clientX - startMouseX;
-  const dy = e.clientY - startMouseY;
-
-  if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
-    wasDragging = true;
-  }
-
-  offsetX = startOffsetX + dx;
-  offsetY = startOffsetY + dy;
-
-  updateTransform();
-});
-
-// Quand on relâche le clic → arrêter le drag
-document.addEventListener("mouseup", () => {
-  isDragging = false;
-  mapContainer.classList.remove("dragging");
-});
-
-
 document.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
 
@@ -161,7 +133,8 @@ document.addEventListener("mouseup", () => {
   mapContainer.classList.remove("dragging");
 });
 
-// Zoom molette
+// --- ZOOM MOLETTE ---
+
 mapContainer.addEventListener("wheel", (e) => {
   const overTopbar = e.target.closest("#topbar");
   if (overTopbar) return;
@@ -301,8 +274,8 @@ function deleteMarker(id) {
 
 function showMarkerMenu(x, y, markerId) {
   contextMarkerId = markerId;
-  markerMenu.style.left   = x + "px";
-  markerMenu.style.top    = y + "px";
+  markerMenu.style.left    = x + "px";
+  markerMenu.style.top     = y + "px";
   markerMenu.style.display = "block";
 }
 
@@ -413,6 +386,7 @@ mapContainer.addEventListener("click", (e) => {
 populateIconSelect();
 updateTransform();
 initFirebaseSync();
+
 
 
 

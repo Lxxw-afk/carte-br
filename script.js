@@ -372,9 +372,51 @@ window.addEventListener("click", () => {
 });
 
 /* ============================================================
-   CHARGEMENT INITIAL DES MARKERS
+   🔥 LISTENER TEMPS RÉEL FIRESTORE
+   (affiche les markers, les met à jour, et les supprime en live)
 ============================================================ */
-loadMarkersFromFirebase().catch(console.error);
+function listenMarkersRealtime() {
+  db.collection("markers").onSnapshot(snapshot => {
+
+    snapshot.docChanges().forEach(change => {
+
+      const doc = change.doc;
+      const d = doc.data();
+
+      // AJOUT
+      if (change.type === "added") {
+        addMarker(d.x, d.y, d.icon, d.name, doc.id);
+      }
+
+      // MODIFICATION
+      if (change.type === "modified") {
+        const marker = markers.find(m => m.dataset.id === doc.id);
+        if (marker) {
+          marker.dataset.x = d.x;
+          marker.dataset.y = d.y;
+          marker.dataset.icon = d.icon;
+          marker.title = d.name;
+          marker.src = "icons/" + d.icon;
+          updateMarkerDisplay();
+        }
+      }
+
+      // SUPPRESSION
+      if (change.type === "removed") {
+        const marker = markers.find(m => m.dataset.id === doc.id);
+        if (marker) {
+          marker.remove();
+          markers = markers.filter(m => m !== marker);
+        }
+      }
+
+    });
+  });
+}
+
+// ACTIVATION DU MODE TEMPS RÉEL
+listenMarkersRealtime();
+
 
 
 

@@ -300,26 +300,36 @@ function addMarker(x, y, icon, name, id = null) {
   });
 
 /* ============================================================
-   CLIC GAUCHE → POPUP AVEC TEXTE + PHOTOS
+   CLIC GAUCHE = POPUP AVEC 2 IMAGES + 2 TEXTES
 ============================================================ */
-img.addEventListener("click", async () => {
-  const doc = await db.collection("markers").doc(id).get();
-  const d = doc.data();
+img.addEventListener("click", async (e) => {
+  e.stopPropagation();
+
+  const docSnap = await db.collection("markers").doc(id).get();
+  const data = docSnap.data();
 
   const rect = img.getBoundingClientRect();
   const popup = document.getElementById("marker-popup");
 
-  document.getElementById("popup-text1").textContent = TEXT_1;
-  document.getElementById("popup-text2").textContent = TEXT_2;
+  document.getElementById("popup-text1").textContent = POINT;
+  document.getElementById("popup-text2").textContent = ENTRE;
 
-  document.getElementById("popup-img1").src = d.img1;
-  document.getElementById("popup-img2").src = d.img2;
+  document.getElementById("popup-img1").src = data.img1;
+  document.getElementById("popup-img2").src = data.img2;
 
   popup.style.left = (rect.left + rect.width / 2) + "px";
-  popup.style.top = (rect.top - 200) + "px";
+  popup.style.top = (rect.top - 220) + "px";
+
+  // Si popup déjà visible → toggle fermer
+  if (!popup.classList.contains("hidden")) {
+    popup.classList.add("hidden");
+    return;
+  }
 
   popup.classList.remove("hidden");
 });
+
+
 
    
   /* ============================================================
@@ -401,16 +411,17 @@ pointIcon.addEventListener("change", () => {
    VALIDATION POINT (ICI LE BOUTON EST BIEN validate-point)
 ============================================================ */
 document.getElementById("validate-point").addEventListener("click", async () => {
+
   if (!pointName.value || !pointIcon.value) {
     alert("Nom + Icône obligatoires !");
     return;
   }
 
-  // MODIFICATION
+  // MODE EDIT
   if (editMode && selectedMarker) {
     selectedMarker.title = pointName.value;
-    selectedMarker.src = "icons/" + pointIcon.value;
     selectedMarker.dataset.icon = pointIcon.value;
+    selectedMarker.src = "icons/" + pointIcon.value;
 
     await updateMarkerInFirebase(selectedMarker, {
       name: pointName.value,
@@ -423,18 +434,30 @@ document.getElementById("validate-point").addEventListener("click", async () => 
     return;
   }
 
-  // CREATION DU POINT DANS FIRESTORE
-const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
+  // -----------------------
+  // CREATION NOUVEAU POINT
+  // -----------------------
 
-// Upload des deux images dans Firebase Storage
-const img1URL = await uploadImageToStorage(uploadedImg1, "markers/" + id + "_1.png");
-const img2URL = await uploadImageToStorage(uploadedImg2, "markers/" + id + "_2.png");
+  const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
 
-// Mise à jour du document Firestore avec les 2 photos
-await db.collection("markers").doc(id).update({
-  img1: img1URL,
-  img2: img2URL
+  const img1URL = await uploadImageToStorage(uploadedImg1, "markers/" + id + "_1.png");
+  const img2URL = await uploadImageToStorage(uploadedImg2, "markers/" + id + "_2.png");
+
+  await db.collection("markers").doc(id).update({
+    img1: img1URL,
+    img2: img2URL
+  });
+
+  addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
+
+  pointMenu.classList.add("hidden");
+  step1.classList.add("hidden");
+
+  uploadedImg1 = null;
+  uploadedImg2 = null;
+
 });
+
 
 // afficher le marker sur la carte
 addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
@@ -491,9 +514,19 @@ moveBtn.addEventListener("click", () => {
 });
 
 /* Fermer menu clic droit si on clique ailleurs */
-window.addEventListener("click", () => {
-  if (!moveMode) markerMenu.style.display = "none";
+window.addEventListener("click", (e) => {
+  const popup = document.getElementById("marker-popup");
+
+  // Si on clique sur un marker → NE PAS fermer
+  if (e.target.classList.contains("marker")) return;
+
+  // Si on clique sur les images du popup → NE PAS fermer
+  if (e.target.classList.contains("popup-img")) return;
+
+  // Sinon → fermer
+  popup.classList.add("hidden");
 });
+
 
 /* ============================================================
    🔥 LISTENER TEMPS RÉEL FIRESTORE

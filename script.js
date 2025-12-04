@@ -52,9 +52,11 @@ const iconList = [
   "Munitions.png",
   "organes.png",
   "Weed.png",
-  "Heroine.png",   // 👈 Nouveau
-  "Entrepot.png"   // 👈 Nouveau
+  "Heroine.png",
+  "Entrepot.png",
+  "Metal.png"   // 👈 AJOUT ICI
 ];
+
 
 
 

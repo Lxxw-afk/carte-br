@@ -54,8 +54,10 @@ const iconList = [
   "Weed.png",
   "Heroine.png",
   "Entrepot.png",
-  "Metal.png",
-  "bijoux.png"   // 👈 AJOUT ICI
+  "metal.png",
+  "Bijoux.png",
+  "titane.png",   // 👈 AJOUT
+  "acier.png"     // 👈 AJOUT
 ];
 
 

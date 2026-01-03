@@ -19,6 +19,14 @@ try {
   db = firebase.firestore();
   firebaseReady = true;
   console.log("Firebase OK");
+   firebase.auth().signInAnonymously()
+  .then(() => {
+    console.log("Utilisateur authentifié anonymement");
+  })
+  .catch((error) => {
+    console.error("Erreur auth anonyme :", error);
+  });
+
 } catch (err) {
   console.warn("Firebase désactivé :", err);
 }

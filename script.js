@@ -65,7 +65,8 @@ const iconList = [
   "Metal.png",
   "bijoux.png",
   "Titane.png",   // 👈 AJOUT
-  "Acier.png"     // 👈 AJOUT
+  "Acier.png", 
+  "LSD.png",
 ];
 
 

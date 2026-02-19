@@ -1,45 +1,357 @@
+body {
+    margin: 0;
+    background: #003F87;
+    overflow: hidden;
+    font-family: Arial;
+}
+
+/* BARRE DU HAUT */
+#topbar {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 20px;
+    padding: 10px 20px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border-radius: 12px;
+    z-index: 2000;
+}
+
+#new-point-btn {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.15); /* léger transparent */
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    font-weight: 700;     /* GRAS */
+    text-transform: uppercase; /* MAJUSCULE */
+    transition: 0.2s;
+    backdrop-filter: blur(4px); /* flou léger, très propre */
+}
+
+#new-point-btn:hover {
+    background: rgba(255, 255, 255, 0.25); /* un peu plus clair au survol */
+}
+
+
+/* MESSAGE ÉTAPE 1 */
+#step1 {
 /* ===================== */
 /* 🔐 ÉCRAN CONNEXION */
 /* ===================== */
 #login-screen {
     position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 18px;
+    z-index: 3000;
     inset: 0;
     z-index: 100000;
 }
 
+.hidden {
+    display: none;
 .login-bg {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
+/* CARTE */
+#map-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+}
+
+#map-inner {
+    position: absolute;
+    transform-origin: 0 0;
+}
+
+#map {
+    pointer-events: none;
+    user-select: none;
+}
+
+/* MARQUEURS */
+.marker {
 .login-box {
     position: absolute;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    z-index: 4000;
+}
+
+/* MENU CONFIGURATION POINT (ÉTAPE 2) */
+#point-menu {
+    position: fixed;
+    bottom: 40px;
     top: 50%;
     left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.9);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    z-index: 5000;
+}
+
+.point-box {
     transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
+    gap: 10px;
+}
+
+.preview {
+    width: 40px;
+    height: 40px;
+    margin-top: 5px;
+}
+
+#marker-menu {
+    position: absolute;
+    background: #222;
+    border: 1px solid #555;
+    padding: 5px;
+    border-radius: 5px;
+    display: none;
+    flex-direction: column;
+    z-index: 99999;
     gap: 12px;
     width: 280px;
 }
 
+#marker-menu button {
+    background: #444;
+    color: white;
 .login-box input,
 .login-box button {
     padding: 12px;
     font-size: 16px;
     border-radius: 8px;
     border: none;
-}
-
-.login-box button {
-    background: #1e90ff;
-    color: white;
+    padding: 6px 12px;
+    text-align: left;
     cursor: pointer;
 }
 
+#marker-menu button:hover {
+    background: #666;
+}
+
+#marker-menu {
+    position: absolute;
+    background: #222;
+    border: 1px solid #555;
+    padding: 5px;
+    border-radius: 4px;
+    display: none;
+    z-index: 99999;
+    flex-direction: column;
+}
+
+#marker-menu button {
+    background: #444;
+.login-box button {
+    background: #1e90ff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    text-align: left;
+    cursor: pointer;
+}
+
+#marker-menu button:hover {
+    background: #666;
+}
+
+#credit-btn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: default; /* pas cliquable */
+    z-index: 9999;
+}
+
+#credit-btn:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+#marker-tooltip {
+    position: fixed;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+    pointer-events: none;
+    transform: translate(-50%, -10px);
+    z-index: 99999;
+}
+
+#marker-tooltip.hidden {
+    display: none;
+}
+
+.marker-tooltip {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.35); /* même transparence que ton bouton */
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: bold;   /* texte bien en gras */
+  transform: translate(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+  backdrop-filter: blur(4px); /* OPTIONNEL, pour un effet propre */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* léger contour transparent */
+  z-index: 10000;
+}
+
+/* TOOLTIP SOUS LE MARQUEUR */
+#tooltip {
+    position: fixed;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.35);
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
 #login-error {
     color: red;
     text-align: center;
     font-weight: bold;
+    pointer-events: none;
+    white-space: nowrap;
+    transform: translate(-50%, 0);
+    z-index: 99999;
+    backdrop-filter: blur(4px);
+}
+.login-body {
+  background: #0d2b4d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Arial;
+}
+
+.login-box {
+  background: #102f55;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  width: 300px;
+}
+
+.login-logo {
+  width: 120px;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background: #1e90ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#error {
+  color: #ff6b6b;
+  margin-top: 10px;
+}
+#tooltip.hidden {
+    display: none;
+    html, body {
+  margin: 0;
+  height: 100%;
+}
+
+/* LOGIN */
+#login-screen {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.background {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* CENTRAGE */
+.login-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 280px;
+}
+
+.login-box input,
+.login-box button {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+}
+
+.login-box button {
+  background: #1e90ff;
+  color: white;
+  cursor: pointer;
+}
+
+#error {
+  color: red;
+  text-align: center;
+}
+
+/* CARTE */
+#map-screen {
+  display: none;
+  width: 100%;
+  height: 100vh;
+}
+
+#map-screen iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
 }

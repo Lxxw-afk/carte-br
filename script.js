@@ -19,14 +19,6 @@ try {
   db = firebase.firestore();
   firebaseReady = true;
   console.log("Firebase OK");
-   firebase.auth().signInAnonymously()
-  .then(() => {
-    console.log("Utilisateur authentifié anonymement");
-  })
-  .catch((error) => {
-    console.error("Erreur auth anonyme :", error);
-  });
-
 } catch (err) {
   console.warn("Firebase désactivé :", err);
 }
@@ -59,19 +51,8 @@ const iconList = [
   "cocaine.png",
   "Munitions.png",
   "organes.png",
-  "Weed.png",
-  "Heroine.png",
-  "Entrepot.png",
-  "Metal.png",
-  "bijoux.png",
-  "Titane.png",   // 👈 AJOUT
-  "Acier.png", 
-  "LSD.png",
+  "Weed.png"
 ];
-
-
-
-
 
 iconList.forEach(icon => {
   const option = document.createElement("option");
@@ -99,22 +80,12 @@ let tempX = 0, tempY = 0;
 /* ============================================================
    DRAG
 ============================================================ */
-/* ============================================================
-🖱️ DRAG CARTE (clic gauche maintenu)
-============================================================ */
-
-let isDragging = false;
-let dragStartX = 0;
-let dragStartY = 0;
-
 mapContainer.addEventListener("mousedown", (e) => {
-  if (e.button !== 0) return; // clic gauche seulement
   if (waitingForPlacement || moveMode) return;
 
   isDragging = true;
   dragStartX = e.clientX - posX;
   dragStartY = e.clientY - posY;
-
   mapContainer.style.cursor = "grabbing";
 });
 
@@ -128,6 +99,7 @@ window.addEventListener("mousemove", (e) => {
 
   posX = e.clientX - dragStartX;
   posY = e.clientY - dragStartY;
+
   updateMap();
 });
 
@@ -169,17 +141,12 @@ function updateMarkerDisplay() {
     marker.style.left = (x * scale) + "px";
     marker.style.top = (y * scale) + "px";
 
- // Taille dynamique inversée : dézoom = grand, zoom = petit
-let size = 60 / scale;
+    let size = 45 / scale;
+    size = Math.max(25, size);
+    size = Math.min(60, size);
 
-// Limite min/max
-size = Math.max(20, size);  // taille mini quand très zoomé
-size = Math.min(55, size);  // taille maxi quand dézoomé
-
-marker.style.width = size + "px";
-marker.style.height = size + "px";
-
-     
+    marker.style.width = size + "px";
+    marker.style.height = size + "px";
   });
 }
 
@@ -233,31 +200,33 @@ function addMarker(x, y, icon, name, id = null) {
   img.dataset.icon = icon;
   if (id) img.dataset.id = id;
 
-  /* TOOLTIP SOUS LE MARQUEUR */
+  /* ============================================================
+     TOOLTIP AUTO-ADAPTÉ SELON TAILLE ET ZOOM
+  ============================================================ */
   img.addEventListener("mouseenter", () => {
-      const rect = img.getBoundingClientRect();
-      const h = rect.height;
 
-      tooltip.textContent = img.title;
-      tooltip.classList.remove("hidden");
+    const rect = img.getBoundingClientRect();
+    const markerHeight = rect.height;
 
-      tooltip.style.left = (rect.left + rect.width / 2) + "px";
-      tooltip.style.top = (rect.top + h + 6) + "px";
-  });
+    tooltip.textContent = img.title;
+    tooltip.className = "marker-tooltip";
+    tooltip.style.fontWeight = "bold"; // TEXTE EN GRAS
+     
+    // Position : centré + juste sous le marker selon sa taille réelle
+    tooltip.style.left = (rect.left + rect.width / 2) + "px";
+    tooltip.style.top = (rect.top + markerHeight + 6) + "px"; 
+    // +6 pour un petit espace, tu peux ajuster
 
-  img.addEventListener("mousemove", () => {
-      const rect = img.getBoundingClientRect();
-      const h = rect.height;
-
-      tooltip.style.left = (rect.left + rect.width / 2) + "px";
-      tooltip.style.top = (rect.top + h + 6) + "px";
+    tooltip.classList.remove("hidden");
   });
 
   img.addEventListener("mouseleave", () => {
-      tooltip.classList.add("hidden");
+    tooltip.classList.add("hidden");
   });
 
-  /* MENU CLIC DROIT */
+  /* ============================================================
+     MENU CLIC DROIT (inchangé)
+  ============================================================ */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     selectedMarker = img;
@@ -273,7 +242,6 @@ function addMarker(x, y, icon, name, id = null) {
 
   updateMarkerDisplay();
 }
-
 
 
 
@@ -305,7 +273,6 @@ mapContainer.addEventListener("click", (e) => {
     updateMarkerInFirebase(selectedMarker, { x, y });
     selectedMarker = null;
     return;
-    loginError.textContent = "Code d'accès incorrect";
   }
 
   // Placement nouveau point
@@ -462,10 +429,6 @@ function listenMarkersRealtime() {
 
 // ACTIVATION DU MODE TEMPS RÉEL
 listenMarkersRealtime();
-
-
-});
-
 
 
 

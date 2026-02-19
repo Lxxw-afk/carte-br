@@ -457,32 +457,40 @@ listenMarkersRealtime();
 /* ===================== */
 /* 🔐 SYSTÈME CONNEXION */
 /* ===================== */
-const ACCESS_CODE = "BRIGADE2026"; // change-le quand tu veux
+document.addEventListener("DOMContentLoaded", () => {
 
-const loginScreen = document.getElementById("login-screen");
-const app = document.getElementById("app");
-const loginBtn = document.getElementById("login-btn");
-const loginError = document.getElementById("login-error");
+  const ACCESS_CODE = "BRIGADE2026"; // change-le quand tu veux
 
-loginBtn.addEventListener("click", () => {
-  const value = document.getElementById("access-code").value;
+  const loginScreen = document.getElementById("login-screen");
+  const app = document.getElementById("app");
+  const loginBtn = document.getElementById("login-btn");
+  const loginError = document.getElementById("login-error");
+  const accessInput = document.getElementById("access-code");
 
-  if (value === ACCESS_CODE) {
-    // Cache l'écran de connexion
-    loginScreen.style.display = "none";
-
-    // Affiche l'application (la carte)
-    app.classList.remove("hidden");
-
-    // 🔥 IMPORTANT — redonne le contrôle souris
-    document.body.style.pointerEvents = "auto";
-    document.body.style.cursor = "grab";
-
-    // Nettoie message d'erreur
-    loginError.textContent = "";
-  } else {
-    loginError.textContent = "Code d'accès incorrect";
+  if (!loginBtn || !loginScreen || !app) {
+    console.error("Éléments login manquants dans le DOM");
+    return;
   }
+
+  loginBtn.addEventListener("click", () => {
+    const value = accessInput.value.trim();
+
+    if (value === ACCESS_CODE) {
+      loginScreen.style.display = "none";
+      app.classList.remove("hidden");
+
+      // IMPORTANT : réactiver le drag après connexion
+      setTimeout(() => {
+        if (typeof enableMapDrag === "function") {
+          enableMapDrag();
+        }
+      }, 50);
+
+    } else {
+      loginError.textContent = "Code d'accès incorrect";
+    }
+  });
+
 });
 
 

@@ -179,28 +179,29 @@ function addMarker(x, y, icon, name, id = null) {
   if (id) img.dataset.id = id;
 
   /* TOOLTIP SOUS LE MARQUEUR */
-  img.addEventListener("mouseenter", () => {
-      const rect = img.getBoundingClientRect();
-      const h = rect.height;
+ // === TOOLTIP SOUS LE POINT (nom du point) ===
+img.addEventListener("mouseenter", () => {
+    const rect = img.getBoundingClientRect();
+    const h = rect.height;
 
-      tooltip.textContent = img.title;
-      tooltip.classList.remove("hidden");
+    tooltip.textContent = img.title;
+    tooltip.classList.remove("hidden");
 
-      tooltip.style.left = (rect.left + rect.width / 2) + "px";
-      tooltip.style.top = (rect.top + h + 6) + "px";
-  });
+    tooltip.style.left = (rect.left + rect.width / 2) + "px";
+    tooltip.style.top = (rect.top + h + 6) + "px";
+});
 
-  img.addEventListener("mousemove", () => {
-      const rect = img.getBoundingClientRect();
-      const h = rect.height;
+img.addEventListener("mousemove", () => {
+    const rect = img.getBoundingClientRect();
+    const h = rect.height;
 
-      tooltip.style.left = (rect.left + rect.width / 2) + "px";
-      tooltip.style.top = (rect.top + h + 6) + "px";
-  });
+    tooltip.style.left = (rect.left + rect.width / 2) + "px";
+    tooltip.style.top = (rect.top + h + 6) + "px";
+});
 
-  img.addEventListener("mouseleave", () => {
-      tooltip.classList.add("hidden");
-  });
+img.addEventListener("mouseleave", () => {
+    tooltip.classList.add("hidden");
+});
 
   /* MENU CLIC DROIT */
   img.addEventListener("contextmenu", (e) => {

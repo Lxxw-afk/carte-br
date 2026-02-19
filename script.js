@@ -56,7 +56,9 @@ const iconList = [
   "Entrepot.png",
    "Heroine.png",
    "LSD.png",
-   "Metal.png"
+   "Metal.png",
+   "Titane.png",
+   "bijoux.png"
 ];
 
 iconList.forEach(icon => {

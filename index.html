@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <body>
+
+  <!-- ÉCRAN LOGIN -->
+  <div id="login-screen">
+    <img src="Sans titre (4).png" class="background">
+
+    <div class="login-box">
+      <input type="password" id="password" placeholder="Code d'accès">
+      <button onclick="checkPassword()">Connexion</button>
+      <p id="error"></p>
+    </div>
+  </div>
+
+  <!-- CARTE (cachée au départ) -->
+  <div id="map-screen">
+    <!-- ICI ta carte -->
+    <iframe src="map.html"></iframe>
+  </div>
+
+<script src="script.js"></script>
+</body>
   <meta charset="UTF-8">
   <title>Accès sécurisé</title>
   <link rel="stylesheet" href="style.css">

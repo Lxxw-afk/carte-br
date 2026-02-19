@@ -468,8 +468,18 @@ loginBtn.addEventListener("click", () => {
   const value = document.getElementById("access-code").value;
 
   if (value === ACCESS_CODE) {
+    // Cache l'écran de connexion
     loginScreen.style.display = "none";
+
+    // Affiche l'application (la carte)
     app.classList.remove("hidden");
+
+    // 🔥 IMPORTANT — redonne le contrôle souris
+    document.body.style.pointerEvents = "auto";
+    document.body.style.cursor = "grab";
+
+    // Nettoie message d'erreur
+    loginError.textContent = "";
   } else {
     loginError.textContent = "Code d'accès incorrect";
   }

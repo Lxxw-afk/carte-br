@@ -99,12 +99,22 @@ let tempX = 0, tempY = 0;
 /* ============================================================
    DRAG
 ============================================================ */
+/* ============================================================
+🖱️ DRAG CARTE (clic gauche maintenu)
+============================================================ */
+
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+
 mapContainer.addEventListener("mousedown", (e) => {
+  if (e.button !== 0) return; // clic gauche seulement
   if (waitingForPlacement || moveMode) return;
 
   isDragging = true;
   dragStartX = e.clientX - posX;
   dragStartY = e.clientY - posY;
+
   mapContainer.style.cursor = "grabbing";
 });
 
@@ -118,7 +128,6 @@ window.addEventListener("mousemove", (e) => {
 
   posX = e.clientX - dragStartX;
   posY = e.clientY - dragStartY;
-
   updateMap();
 });
 

@@ -457,7 +457,18 @@ listenMarkersRealtime();
 /* ===================== */
 /* 🔐 SYSTÈME CONNEXION */
 /* ===================== */
-document.addEventListener("DOMContentLoaded", () => { alert("SCRIPT BIEN CHARGÉ");
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("login-btn");
+
+  if (!btn) {
+    alert("BOUTON INTROUVABLE");
+    return;
+  }
+
+  btn.addEventListener("click", () => {
+    alert("BOUTON CLIQUÉ");
+  });
+});
 
   const ACCESS_CODE = "BRIGADE2026"; // change-le quand tu veux
 

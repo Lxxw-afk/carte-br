@@ -458,52 +458,30 @@ listenMarkersRealtime();
 /* 🔐 SYSTÈME CONNEXION */
 /* ===================== */
 document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("login-btn");
-
-  if (!btn) {
-    alert("BOUTON INTROUVABLE");
-    return;
-  }
-
-  btn.addEventListener("click", () => {
-    alert("BOUTON CLIQUÉ");
-  });
-});
-
   const ACCESS_CODE = "BRIGADE2026"; // change-le quand tu veux
 
   const loginScreen = document.getElementById("login-screen");
   const app = document.getElementById("app");
   const loginBtn = document.getElementById("login-btn");
   const loginError = document.getElementById("login-error");
-  const accessInput = document.getElementById("access-code");
+  const input = document.getElementById("access-code");
 
-  if (!loginBtn || !loginScreen || !app) {
-    console.error("Éléments login manquants dans le DOM");
+  if (!loginBtn) {
+    console.error("❌ Bouton connexion introuvable");
     return;
   }
 
   loginBtn.addEventListener("click", () => {
-    const value = accessInput.value.trim();
+    const value = input.value.trim();
 
     if (value === ACCESS_CODE) {
       loginScreen.style.display = "none";
-      app.classList.remove("hidden");
-
-      // IMPORTANT : réactiver le drag après connexion
-      setTimeout(() => {
-        if (typeof enableMapDrag === "function") {
-          enableMapDrag();
-        }
-      }, 50);
-
+      app.style.display = "block";
     } else {
       loginError.textContent = "Code d'accès incorrect";
     }
   });
-
 });
-
 
 
 

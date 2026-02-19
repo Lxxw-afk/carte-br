@@ -1,4 +1,15 @@
-/* ============================================================
+const PASSWORD = "BRIGADE2026"; // ← change-le quand tu veux
+
+function checkPassword() {
+  const input = document.getElementById("password").value;
+
+  if (input === PASSWORD) {
+    sessionStorage.setItem("access", "true");
+    window.location.href = "map.html";
+  } else {
+    document.getElementById("error").innerText = "Code incorrect";
+  }
+}/* ============================================================
    🔥 FIREBASE INIT (avec fallback si ça plante)
 ============================================================ */
 let db = null;

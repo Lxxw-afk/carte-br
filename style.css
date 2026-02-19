@@ -268,4 +268,65 @@ button {
 }
 #tooltip.hidden {
     display: none;
+    html, body {
+  margin: 0;
+  height: 100%;
+}
+
+/* LOGIN */
+#login-screen {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.background {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* CENTRAGE */
+.login-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 280px;
+}
+
+.login-box input,
+.login-box button {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+}
+
+.login-box button {
+  background: #1e90ff;
+  color: white;
+  cursor: pointer;
+}
+
+#error {
+  color: red;
+  text-align: center;
+}
+
+/* CARTE */
+#map-screen {
+  display: none;
+  width: 100%;
+  height: 100vh;
+}
+
+#map-screen iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
 }

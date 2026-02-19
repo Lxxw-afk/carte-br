@@ -343,7 +343,47 @@ function listenRealtime() {
   });
 }
 
-listenRealtime();
+function listenRealtime() {
+  if (!firebaseReady) return;
+
+  db.collection("markers").onSnapshot(snapshot => {
+
+    snapshot.docChanges().forEach(change => {
+
+      const doc = change.doc;
+      const data = doc.data();
+
+      // ➕ AJOUT
+      if (change.type === "added") {
+        addMarker(data.x, data.y, data.icon, data.name, doc.id);
+      }
+
+      // ✏ MODIFICATION
+      if (change.type === "modified") {
+        const marker = markers.find(m => m.dataset.id === doc.id);
+        if (marker) {
+          marker.dataset.x = data.x;
+          marker.dataset.y = data.y;
+          marker.dataset.icon = data.icon;
+          marker.title = data.name;
+          marker.src = "icons/" + data.icon;
+          updateMarkerDisplay();
+        }
+      }
+
+      // 🗑 SUPPRESSION
+      if (change.type === "removed") {
+        const marker = markers.find(m => m.dataset.id === doc.id);
+        if (marker) {
+          marker.remove();
+          markers = markers.filter(m => m !== marker);
+        }
+      }
+
+    });
+
+  });
+}
 
 
 

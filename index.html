@@ -1,53 +1,30 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <body>
-
-  <!-- ÉCRAN LOGIN -->
-  <div id="login-screen">
-    <img src="Sans titre (4).png" class="background">
-
-    <div class="login-box">
-      <input type="password" id="password" placeholder="Code d'accès">
-      <button onclick="checkPassword()">Connexion</button>
-      <p id="error"></p>
-    </div>
-  </div>
-
-  <!-- CARTE (cachée au départ) -->
-  <div id="map-screen">
-    <!-- ICI ta carte -->
-    <iframe src="map.html"></iframe>
-  </div>
-
-<script src="script.js"></script>
-</body>
-  <meta charset="UTF-8">
-  <title>Accès sécurisé</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body class="login-body">
-
-  <div class="login-box">
-    <img src="logo.png" class="login-logo">
-    <h2>Accès à la carte</h2>
-
-    <input type="password" id="password" placeholder="Code d'accès">
-    <button onclick="checkPassword()">Connexion</button>
-
-    <p id="error"></p>
-  </div>
-
-  <script src="script.js"></script>
-</body>
-</html>
-<head>
     <meta charset="UTF-8" />
-    <title>BRIGADE DE RECHERCHE </title>
+    <title>BRIGADE DE RECHERCHE</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+
+<!-- ===================== -->
+<!-- 🔐 ÉCRAN CONNEXION -->
+<!-- ===================== -->
+<div id="login-screen">
+    <img src="images/Brigade2recherches.png" class="login-bg" alt="Connexion">
+
+    <div class="login-box">
+        <input type="password" id="access-code" placeholder="Code d'accès">
+        <button id="login-btn">Connexion</button>
+        <p id="login-error"></p>
+    </div>
+</div>
+
+<!-- ===================== -->
+<!-- 🗺️ APPLICATION -->
+<!-- ===================== -->
+<div id="app" class="hidden">
 
     <!-- BARRE DU HAUT -->
     <div id="topbar">
@@ -71,7 +48,7 @@
         <div id="marker-layer"></div>
     </div>
 
-    <!-- MENU ÉTAPE 2 : NOM + ICÔNE -->
+    <!-- MENU ÉTAPE 2 -->
     <div id="point-menu" class="hidden">
         <div class="point-box">
             <h3>Configurer le point</h3>
@@ -84,13 +61,13 @@
                 <option value="">Choisir...</option>
             </select>
 
-            <img id="icon-preview" class="preview hidden" src="">
+            <img id="icon-preview" class="preview hidden">
 
             <button id="validate-point">Valider</button>
             <button id="cancel-point">Annuler</button>
         </div>
     </div>
-    
+
     <!-- MENU CLIC DROIT -->
     <div id="marker-menu" class="hidden">
         <button id="edit-marker">Modifier</button>
@@ -98,16 +75,16 @@
         <button id="delete-marker">Supprimer</button>
     </div>
 
-    <!-- TOOLTIP : NOM DU POINT -->
+    <!-- TOOLTIP -->
     <div id="tooltip" class="hidden"></div>
+
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
 <script src="script.js"></script>
-
-
 </body>
 </html>
 

@@ -467,32 +467,30 @@ listenMarkersRealtime();
 /* 🔐 SYSTÈME CONNEXION */
 /* ===================== */
 document.addEventListener("DOMContentLoaded", () => {
-  const ACCESS_CODE = "BRIGADE2026"; // change-le quand tu veux
+ const ACCESS_CODE = "BRIGADE2026";
 
-  const loginScreen = document.getElementById("login-screen");
-  const app = document.getElementById("app");
-  const loginBtn = document.getElementById("login-btn");
-  const loginError = document.getElementById("login-error");
-  const input = document.getElementById("access-code");
+const loginScreen = document.getElementById("login-screen");
+const app = document.getElementById("app");
+const loginBtn = document.getElementById("login-btn");
+const loginError = document.getElementById("login-error");
 
-  if (!loginBtn) {
-    console.error("❌ Bouton connexion introuvable");
-    return;
+loginBtn.addEventListener("click", () => {
+  const value = document.getElementById("access-code").value;
+
+  if (value === ACCESS_CODE) {
+    loginScreen.style.display = "none";
+    app.classList.remove("hidden");
+    app.style.display = "block";
+
+    // 🔥 IMPORTANT : reset curseur + drag
+    mapContainer.style.cursor = "grab";
+
+    // 🔥 forcer affichage du bouton nouveau point
+    document.getElementById("new-point-btn").style.display = "block";
+  } else {
+    loginError.textContent = "Code d'accès incorrect";
   }
-
-  loginBtn.addEventListener("click", () => {
-    const value = input.value.trim();
-
-    if (value === ACCESS_CODE) {
-      loginScreen.style.display = "none";
-      app.style.display = "block";
-    } else {
-      loginError.textContent = "Code d'accès incorrect";
-    }
-  });
 });
-
-
 
 
 

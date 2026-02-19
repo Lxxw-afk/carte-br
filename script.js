@@ -1,11 +1,11 @@
-const PASSWORD = "BRIGADE2026"; // ← change-le quand tu veux
+const PASSWORD = "BRIGADE2026";
 
 function checkPassword() {
   const input = document.getElementById("password").value;
 
   if (input === PASSWORD) {
-    sessionStorage.setItem("access", "true");
-    window.location.href = "map.html";
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("map-screen").style.display = "block";
   } else {
     document.getElementById("error").innerText = "Code incorrect";
   }

@@ -8,18 +8,12 @@
 
 <body>
 
-<!-- ===================== -->
-<!-- 🗺️ APPLICATION -->
-<!-- ===================== -->
-<div id="app" class="hidden">
-
     <!-- BARRE DU HAUT -->
     <div id="topbar">
-        <h1> BRIGADE DE RECHERCHE </h1>
-        <button id="new-point-btn">NOUVEAU POINT</button>
+        <h1>BRIGADE DE RECHERCHE</h1>
+        <button id="new-point-btn">Nouveau point</button>
     </div>
-
-    <button id="credit-btn">Créé par Julien Flament | Lxxw.</button>
+<button id="credit-btn">Créé par Lxxw</button>
 
     <!-- MESSAGE : étape 1 -->
     <div id="step1" class="hidden">
@@ -35,7 +29,7 @@
         <div id="marker-layer"></div>
     </div>
 
-    <!-- MENU ÉTAPE 2 -->
+    <!-- MENU ÉTAPE 2 : NOM + ICÔNE -->
     <div id="point-menu" class="hidden">
         <div class="point-box">
             <h3>Configurer le point</h3>
@@ -48,33 +42,40 @@
                 <option value="">Choisir...</option>
             </select>
 
-            <img id="icon-preview" class="preview hidden">
+            <img id="icon-preview" class="preview hidden" src="">
 
             <button id="validate-point">Valider</button>
             <button id="cancel-point">Annuler</button>
         </div>
     </div>
-
-    <!-- MENU CLIC DROIT -->
-    <div id="marker-menu" class="hidden">
-        <button id="edit-marker">Modifier</button>
-        <button id="move-marker">Déplacer</button>
-        <button id="delete-marker">Supprimer</button>
-    </div>
-
-    <!-- TOOLTIP -->
-    <div id="tooltip" class="hidden"></div>
-
+    
+<!-- MENU CLIC DROIT -->
+<div id="marker-menu" class="hidden">
+    <button id="edit-marker">Modifier</button>
+    <button id="move-marker">Déplacer</button>
+    <button id="delete-marker">Supprimer</button>
 </div>
-
+<!-- Firebase compat (adapté à GitHub Pages) -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
+    <script src="script.js"></script>
+<!-- Firebase v8 (compat) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<!-- Ton script -->
 <script src="script.js"></script>
+
+    <div id="marker-menu" class="hidden">
+    <button id="edit-marker">Modifier</button>
+    <button id="move-marker">Déplacer</button>
+    <button id="delete-marker">Supprimer</button>
+</div>
+<div id="marker-tooltip" class="hidden"></div>
+
 </body>
 </html>
-
 
 
 

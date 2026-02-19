@@ -463,33 +463,7 @@ function listenMarkersRealtime() {
 // ACTIVATION DU MODE TEMPS RÉEL
 listenMarkersRealtime();
 
-/* ===================== */
-/* 🔐 SYSTÈME CONNEXION */
-/* ===================== */
-document.addEventListener("DOMContentLoaded", () => {
-  const ACCESS_CODE = "BRIGADE2026"; // change-le quand tu veux
 
-  const loginScreen = document.getElementById("login-screen");
-  const app = document.getElementById("app");
-  const loginBtn = document.getElementById("login-btn");
-  const loginError = document.getElementById("login-error");
-  const input = document.getElementById("access-code");
-
-  if (!loginBtn) {
-    console.error("❌ Bouton connexion introuvable");
-    return;
-  }
-
-  loginBtn.addEventListener("click", () => {
-    const value = input.value.trim();
-
-    if (value === ACCESS_CODE) {
-      loginScreen.style.display = "none";
-      app.style.display = "block";
-    } else {
-      loginError.textContent = "Code d'accès incorrect";
-    }
-  });
 });
 
 

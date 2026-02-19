@@ -221,7 +221,51 @@ body {
     z-index: 99999;
     backdrop-filter: blur(4px);
 }
+.login-body {
+  background: #0d2b4d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Arial;
+}
 
+.login-box {
+  background: #102f55;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  width: 300px;
+}
+
+.login-logo {
+  width: 120px;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background: #1e90ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#error {
+  color: #ff6b6b;
+  margin-top: 10px;
+}
 #tooltip.hidden {
     display: none;
 }

@@ -457,7 +457,7 @@ listenMarkersRealtime();
 /* ===================== */
 /* 🔐 SYSTÈME CONNEXION */
 /* ===================== */
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => { alert("SCRIPT BIEN CHARGÉ");
 
   const ACCESS_CODE = "BRIGADE2026"; // change-le quand tu veux
 

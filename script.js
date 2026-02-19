@@ -43,7 +43,7 @@ const deleteBtn = document.getElementById("delete-marker");
 const tooltip = document.getElementById("tooltip");
 
 /* ============================================================
-   ICONES DISPONIBLES
+   ICONES
 ============================================================ */
 const iconList = [
   "Meth.png",
@@ -51,7 +51,7 @@ const iconList = [
   "Munitions.png",
   "organes.png",
   "Weed.png",
-  "Entrepot.png" // ajout Entrepôt
+  "Entrepot.png"
 ];
 
 iconList.forEach(icon => {
@@ -66,8 +66,10 @@ iconList.forEach(icon => {
 ============================================================ */
 let posX = 0, posY = 0;
 let scale = 1;
+
 let isDragging = false;
-let dragStartX = 0, dragStartY = 0;
+let dragStartX = 0;
+let dragStartY = 0;
 
 let waitingForPlacement = false;
 let moveMode = false;
@@ -75,13 +77,15 @@ let editMode = false;
 
 let selectedMarker = null;
 let markers = [];
-let tempX = 0, tempY = 0;
+
+let tempX = 0;
+let tempY = 0;
 
 /* ============================================================
-   DRAG STYLE GOOGLE MAPS
+   DRAG GOOGLE MAPS
 ============================================================ */
 mapContainer.addEventListener("mousedown", (e) => {
-  if (waitingForPlacement || moveMode) return;
+  if (e.button !== 0) return;
   isDragging = true;
   dragStartX = e.clientX - posX;
   dragStartY = e.clientY - posY;
@@ -108,6 +112,7 @@ mapContainer.addEventListener("wheel", (e) => {
 
   const oldScale = scale;
   const zoom = 0.1;
+
   scale += (e.deltaY < 0 ? zoom : -zoom);
   scale = Math.max(0.5, Math.min(4, scale));
 
@@ -121,7 +126,7 @@ mapContainer.addEventListener("wheel", (e) => {
 });
 
 /* ============================================================
-   MISE À JOUR AFFICHAGE CARTE + MARKERS
+   UPDATE MAP
 ============================================================ */
 function updateMap() {
   mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
@@ -133,11 +138,13 @@ function updateMarkerDisplay() {
   markers.forEach(marker => {
     const x = parseFloat(marker.dataset.x);
     const y = parseFloat(marker.dataset.y);
+
     marker.style.left = (x * scale) + "px";
     marker.style.top = (y * scale) + "px";
 
     let size = 45 / scale;
     size = Math.max(25, Math.min(60, size));
+
     marker.style.width = size + "px";
     marker.style.height = size + "px";
   });
@@ -165,7 +172,7 @@ async function deleteMarkerInFirebase(marker) {
 }
 
 /* ============================================================
-   AJOUT D’UN MARQUEUR
+   ADD MARKER
 ============================================================ */
 function addMarker(x, y, icon, name, id = null) {
   const img = document.createElement("img");
@@ -178,37 +185,30 @@ function addMarker(x, y, icon, name, id = null) {
   img.dataset.icon = icon;
   if (id) img.dataset.id = id;
 
-  /* TOOLTIP SOUS LE MARQUEUR */
- // === TOOLTIP SOUS LE POINT (nom du point) ===
-img.addEventListener("mouseenter", () => {
+  /* TOOLTIP */
+  img.addEventListener("mouseenter", () => {
     const rect = img.getBoundingClientRect();
-    const h = rect.height;
-
     tooltip.textContent = img.title;
     tooltip.classList.remove("hidden");
 
     tooltip.style.left = (rect.left + rect.width / 2) + "px";
-    tooltip.style.top = (rect.top + h + 6) + "px";
-});
+    tooltip.style.top = (rect.top + rect.height + 6) + "px";
+  });
 
-img.addEventListener("mousemove", () => {
+  img.addEventListener("mousemove", () => {
     const rect = img.getBoundingClientRect();
-    const h = rect.height;
-
     tooltip.style.left = (rect.left + rect.width / 2) + "px";
-    tooltip.style.top = (rect.top + h + 6) + "px";
-});
+    tooltip.style.top = (rect.top + rect.height + 6) + "px";
+  });
 
-img.addEventListener("mouseleave", () => {
+  img.addEventListener("mouseleave", () => {
     tooltip.classList.add("hidden");
-});
+  });
 
   /* MENU CLIC DROIT */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     selectedMarker = img;
-    moveMode = false;
-
     markerMenu.style.left = e.pageX + "px";
     markerMenu.style.top = e.pageY + "px";
     markerMenu.style.display = "flex";
@@ -216,47 +216,44 @@ img.addEventListener("mouseleave", () => {
 
   markerLayer.appendChild(img);
   markers.push(img);
-
   updateMarkerDisplay();
 }
 
 /* ============================================================
-   BOUTON NOUVEAU POINT
+   NEW POINT
 ============================================================ */
 document.getElementById("new-point-btn").addEventListener("click", () => {
   waitingForPlacement = true;
+  moveMode = false;
+  editMode = false;
+  selectedMarker = null;
   step1.classList.remove("hidden");
 });
 
 /* ============================================================
-   CLICK SUR LA CARTE
+   MAP CLICK
 ============================================================ */
 mapContainer.addEventListener("click", (e) => {
   if (isDragging) return;
 
-  // Déplacement d'un marqueur
-  if (moveMode && selectedMarker) {
-    const rect = mapContainer.getBoundingClientRect();
-    const x = (e.clientX - rect.left - posX) / scale;
-    const y = (e.clientY - rect.top - posY) / scale;
+  const rect = mapContainer.getBoundingClientRect();
+  const x = (e.clientX - rect.left - posX) / scale;
+  const y = (e.clientY - rect.top - posY) / scale;
 
+  if (moveMode && selectedMarker) {
     selectedMarker.dataset.x = x;
     selectedMarker.dataset.y = y;
-
     updateMarkerDisplay();
     updateMarkerInFirebase(selectedMarker, { x, y });
-
     moveMode = false;
     selectedMarker = null;
     return;
   }
 
-  // Placement nouveau point
   if (!waitingForPlacement) return;
 
-  const rect = mapContainer.getBoundingClientRect();
-  tempX = (e.clientX - rect.left - posX) / scale;
-  tempY = (e.clientY - rect.top - posY) / scale;
+  tempX = x;
+  tempY = y;
 
   waitingForPlacement = false;
   step1.classList.add("hidden");
@@ -264,19 +261,7 @@ mapContainer.addEventListener("click", (e) => {
 });
 
 /* ============================================================
-   PREVIEW ICÔNE
-============================================================ */
-pointIcon.addEventListener("change", () => {
-  if (!pointIcon.value) {
-    iconPreview.classList.add("hidden");
-    return;
-  }
-  iconPreview.src = "icons/" + pointIcon.value;
-  iconPreview.classList.remove("hidden");
-});
-
-/* ============================================================
-   VALIDATION DU POINT
+   VALIDATE POINT
 ============================================================ */
 document.getElementById("validate-point").addEventListener("click", async () => {
   if (!pointName.value || !pointIcon.value) {
@@ -284,7 +269,6 @@ document.getElementById("validate-point").addEventListener("click", async () => 
     return;
   }
 
-  // MODE EDIT
   if (editMode && selectedMarker) {
     selectedMarker.title = pointName.value;
     selectedMarker.dataset.icon = pointIcon.value;
@@ -295,13 +279,12 @@ document.getElementById("validate-point").addEventListener("click", async () => 
       icon: pointIcon.value
     });
 
-    pointMenu.classList.add("hidden");
     editMode = false;
     selectedMarker = null;
+    pointMenu.classList.add("hidden");
     return;
   }
 
-  // CREATION
   const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
   addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
 
@@ -309,18 +292,7 @@ document.getElementById("validate-point").addEventListener("click", async () => 
 });
 
 /* ============================================================
-   ANNULER
-============================================================ */
-document.getElementById("cancel-point").addEventListener("click", () => {
-  pointMenu.classList.add("hidden");
-  selectedMarker = null;
-  waitingForPlacement = false;
-  editMode = false;
-  moveMode = false;
-});
-
-/* ============================================================
-   MENU CLIC DROIT ACTIONS
+   MENU ACTIONS
 ============================================================ */
 deleteBtn.addEventListener("click", async () => {
   if (!selectedMarker) return;
@@ -349,14 +321,14 @@ moveBtn.addEventListener("click", () => {
 });
 
 /* ============================================================
-   FERMER MENU CLIC DROIT SI ON CLIQUE AILLEURS
+   CLOSE MENU
 ============================================================ */
 window.addEventListener("click", () => {
   if (!moveMode) markerMenu.style.display = "none";
 });
 
 /* ============================================================
-   TEMPS RÉEL FIRESTORE
+   REALTIME FIRESTORE
 ============================================================ */
 function listenRealtime() {
   if (!firebaseReady) return;
@@ -372,8 +344,6 @@ function listenRealtime() {
 }
 
 listenRealtime();
-
-
 
 
 

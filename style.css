@@ -91,16 +91,25 @@ body {
 /* TOOLTIP SOUS LE MARQUEUR */
 #tooltip {
     position: fixed;
-    padding: 6px 10px;
-    background: rgba(0, 0, 0, 0.35);
+    padding: 6px 14px;
+
+    background: rgba(255, 255, 255, 0.15);
     color: white;
-    border-radius: 6px;
-    font-weight: bold;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+
     font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+
+    backdrop-filter: blur(4px);
+
     pointer-events: none;
     white-space: nowrap;
-    transform: translate(-50%, 0);
-    z-index: 99999;
+
+    transform: translate(-50%, -120%);
+    z-index: 999999;
 }
 
 #tooltip.hidden {
@@ -206,7 +215,7 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain; /* affiche l’image entièrement */
-    background: black;   /* fond noir propre */
+    background: white;   /* fond blanc propre */
 }
 
 /* Bloc connexion centré */

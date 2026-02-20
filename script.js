@@ -186,13 +186,29 @@ function addMarker(x, y, icon, name, id) {
   const img = document.createElement("img");
   img.src = "icons/" + icon;
   img.className = "marker";
-  img.title = name;
 
   img.dataset.x = x;
   img.dataset.y = y;
   img.dataset.icon = icon;
   img.dataset.id = id;
+  img.dataset.name = name;
 
+  /* TOOLTIP */
+  img.addEventListener("mouseenter", (e) => {
+    tooltip.textContent = img.dataset.name;
+    tooltip.classList.remove("hidden");
+  });
+
+  img.addEventListener("mousemove", (e) => {
+    tooltip.style.left = e.clientX + "px";
+    tooltip.style.top = e.clientY + "px";
+  });
+
+  img.addEventListener("mouseleave", () => {
+    tooltip.classList.add("hidden");
+  });
+
+  /* CLIC DROIT */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -208,7 +224,6 @@ function addMarker(x, y, icon, name, id) {
   markers.push(img);
   updateMarkerDisplay();
 }
-
 /* ============================================================
    NOUVEAU POINT
 ============================================================ */

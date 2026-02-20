@@ -188,3 +188,54 @@ body {
 #marker-menu button:hover {
     background: #666;
 }
+/* ================= LOGIN ================= */
+
+#login-screen {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: black;
+    z-index: 999999;
+    overflow: hidden;
+}
+
+#login-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#login-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 300px;
+}
+
+#login-box input {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+}
+
+#login-box button {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #007BFF;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#login-error {
+    color: red;
+    text-align: center;
+    font-weight: bold;
+}

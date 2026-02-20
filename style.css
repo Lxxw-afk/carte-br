@@ -259,19 +259,23 @@ body {
 ============================================================ */
 
 #marker-tooltip {
-    position: fixed;
-    padding: 6px 10px;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    border-radius: 6px;
-    font-size: 14px;
-    pointer-events: none;
-    transform: translate(-50%, -10px);
-    z-index: 99999;
+  position: fixed;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  pointer-events: none;
+  transform: translate(-50%, 0);
+  white-space: nowrap;
+  z-index: 99999;
 }
 
 #marker-tooltip.hidden {
-    display: none;
+  display: none;
 }
 
 .marker-tooltip {

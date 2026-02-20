@@ -90,7 +90,7 @@ body {
 
 #tooltip {
     position: fixed;
-    padding: 6px 14px;
+    padding: 5px 10px;
 
     background: rgba(255, 255, 255, 0.15);
     color: white;
@@ -98,8 +98,8 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 8px;
 
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 11px;      /* 🔥 plus petit */
+    font-weight: 600;     /* un peu moins lourd que bold */
     text-transform: uppercase;
 
     backdrop-filter: blur(4px);

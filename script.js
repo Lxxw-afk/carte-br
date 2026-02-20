@@ -146,8 +146,27 @@ mapContainer.addEventListener("wheel", (e) => {
 ============================================================ */
 
 function updateMap() {
+
+  const containerWidth = mapContainer.clientWidth;
+  const containerHeight = mapContainer.clientHeight;
+
+  const mapWidth = mapInner.offsetWidth * scale;
+  const mapHeight = mapInner.offsetHeight * scale;
+
+  // Calcul des limites
+  const minX = Math.min(0, containerWidth - mapWidth);
+  const minY = Math.min(0, containerHeight - mapHeight);
+
+  const maxX = 0;
+  const maxY = 0;
+
+  // Clamp (empêche de sortir de la carte)
+  posX = Math.max(minX, Math.min(maxX, posX));
+  posY = Math.max(minY, Math.min(maxY, posY));
+
   mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
   markerLayer.style.transform = `translate(${posX}px, ${posY}px)`;
+
   updateMarkerDisplay();
 }
 

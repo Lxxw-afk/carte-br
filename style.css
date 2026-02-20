@@ -192,11 +192,16 @@ body {
 
 #login-screen {
     position: fixed;
+    inset: 0;
     width: 100vw;
     height: 100vh;
-    background: black;
-    z-index: 999999;
-    overflow: hidden;
+    background: url"images/Brigade2recherches.png" no-repeat center center;
+    background-size: cover; /* 👈 image prend tout l'écran */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
 }
 
 #login-bg {

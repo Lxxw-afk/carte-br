@@ -195,11 +195,15 @@ body {
     inset: 0;
     width: 100vw;
     height: 100vh;
+
     background: url"images/Brigade2recherches.png" no-repeat center center;
-    background-size: cover; /* 👈 image prend tout l'écran */
+    background-size: contain;   /* 👈 IMPORTANT */
+    background-color: #0f2d4a;  /* couleur derrière si bandes */
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     z-index: 10000;
 }
 }

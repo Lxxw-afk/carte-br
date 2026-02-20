@@ -258,19 +258,34 @@ body {
    TOOLTIP NOM POINT
 ============================================================ */
 
-#tooltip {
+#marker-tooltip {
     position: fixed;
     padding: 6px 10px;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.8);
     color: white;
     border-radius: 6px;
     font-size: 14px;
     pointer-events: none;
-    white-space: nowrap;
-    transform: translate(-50%, -120%);
-    z-index: 999999;
+    transform: translate(-50%, -10px);
+    z-index: 99999;
 }
 
-.hidden {
+#marker-tooltip.hidden {
     display: none;
+}
+
+.marker-tooltip {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    transform: translate(-50%);
+    pointer-events: none;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 10000;
 }

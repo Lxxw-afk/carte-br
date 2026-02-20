@@ -28,9 +28,6 @@ const firebaseConfig = {
   apiKey: "AIzaSyAoiD4sgUaamp0SGOBvx3A7FGjw4E3K4TE",
   authDomain: "carte-br.firebaseapp.com",
   projectId: "carte-br",
-  storageBucket: "carte-br.firebasestorage.app",
-  messagingSenderId: "698417792662",
-  appId: "1:698417792662:web:4766a306741bc5c71724b7"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -48,7 +45,6 @@ const step1 = document.getElementById("step1");
 const pointMenu = document.getElementById("point-menu");
 const pointName = document.getElementById("point-name");
 const pointIcon = document.getElementById("point-icon");
-const iconPreview = document.getElementById("icon-preview");
 
 const markerMenu = document.getElementById("marker-menu");
 const editBtn = document.getElementById("edit-marker");
@@ -93,7 +89,7 @@ let markers = [];
 let tempX = 0, tempY = 0;
 
 /* ============================================================
-   DRAG GOOGLE MAPS
+   DRAG (GOOGLE MAP STYLE)
 ============================================================ */
 
 mapContainer.addEventListener("mousedown", (e) => {
@@ -162,22 +158,6 @@ function updateMarkerDisplay() {
 }
 
 /* ============================================================
-   FIREBASE LISTENER TEMPS REEL (PROPRE)
-============================================================ */
-
-db.collection("markers").onSnapshot(snapshot => {
-
-  markers.forEach(m => m.remove());
-  markers = [];
-
-  snapshot.forEach(doc => {
-    const d = doc.data();
-    addMarker(d.x, d.y, d.icon, d.name, doc.id);
-  });
-
-});
-
-/* ============================================================
    FIREBASE HELPERS
 ============================================================ */
 
@@ -200,7 +180,8 @@ async function deleteMarkerInFirebase(marker) {
    AJOUT MARKER
 ============================================================ */
 
-function addMarker(x, y, icon, name, id = null) {
+function addMarker(x, y, icon, name, id) {
+  if (markers.some(m => m.dataset.id === id)) return;
 
   const img = document.createElement("img");
   img.src = "icons/" + icon;
@@ -210,15 +191,17 @@ function addMarker(x, y, icon, name, id = null) {
   img.dataset.x = x;
   img.dataset.y = y;
   img.dataset.icon = icon;
-  if (id) img.dataset.id = id;
+  img.dataset.id = id;
 
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
     selectedMarker = img;
 
     markerMenu.style.left = e.pageX + "px";
     markerMenu.style.top = e.pageY + "px";
-    markerMenu.classList.remove("hidden");
+    markerMenu.style.display = "flex";
   });
 
   markerLayer.appendChild(img);
@@ -243,10 +226,14 @@ mapContainer.addEventListener("click", async (e) => {
     const x = (e.clientX - rect.left - posX) / scale;
     const y = (e.clientY - rect.top - posY) / scale;
 
+    selectedMarker.dataset.x = x;
+    selectedMarker.dataset.y = y;
+
     await updateMarkerInFirebase(selectedMarker, { x, y });
 
     moveMode = false;
     selectedMarker = null;
+    updateMarkerDisplay();
     return;
   }
 
@@ -266,10 +253,12 @@ mapContainer.addEventListener("click", async (e) => {
 ============================================================ */
 
 document.getElementById("validate-point").addEventListener("click", async () => {
-
   if (!pointName.value || !pointIcon.value) return;
 
   if (editMode && selectedMarker) {
+    selectedMarker.title = pointName.value;
+    selectedMarker.src = "icons/" + pointIcon.value;
+
     await updateMarkerInFirebase(selectedMarker, {
       name: pointName.value,
       icon: pointIcon.value
@@ -281,7 +270,8 @@ document.getElementById("validate-point").addEventListener("click", async () => 
     return;
   }
 
-  await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
+  const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
+  addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
 
   pointMenu.classList.add("hidden");
 });
@@ -292,31 +282,73 @@ document.getElementById("validate-point").addEventListener("click", async () => 
 
 deleteBtn.addEventListener("click", async () => {
   if (!selectedMarker) return;
+
   await deleteMarkerInFirebase(selectedMarker);
+  selectedMarker.remove();
+  markers = markers.filter(m => m !== selectedMarker);
+
   selectedMarker = null;
-  markerMenu.classList.add("hidden");
+  markerMenu.style.display = "none";
 });
 
 editBtn.addEventListener("click", () => {
   if (!selectedMarker) return;
+
   editMode = true;
   pointName.value = selectedMarker.title;
   pointIcon.value = selectedMarker.dataset.icon;
+
   pointMenu.classList.remove("hidden");
-  markerMenu.classList.add("hidden");
+  markerMenu.style.display = "none";
 });
 
 moveBtn.addEventListener("click", () => {
   if (!selectedMarker) return;
   moveMode = true;
-  markerMenu.classList.add("hidden");
+  markerMenu.style.display = "none";
 });
 
-window.addEventListener("click", () => {
-  if (!moveMode) markerMenu.classList.add("hidden");
+document.addEventListener("click", (e) => {
+  if (!markerMenu.contains(e.target)) {
+    markerMenu.style.display = "none";
+  }
 });
 
-document.addEventListener("contextmenu", (e) => {
-  console.log("CLIC DROIT GLOBAL détecté");
+/* ============================================================
+   TEMPS REEL FIRESTORE
+============================================================ */
+
+db.collection("markers").onSnapshot(snapshot => {
+
+  snapshot.docChanges().forEach(change => {
+
+    const doc = change.doc;
+    const d = doc.data();
+
+    if (change.type === "added") {
+      addMarker(d.x, d.y, d.icon, d.name, doc.id);
+    }
+
+    if (change.type === "modified") {
+      const marker = markers.find(m => m.dataset.id === doc.id);
+      if (marker) {
+        marker.dataset.x = d.x;
+        marker.dataset.y = d.y;
+        marker.title = d.name;
+        marker.src = "icons/" + d.icon;
+        updateMarkerDisplay();
+      }
+    }
+
+    if (change.type === "removed") {
+      const marker = markers.find(m => m.dataset.id === doc.id);
+      if (marker) {
+        marker.remove();
+        markers = markers.filter(m => m !== marker);
+      }
+    }
+
+  });
+
 });
 

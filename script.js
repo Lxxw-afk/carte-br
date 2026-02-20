@@ -172,14 +172,19 @@ function updateMap() {
 
 function updateMarkerDisplay() {
   markers.forEach(marker => {
+
     const x = parseFloat(marker.dataset.x);
     const y = parseFloat(marker.dataset.y);
 
     marker.style.left = (x * scale) + "px";
     marker.style.top = (y * scale) + "px";
 
-    let size = 45 / scale;
-    size = Math.max(25, Math.min(60, size));
+    // 🔥 Nouvelle taille plus discrète
+    let size = 28 / scale;
+
+    // limites propres
+    size = Math.max(18, Math.min(32, size));
+
     marker.style.width = size + "px";
     marker.style.height = size + "px";
   });

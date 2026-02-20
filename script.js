@@ -333,4 +333,9 @@ db.collection("markers").onSnapshot(snapshot => {
   });
 });
 
+listenRealtime();
+
+document.addEventListener("contextmenu", (e) => {
+  console.log("CLIC DROIT GLOBAL détecté");
+});
 

@@ -5,7 +5,8 @@ body {
     font-family: Arial;
 }
 
-/* BARRE DU HAUT */
+/* ================= TOP BAR ================= */
+
 #topbar {
     position: fixed;
     top: 10px;
@@ -21,23 +22,23 @@ body {
 
 #new-point-btn {
     padding: 6px 14px;
-    background: rgba(255, 255, 255, 0.15); /* léger transparent */
+    background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 6px;
     cursor: pointer;
     color: white;
-    font-weight: 700;     /* GRAS */
-    text-transform: uppercase; /* MAJUSCULE */
+    font-weight: 700;
+    text-transform: uppercase;
     transition: 0.2s;
-    backdrop-filter: blur(4px); /* flou léger, très propre */
+    backdrop-filter: blur(4px);
 }
 
 #new-point-btn:hover {
-    background: rgba(255, 255, 255, 0.25); /* un peu plus clair au survol */
+    background: rgba(255, 255, 255, 0.25);
 }
 
+/* ================= MESSAGE STEP ================= */
 
-/* MESSAGE ÉTAPE 1 */
 #step1 {
     position: fixed;
     bottom: 20px;
@@ -55,7 +56,8 @@ body {
     display: none;
 }
 
-/* CARTE */
+/* ================= MAP ================= */
+
 #map-container {
     width: 100vw;
     height: 100vh;
@@ -74,21 +76,18 @@ body {
     user-select: none;
 }
 
-#credit-btn {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: default;
-    z-index: 9999;
+/* ================= MARKERS ================= */
+
+.marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    z-index: 4000;
 }
 
-/* TOOLTIP SOUS LE MARQUEUR */
+/* ================= TOOLTIP STYLE (TRANSPARENT BUTTON STYLE) ================= */
+
 #tooltip {
     position: fixed;
     padding: 6px 14px;
@@ -116,16 +115,8 @@ body {
     display: none;
 }
 
-/* MARQUEURS */
-.marker {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    z-index: 4000;
-}
+/* ================= POINT MENU ================= */
 
-/* MENU CONFIGURATION POINT (ÉTAPE 2) */
 #point-menu {
     position: fixed;
     bottom: 40px;
@@ -150,29 +141,7 @@ body {
     margin-top: 5px;
 }
 
-#marker-menu {
-    position: absolute;
-    background: #222;
-    border: 1px solid #555;
-    padding: 5px;
-    border-radius: 5px;
-    display: none;
-    flex-direction: column;
-    z-index: 99999;
-}
-
-#marker-menu button {
-    background: #444;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    text-align: left;
-    cursor: pointer;
-}
-
-#marker-menu button:hover {
-    background: #666;
-}
+/* ================= RIGHT CLICK MENU ================= */
 
 #marker-menu {
     position: absolute;
@@ -181,8 +150,8 @@ body {
     padding: 5px;
     border-radius: 4px;
     display: none;
-    z-index: 99999;
     flex-direction: column;
+    z-index: 99999;
 }
 
 #marker-menu button {
@@ -197,9 +166,28 @@ body {
 #marker-menu button:hover {
     background: #666;
 }
-/* ============================================================
-   ECRAN DE CONNEXION
-============================================================ */
+
+/* ================= CREDIT ================= */
+
+#credit-btn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: default;
+    z-index: 9999;
+}
+
+#credit-btn:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+/* ================= LOGIN SCREEN ================= */
 
 #login-screen {
     position: fixed;
@@ -209,16 +197,15 @@ body {
     z-index: 99999;
 }
 
-/* Image plein écran 1920x1080 */
+/* Image 1920x1080 affichée entièrement */
 #login-screen img {
     position: absolute;
     width: 100%;
     height: 100%;
-    object-fit: contain; /* affiche l’image entièrement */
-    background: white;   /* fond blanc propre */
+    object-fit: contain;
+    background: white;
 }
 
-/* Bloc connexion centré */
 #login-box {
     position: absolute;
     top: 50%;
@@ -248,6 +235,7 @@ body {
     font-weight: bold;
     cursor: pointer;
 }
+
 #login-error {
     color: red;
     text-align: center;

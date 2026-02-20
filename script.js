@@ -51,6 +51,8 @@ const editBtn = document.getElementById("edit-marker");
 const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
+const markerTooltip = document.getElementById("marker-tooltip");
+
 /* ============================================================
    ICONES
 ============================================================ */
@@ -187,17 +189,46 @@ async function deleteMarkerInFirebase(marker) {
 ============================================================ */
 
 function addMarker(x, y, icon, name, id) {
+
   if (markers.some(m => m.dataset.id === id)) return;
 
   const img = document.createElement("img");
   img.src = "icons/" + icon;
   img.className = "marker";
-  img.title = name;
 
   img.dataset.x = x;
   img.dataset.y = y;
   img.dataset.icon = icon;
   img.dataset.id = id;
+
+  /* ============================
+     TOOLTIP STYLE BOUTON
+  ============================ */
+
+  img.addEventListener("mouseenter", () => {
+    const rect = img.getBoundingClientRect();
+
+    markerTooltip.textContent = name;
+    markerTooltip.classList.remove("hidden");
+
+    markerTooltip.style.left = rect.left + rect.width / 2 + "px";
+    markerTooltip.style.top = rect.top + rect.height + 8 + "px";
+  });
+
+  img.addEventListener("mousemove", () => {
+    const rect = img.getBoundingClientRect();
+
+    markerTooltip.style.left = rect.left + rect.width / 2 + "px";
+    markerTooltip.style.top = rect.top + rect.height + 8 + "px";
+  });
+
+  img.addEventListener("mouseleave", () => {
+    markerTooltip.classList.add("hidden");
+  });
+
+  /* ============================
+     CLIC DROIT
+  ============================ */
 
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
@@ -214,7 +245,6 @@ function addMarker(x, y, icon, name, id) {
   markers.push(img);
   updateMarkerDisplay();
 }
-
 /* ============================================================
    NOUVEAU POINT
 ============================================================ */

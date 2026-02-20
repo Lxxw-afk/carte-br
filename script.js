@@ -310,6 +310,25 @@ document.getElementById("validate-point").addEventListener("click", async () => 
 });
 
 /* ============================================================
+   ANNULER CONFIGURATION POINT
+============================================================ */
+
+document.getElementById("cancel-point").addEventListener("click", () => {
+
+  pointMenu.classList.add("hidden");
+  step1.classList.add("hidden");
+
+  waitingForPlacement = false;
+  editMode = false;
+  moveMode = false;
+  selectedMarker = null;
+
+  // Nettoyage des champs
+  pointName.value = "";
+  pointIcon.value = "";
+});
+
+/* ============================================================
    MENU ACTIONS
 ============================================================ */
 

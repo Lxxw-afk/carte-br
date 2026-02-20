@@ -195,6 +195,7 @@ function addMarker(x, y, icon, name, id) {
   const img = document.createElement("img");
   img.src = "icons/" + icon;
   img.className = "marker";
+  img.title = name; // 🔥 IMPORTANT
 
   img.dataset.x = x;
   img.dataset.y = y;
@@ -202,24 +203,28 @@ function addMarker(x, y, icon, name, id) {
   img.dataset.id = id;
 
   /* ============================
-     TOOLTIP STYLE BOUTON
+     TOOLTIP EXACT COMME AVANT
   ============================ */
 
   img.addEventListener("mouseenter", () => {
     const rect = img.getBoundingClientRect();
+    const markerHeight = rect.height;
 
-    markerTooltip.textContent = name;
+    markerTooltip.textContent = img.title;
+    markerTooltip.className = "marker-tooltip";
+
+    markerTooltip.style.left = (rect.left + rect.width / 2) + "px";
+    markerTooltip.style.top = (rect.top + markerHeight + 6) + "px";
+
     markerTooltip.classList.remove("hidden");
-
-    markerTooltip.style.left = rect.left + rect.width / 2 + "px";
-    markerTooltip.style.top = rect.top + rect.height + 8 + "px";
   });
 
   img.addEventListener("mousemove", () => {
     const rect = img.getBoundingClientRect();
+    const markerHeight = rect.height;
 
-    markerTooltip.style.left = rect.left + rect.width / 2 + "px";
-    markerTooltip.style.top = rect.top + rect.height + 8 + "px";
+    markerTooltip.style.left = (rect.left + rect.width / 2) + "px";
+    markerTooltip.style.top = (rect.top + markerHeight + 6) + "px";
   });
 
   img.addEventListener("mouseleave", () => {

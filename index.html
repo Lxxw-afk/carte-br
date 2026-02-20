@@ -8,6 +8,20 @@
 
 <body>
 
+<!-- ================= LOGIN SCREEN ================= -->
+<div id="login-screen">
+    <img src="images/Brigade2recherches" id="login-bg">
+
+    <div id="login-box">
+        <input type="password" id="access-code" placeholder="Code d'accès">
+        <button id="login-btn">Connexion</button>
+        <div id="login-error"></div>
+    </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" class="hidden">
+
     <!-- BARRE DU HAUT -->
     <div id="topbar">
         <h1>BRIGADE DE RECHERCHE</h1>
@@ -16,56 +30,48 @@
 
     <button id="credit-btn">Créé par Julien Flament | Lxxw.</button>
 
-    <!-- MESSAGE : étape 1 -->
     <div id="step1" class="hidden">
         👉 Cliquez sur la carte pour placer votre point.
     </div>
 
-    <!-- CONTENEUR CARTE -->
     <div id="map-container">
         <div id="map-inner">
             <img id="map" src="images/map.png" alt="Carte RP">
         </div>
-
         <div id="marker-layer"></div>
     </div>
 
-    <!-- MENU ÉTAPE 2 : NOM + ICÔNE -->
     <div id="point-menu" class="hidden">
         <div class="point-box">
             <h3>Configurer le point</h3>
-
             <label>Nom :</label>
             <input type="text" id="point-name">
-
             <label>Icône :</label>
             <select id="point-icon">
                 <option value="">Choisir...</option>
             </select>
-
             <img id="icon-preview" class="preview hidden" src="">
-
             <button id="validate-point">Valider</button>
             <button id="cancel-point">Annuler</button>
         </div>
     </div>
-    
-    <!-- MENU CLIC DROIT -->
+
     <div id="marker-menu" class="hidden">
         <button id="edit-marker">Modifier</button>
         <button id="move-marker">Déplacer</button>
         <button id="delete-marker">Supprimer</button>
     </div>
 
-    <!-- TOOLTIP : NOM DU POINT -->
     <div id="tooltip" class="hidden"></div>
 
-    <!-- Firebase compat (v9) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</div>
 
-    <!-- Script -->
-    <script src="script.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<script src="script.js"></script>
 
 </body>
 </html>

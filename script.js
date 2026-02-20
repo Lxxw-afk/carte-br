@@ -51,8 +51,8 @@ const editBtn = document.getElementById("edit-marker");
 const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
-const markerTooltip = document.getElementById("marker-tooltip");
 const tooltip = document.getElementById("tooltip");
+
 /* ============================================================
    ICONES
 ============================================================ */
@@ -64,12 +64,13 @@ const iconList = [
   "organes.png",
   "Weed.png",
   "Entrepot.png",
-   "Acier.png",
-   "Heroine.png",
-   "LSD.png",
-   "bijoux.png",
-   "Metal.png",
-   "Titane.png"
+  "Acier.png",
+  "Heroine.png",
+  "LSD.png",
+  "bijoux.png",
+  "Metal.png",
+  "Titane.png",
+   "QG.png"
 ];
 
 iconList.forEach(icon => {
@@ -97,7 +98,7 @@ let markers = [];
 let tempX = 0, tempY = 0;
 
 /* ============================================================
-   DRAG (GOOGLE MAP STYLE)
+   DRAG GOOGLE MAP STYLE
 ============================================================ */
 
 mapContainer.addEventListener("mousedown", (e) => {
@@ -202,16 +203,16 @@ function addMarker(x, y, icon, name, id) {
   img.dataset.id = id;
   img.dataset.name = name;
 
-  /* ===== TOOLTIP STYLE NOUVEAU POINT ===== */
+  /* ===== TOOLTIP FIXE SOUS LE POINT ===== */
 
   img.addEventListener("mouseenter", () => {
+    const rect = img.getBoundingClientRect();
+
     tooltip.textContent = img.dataset.name;
     tooltip.classList.remove("hidden");
-  });
 
-  img.addEventListener("mousemove", (e) => {
-    tooltip.style.left = e.clientX + "px";
-    tooltip.style.top = (e.clientY - 20) + "px";
+    tooltip.style.left = (rect.left + rect.width / 2) + "px";
+    tooltip.style.top = (rect.bottom + 8) + "px";
   });
 
   img.addEventListener("mouseleave", () => {
@@ -236,6 +237,7 @@ function addMarker(x, y, icon, name, id) {
 
   updateMarkerDisplay();
 }
+
 /* ============================================================
    NOUVEAU POINT
 ============================================================ */
@@ -246,9 +248,11 @@ document.getElementById("new-point-btn").addEventListener("click", () => {
 });
 
 mapContainer.addEventListener("click", async (e) => {
+
   if (isDragging) return;
 
   if (moveMode && selectedMarker) {
+
     const rect = mapContainer.getBoundingClientRect();
     const x = (e.clientX - rect.left - posX) / scale;
     const y = (e.clientY - rect.top - posY) / scale;
@@ -280,10 +284,12 @@ mapContainer.addEventListener("click", async (e) => {
 ============================================================ */
 
 document.getElementById("validate-point").addEventListener("click", async () => {
+
   if (!pointName.value || !pointIcon.value) return;
 
   if (editMode && selectedMarker) {
-    selectedMarker.title = pointName.value;
+
+    selectedMarker.dataset.name = pointName.value;
     selectedMarker.src = "icons/" + pointIcon.value;
 
     await updateMarkerInFirebase(selectedMarker, {
@@ -308,9 +314,11 @@ document.getElementById("validate-point").addEventListener("click", async () => 
 ============================================================ */
 
 deleteBtn.addEventListener("click", async () => {
+
   if (!selectedMarker) return;
 
   await deleteMarkerInFirebase(selectedMarker);
+
   selectedMarker.remove();
   markers = markers.filter(m => m !== selectedMarker);
 
@@ -319,10 +327,11 @@ deleteBtn.addEventListener("click", async () => {
 });
 
 editBtn.addEventListener("click", () => {
+
   if (!selectedMarker) return;
 
   editMode = true;
-  pointName.value = selectedMarker.title;
+  pointName.value = selectedMarker.dataset.name;
   pointIcon.value = selectedMarker.dataset.icon;
 
   pointMenu.classList.remove("hidden");
@@ -330,6 +339,7 @@ editBtn.addEventListener("click", () => {
 });
 
 moveBtn.addEventListener("click", () => {
+
   if (!selectedMarker) return;
   moveMode = true;
   markerMenu.style.display = "none";
@@ -356,16 +366,16 @@ db.collection("markers").onSnapshot(snapshot => {
       addMarker(d.x, d.y, d.icon, d.name, doc.id);
     }
 
-   if (change.type === "modified") {
-  const marker = markers.find(m => m.dataset.id === doc.id);
-  if (marker) {
-    marker.dataset.x = d.x;
-    marker.dataset.y = d.y;
-    marker.dataset.name = d.name;   // IMPORTANT
-    marker.src = "icons/" + d.icon;
-    updateMarkerDisplay();
-  }
-}
+    if (change.type === "modified") {
+      const marker = markers.find(m => m.dataset.id === doc.id);
+      if (marker) {
+        marker.dataset.x = d.x;
+        marker.dataset.y = d.y;
+        marker.dataset.name = d.name;
+        marker.src = "icons/" + d.icon;
+        updateMarkerDisplay();
+      }
+    }
 
     if (change.type === "removed") {
       const marker = markers.find(m => m.dataset.id === doc.id);

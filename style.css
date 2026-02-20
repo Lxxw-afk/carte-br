@@ -244,3 +244,24 @@ body {
     text-align: center;
     font-weight: bold;
 }
+
+/* ============================================================
+   TOOLTIP NOM POINT
+============================================================ */
+
+#tooltip {
+    position: fixed;
+    padding: 6px 10px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+    pointer-events: none;
+    white-space: nowrap;
+    transform: translate(-50%, -120%);
+    z-index: 999999;
+}
+
+.hidden {
+    display: none;
+}

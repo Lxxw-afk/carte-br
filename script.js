@@ -13,7 +13,7 @@ loginBtn.addEventListener("click", () => {
   const value = document.getElementById("access-code").value.trim();
 
   if (value === ACCESS_CODE) {
-    loginScreen.remove();          // 🔥 IMPORTANT
+    loginScreen.remove();
     app.classList.remove("hidden");
   } else {
     loginError.textContent = "Code d'accès incorrect";
@@ -23,9 +23,6 @@ loginBtn.addEventListener("click", () => {
 /* ============================================================
    🔥 FIREBASE INIT
 ============================================================ */
-
-let db = null;
-let firebaseReady = false;
 
 const firebaseConfig = {
   apiKey: "AIzaSyAoiD4sgUaamp0SGOBvx3A7FGjw4E3K4TE",
@@ -37,8 +34,7 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-db = firebase.firestore();
-firebaseReady = true;
+const db = firebase.firestore();
 
 /* ============================================================
    VARIABLES DOM
@@ -58,8 +54,6 @@ const markerMenu = document.getElementById("marker-menu");
 const editBtn = document.getElementById("edit-marker");
 const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
-
-const tooltip = document.getElementById("tooltip");
 
 /* ============================================================
    ICONES
@@ -168,6 +162,22 @@ function updateMarkerDisplay() {
 }
 
 /* ============================================================
+   FIREBASE LISTENER TEMPS REEL (PROPRE)
+============================================================ */
+
+db.collection("markers").onSnapshot(snapshot => {
+
+  markers.forEach(m => m.remove());
+  markers = [];
+
+  snapshot.forEach(doc => {
+    const d = doc.data();
+    addMarker(d.x, d.y, d.icon, d.name, doc.id);
+  });
+
+});
+
+/* ============================================================
    FIREBASE HELPERS
 ============================================================ */
 
@@ -191,7 +201,6 @@ async function deleteMarkerInFirebase(marker) {
 ============================================================ */
 
 function addMarker(x, y, icon, name, id = null) {
-  if (markers.some(m => m.dataset.id === id)) return;
 
   const img = document.createElement("img");
   img.src = "icons/" + icon;
@@ -206,6 +215,7 @@ function addMarker(x, y, icon, name, id = null) {
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     selectedMarker = img;
+
     markerMenu.style.left = e.pageX + "px";
     markerMenu.style.top = e.pageY + "px";
     markerMenu.classList.remove("hidden");
@@ -233,14 +243,10 @@ mapContainer.addEventListener("click", async (e) => {
     const x = (e.clientX - rect.left - posX) / scale;
     const y = (e.clientY - rect.top - posY) / scale;
 
-    selectedMarker.dataset.x = x;
-    selectedMarker.dataset.y = y;
-
     await updateMarkerInFirebase(selectedMarker, { x, y });
 
     moveMode = false;
     selectedMarker = null;
-    updateMarkerDisplay();
     return;
   }
 
@@ -260,12 +266,10 @@ mapContainer.addEventListener("click", async (e) => {
 ============================================================ */
 
 document.getElementById("validate-point").addEventListener("click", async () => {
+
   if (!pointName.value || !pointIcon.value) return;
 
   if (editMode && selectedMarker) {
-    selectedMarker.title = pointName.value;
-    selectedMarker.src = "icons/" + pointIcon.value;
-
     await updateMarkerInFirebase(selectedMarker, {
       name: pointName.value,
       icon: pointIcon.value
@@ -277,8 +281,7 @@ document.getElementById("validate-point").addEventListener("click", async () => 
     return;
   }
 
-  const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
-  addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
+  await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
 
   pointMenu.classList.add("hidden");
 });
@@ -289,11 +292,7 @@ document.getElementById("validate-point").addEventListener("click", async () => 
 
 deleteBtn.addEventListener("click", async () => {
   if (!selectedMarker) return;
-
   await deleteMarkerInFirebase(selectedMarker);
-  selectedMarker.remove();
-  markers = markers.filter(m => m !== selectedMarker);
-
   selectedMarker = null;
   markerMenu.classList.add("hidden");
 });
@@ -301,10 +300,8 @@ deleteBtn.addEventListener("click", async () => {
 editBtn.addEventListener("click", () => {
   if (!selectedMarker) return;
   editMode = true;
-
   pointName.value = selectedMarker.title;
   pointIcon.value = selectedMarker.dataset.icon;
-
   pointMenu.classList.remove("hidden");
   markerMenu.classList.add("hidden");
 });
@@ -318,21 +315,6 @@ moveBtn.addEventListener("click", () => {
 window.addEventListener("click", () => {
   if (!moveMode) markerMenu.classList.add("hidden");
 });
-
-/* ============================================================
-   TEMPS REEL
-============================================================ */
-
-db.collection("markers").onSnapshot(snapshot => {
-  markers.forEach(m => m.remove());
-  markers = [];
-
-  snapshot.forEach(doc => {
-    const d = doc.data();
-    addMarker(d.x, d.y, d.icon, d.name, doc.id);
-  });
-});
-
 listenMarkersRealtime();
 
 document.addEventListener("contextmenu", (e) => {

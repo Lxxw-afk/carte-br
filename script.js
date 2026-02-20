@@ -8,14 +8,15 @@ const loginScreen = document.getElementById("login-screen");
 const app = document.getElementById("app");
 const loginBtn = document.getElementById("login-btn");
 const loginError = document.getElementById("login-error");
-const input = document.getElementById("access-code");
 
 loginBtn.addEventListener("click", () => {
-  if (input.value === ACCESS_CODE) {
-    loginScreen.style.display = "none";
-    app.style.display = "block";   // 👈 IMPORTANT
+  const value = document.getElementById("access-code").value.trim();
+
+  if (value === ACCESS_CODE) {
+    loginScreen.remove();          // 🔥 IMPORTANT
+    app.classList.remove("hidden");
   } else {
-    loginError.textContent = "Code incorrect";
+    loginError.textContent = "Code d'accès incorrect";
   }
 });
 

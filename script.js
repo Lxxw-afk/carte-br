@@ -8,13 +8,12 @@ const loginScreen = document.getElementById("login-screen");
 const app = document.getElementById("app");
 const loginBtn = document.getElementById("login-btn");
 const loginError = document.getElementById("login-error");
+const input = document.getElementById("access-code");
 
 loginBtn.addEventListener("click", () => {
-  const value = document.getElementById("access-code").value;
-
-  if (value === ACCESS_CODE) {
+  if (input.value === ACCESS_CODE) {
     loginScreen.style.display = "none";
-    app.classList.remove("hidden");
+    app.style.display = "block";   // 👈 IMPORTANT
   } else {
     loginError.textContent = "Code incorrect";
   }

@@ -315,7 +315,6 @@ moveBtn.addEventListener("click", () => {
 window.addEventListener("click", () => {
   if (!moveMode) markerMenu.classList.add("hidden");
 });
-listenMarkersRealtime();
 
 document.addEventListener("contextmenu", (e) => {
   console.log("CLIC DROIT GLOBAL détecté");

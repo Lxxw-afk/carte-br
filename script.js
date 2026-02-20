@@ -9,18 +9,16 @@ const app = document.getElementById("app");
 const loginBtn = document.getElementById("login-btn");
 const loginError = document.getElementById("login-error");
 
-if (loginBtn) {
-  loginBtn.addEventListener("click", () => {
-    const value = document.getElementById("access-code").value.trim();
+loginBtn.addEventListener("click", () => {
+  const value = document.getElementById("access-code").value.trim();
 
-    if (value === ACCESS_CODE) {
-      loginScreen.remove();
-      app.classList.remove("hidden");
-    } else {
-      loginError.textContent = "Code d'accès incorrect";
-    }
-  });
-}
+  if (value === ACCESS_CODE) {
+    loginScreen.remove();
+    app.classList.remove("hidden");
+  } else {
+    loginError.textContent = "Code d'accès incorrect";
+  }
+});
 
 /* ============================================================
    🔥 FIREBASE INIT
@@ -30,9 +28,6 @@ const firebaseConfig = {
   apiKey: "AIzaSyAoiD4sgUaamp0SGOBvx3A7FGjw4E3K4TE",
   authDomain: "carte-br.firebaseapp.com",
   projectId: "carte-br",
-  storageBucket: "carte-br.firebasestorage.app",
-  messagingSenderId: "698417792662",
-  appId: "1:698417792662:web:4766a306741bc5c71724b7"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -50,14 +45,11 @@ const step1 = document.getElementById("step1");
 const pointMenu = document.getElementById("point-menu");
 const pointName = document.getElementById("point-name");
 const pointIcon = document.getElementById("point-icon");
-const iconPreview = document.getElementById("icon-preview");
 
 const markerMenu = document.getElementById("marker-menu");
 const editBtn = document.getElementById("edit-marker");
 const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
-
-const markerTooltip = document.getElementById("marker-tooltip");
 
 /* ============================================================
    ICONES
@@ -69,14 +61,7 @@ const iconList = [
   "Munitions.png",
   "organes.png",
   "Weed.png",
-  "Entrepot.png",
-  "Acier.png",
-   "Heroine.png",
-   "LSD.png",
-   "Metal.png",
-   "Titane.png",
-   "bijoux.png"
-   
+  "Entrepot.png"
 ];
 
 iconList.forEach(icon => {
@@ -104,7 +89,7 @@ let markers = [];
 let tempX = 0, tempY = 0;
 
 /* ============================================================
-   DRAG GOOGLE MAPS
+   DRAG (GOOGLE MAP STYLE)
 ============================================================ */
 
 mapContainer.addEventListener("mousedown", (e) => {
@@ -196,7 +181,6 @@ async function deleteMarkerInFirebase(marker) {
 ============================================================ */
 
 function addMarker(x, y, icon, name, id) {
-
   if (markers.some(m => m.dataset.id === id)) return;
 
   const img = document.createElement("img");
@@ -209,33 +193,15 @@ function addMarker(x, y, icon, name, id) {
   img.dataset.icon = icon;
   img.dataset.id = id;
 
-  /* TOOLTIP STYLE BOUTON */
-  img.addEventListener("mouseenter", () => {
-    const rect = img.getBoundingClientRect();
-    markerTooltip.textContent = name;
-    markerTooltip.classList.remove("hidden");
-    markerTooltip.style.left = rect.left + rect.width / 2 + "px";
-    markerTooltip.style.top = rect.top + rect.height + 8 + "px";
-  });
-
-  img.addEventListener("mousemove", () => {
-    const rect = img.getBoundingClientRect();
-    markerTooltip.style.left = rect.left + rect.width / 2 + "px";
-    markerTooltip.style.top = rect.top + rect.height + 8 + "px";
-  });
-
-  img.addEventListener("mouseleave", () => {
-    markerTooltip.classList.add("hidden");
-  });
-
-  /* CLIC DROIT */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
     selectedMarker = img;
 
     markerMenu.style.left = e.pageX + "px";
     markerMenu.style.top = e.pageY + "px";
-    markerMenu.classList.remove("hidden");
+    markerMenu.style.display = "flex";
   });
 
   markerLayer.appendChild(img);
@@ -253,7 +219,6 @@ document.getElementById("new-point-btn").addEventListener("click", () => {
 });
 
 mapContainer.addEventListener("click", async (e) => {
-
   if (isDragging) return;
 
   if (moveMode && selectedMarker) {
@@ -288,7 +253,6 @@ mapContainer.addEventListener("click", async (e) => {
 ============================================================ */
 
 document.getElementById("validate-point").addEventListener("click", async () => {
-
   if (!pointName.value || !pointIcon.value) return;
 
   if (editMode && selectedMarker) {
@@ -307,6 +271,8 @@ document.getElementById("validate-point").addEventListener("click", async () => 
   }
 
   const id = await createMarkerInFirebase(tempX, tempY, pointIcon.value, pointName.value);
+  addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
+
   pointMenu.classList.add("hidden");
 });
 
@@ -318,8 +284,11 @@ deleteBtn.addEventListener("click", async () => {
   if (!selectedMarker) return;
 
   await deleteMarkerInFirebase(selectedMarker);
+  selectedMarker.remove();
+  markers = markers.filter(m => m !== selectedMarker);
+
   selectedMarker = null;
-  markerMenu.classList.add("hidden");
+  markerMenu.style.display = "none";
 });
 
 editBtn.addEventListener("click", () => {
@@ -330,21 +299,23 @@ editBtn.addEventListener("click", () => {
   pointIcon.value = selectedMarker.dataset.icon;
 
   pointMenu.classList.remove("hidden");
-  markerMenu.classList.add("hidden");
+  markerMenu.style.display = "none";
 });
 
 moveBtn.addEventListener("click", () => {
   if (!selectedMarker) return;
   moveMode = true;
-  markerMenu.classList.add("hidden");
+  markerMenu.style.display = "none";
 });
 
-window.addEventListener("click", () => {
-  if (!moveMode) markerMenu.classList.add("hidden");
+document.addEventListener("click", (e) => {
+  if (!markerMenu.contains(e.target)) {
+    markerMenu.style.display = "none";
+  }
 });
 
 /* ============================================================
-   TEMPS REEL PROPRE
+   TEMPS REEL FIRESTORE
 ============================================================ */
 
 db.collection("markers").onSnapshot(snapshot => {
@@ -363,8 +334,8 @@ db.collection("markers").onSnapshot(snapshot => {
       if (marker) {
         marker.dataset.x = d.x;
         marker.dataset.y = d.y;
-        marker.src = "icons/" + d.icon;
         marker.title = d.name;
+        marker.src = "icons/" + d.icon;
         updateMarkerDisplay();
       }
     }
@@ -380,4 +351,3 @@ db.collection("markers").onSnapshot(snapshot => {
   });
 
 });
-

@@ -61,7 +61,13 @@ const iconList = [
   "Munitions.png",
   "organes.png",
   "Weed.png",
-  "Entrepot.png"
+  "Entrepot.png",
+   "Acier.png",
+   "Heroine.png",
+   "LSD.png",
+   "bijoux.png",
+   "Metal.png",
+   "Titane.png"
 ];
 
 iconList.forEach(icon => {

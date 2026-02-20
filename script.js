@@ -52,7 +52,7 @@ const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
 const markerTooltip = document.getElementById("marker-tooltip");
-
+const tooltip = document.getElementById("tooltip");
 /* ============================================================
    ICONES
 ============================================================ */
@@ -195,45 +195,30 @@ function addMarker(x, y, icon, name, id) {
   const img = document.createElement("img");
   img.src = "icons/" + icon;
   img.className = "marker";
-  img.title = name; // 🔥 IMPORTANT
 
   img.dataset.x = x;
   img.dataset.y = y;
   img.dataset.icon = icon;
   img.dataset.id = id;
+  img.dataset.name = name;
 
-  /* ============================
-     TOOLTIP EXACT COMME AVANT
-  ============================ */
+  /* ===== TOOLTIP STYLE NOUVEAU POINT ===== */
 
   img.addEventListener("mouseenter", () => {
-    const rect = img.getBoundingClientRect();
-    const markerHeight = rect.height;
-
-    markerTooltip.textContent = img.title;
-    markerTooltip.className = "marker-tooltip";
-
-    markerTooltip.style.left = (rect.left + rect.width / 2) + "px";
-    markerTooltip.style.top = (rect.top + markerHeight + 6) + "px";
-
-    markerTooltip.classList.remove("hidden");
+    tooltip.textContent = img.dataset.name;
+    tooltip.classList.remove("hidden");
   });
 
-  img.addEventListener("mousemove", () => {
-    const rect = img.getBoundingClientRect();
-    const markerHeight = rect.height;
-
-    markerTooltip.style.left = (rect.left + rect.width / 2) + "px";
-    markerTooltip.style.top = (rect.top + markerHeight + 6) + "px";
+  img.addEventListener("mousemove", (e) => {
+    tooltip.style.left = e.clientX + "px";
+    tooltip.style.top = (e.clientY - 20) + "px";
   });
 
   img.addEventListener("mouseleave", () => {
-    markerTooltip.classList.add("hidden");
+    tooltip.classList.add("hidden");
   });
 
-  /* ============================
-     CLIC DROIT
-  ============================ */
+  /* ===== CLIC DROIT ===== */
 
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
@@ -248,6 +233,7 @@ function addMarker(x, y, icon, name, id) {
 
   markerLayer.appendChild(img);
   markers.push(img);
+
   updateMarkerDisplay();
 }
 /* ============================================================
@@ -370,16 +356,16 @@ db.collection("markers").onSnapshot(snapshot => {
       addMarker(d.x, d.y, d.icon, d.name, doc.id);
     }
 
-    if (change.type === "modified") {
-      const marker = markers.find(m => m.dataset.id === doc.id);
-      if (marker) {
-        marker.dataset.x = d.x;
-        marker.dataset.y = d.y;
-        marker.title = d.name;
-        marker.src = "icons/" + d.icon;
-        updateMarkerDisplay();
-      }
-    }
+   if (change.type === "modified") {
+  const marker = markers.find(m => m.dataset.id === doc.id);
+  if (marker) {
+    marker.dataset.x = d.x;
+    marker.dataset.y = d.y;
+    marker.dataset.name = d.name;   // IMPORTANT
+    marker.src = "icons/" + d.icon;
+    updateMarkerDisplay();
+  }
+}
 
     if (change.type === "removed") {
       const marker = markers.find(m => m.dataset.id === doc.id);

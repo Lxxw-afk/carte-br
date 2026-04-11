@@ -231,17 +231,20 @@ function addMarker(x, y, icon, name, id) {
 img.addEventListener("mouseenter", () => {
     tooltip.innerHTML = `
         <img src="icons/${img.dataset.icon}">
-        <span>${img.dataset.name}</span>
+        <div>
+            <div style="font-weight:bold;">${img.dataset.name}</div>
+            <div style="font-size:11px;opacity:0.7;">Point RP</div>
+        </div>
     `;
-    tooltip.classList.remove("hidden");
+    tooltip.classList.add("show");
 });
 
 img.addEventListener("mouseleave", () => {
-    tooltip.classList.add("hidden");
+    tooltip.classList.remove("show");
 });
 
 img.addEventListener("mousemove", (e) => {
-    tooltip.style.left = (e.pageX + 10) + "px";
+    tooltip.style.left = (e.pageX + 12) + "px";
     tooltip.style.top = (e.pageY - 20) + "px";
 });
 

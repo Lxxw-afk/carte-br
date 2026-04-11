@@ -9,34 +9,49 @@ body {
 
 #topbar {
     position: fixed;
-    top: 10px;
-    left: 10px;
+    top: 15px;
+    left: 20px;
+
     display: flex;
-    gap: 15px;
-    padding: 10px 15px;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    border-radius: 10px;
+    align-items: center; /* 🔥 aligne verticalement */
+
+    gap: 20px;
+
+    padding: 10px 20px;
+
+    background: rgba(0,0,0,0.5);
+    border-radius: 12px;
+
     z-index: 2000;
 }
 
-/* STYLE COMMUN */
+/* TITRE */
+#topbar h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: bold;
+    color: white;
+}
+
+/* BOUTONS */
 #new-point-btn,
 #search-input {
-    height: 42px; /* 🔥 augmente légèrement */
-    padding: 0 15px;
+    height: 44px; /* 🔥 plus haut = plus de coupe */
+    padding: 0 18px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 8px;
+    border-radius: 10px;
     border: none;
 
     font-weight: bold;
     text-transform: uppercase;
 
     box-sizing: border-box;
+
+    line-height: 1; /* 🔥 FIX DU TEXTE COUPÉ */
 }
 
 /* NOUVEAU POINT */
@@ -51,9 +66,6 @@ body {
     background: rgba(255,255,255,0.15);
     color: white;
     text-align: center;
-}
-#search-input {
-    line-height: normal;
 }
 /* ================= MESSAGE STEP ================= */
 

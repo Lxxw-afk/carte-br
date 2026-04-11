@@ -242,4 +242,17 @@ body {
     font-weight: bold;
 }
 
+#search-input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    width: 180px;
+}
+
+#search-input::placeholder {
+    color: rgba(255,255,255,0.6);
+}
 

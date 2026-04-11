@@ -303,3 +303,10 @@ body {
 .hidden {
     display: none;
 }
+#point-category {
+    padding: 6px;
+    border-radius: 5px;
+    border: none;
+    background: #ddd;
+    font-size: 14px;
+}

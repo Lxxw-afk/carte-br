@@ -472,3 +472,51 @@ searchInput.addEventListener("keydown", (e) => {
 
   updateMap();
 });
+const suggestionsBox = document.getElementById("search-suggestions");
+
+searchInput.addEventListener("input", () => {
+
+    const value = searchInput.value.toLowerCase();
+    suggestionsBox.innerHTML = "";
+
+    if (!value) {
+        suggestionsBox.classList.add("hidden");
+        return;
+    }
+
+    const results = markers.filter(m =>
+        m.dataset.name.toLowerCase().includes(value)
+    );
+
+    results.slice(0, 5).forEach(m => {
+
+        const div = document.createElement("div");
+        div.className = "suggestion";
+        div.textContent = m.dataset.name;
+
+        div.addEventListener("click", () => {
+            centerOnMarker(m);
+            suggestionsBox.classList.add("hidden");
+        });
+
+        suggestionsBox.appendChild(div);
+    });
+
+    suggestionsBox.classList.toggle("hidden", results.length === 0);
+});
+
+/* CENTRER CAMÉRA */
+function centerOnMarker(marker) {
+    const x = parseFloat(marker.dataset.x);
+    const y = parseFloat(marker.dataset.y);
+
+    posX = window.innerWidth / 2 - x * scale;
+    posY = window.innerHeight / 2 - y * scale;
+
+    updateMap();
+}
+document.addEventListener("click", (e) => {
+    if (!e.target.closest("#search-input")) {
+        suggestionsBox.classList.add("hidden");
+    }
+});

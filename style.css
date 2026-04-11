@@ -310,3 +310,20 @@ body {
     background: #ddd;
     font-size: 14px;
 }
+#point-menu input,
+#point-menu select {
+    width: 100%;
+    padding: 8px 10px;
+
+    border-radius: 6px;
+    border: none;
+
+    background: #ddd;
+    font-size: 14px;
+
+    box-sizing: border-box;
+}
+#point-menu label {
+    font-size: 13px;
+    margin-top: 5px;
+}

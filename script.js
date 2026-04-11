@@ -231,7 +231,7 @@ function addMarker(x, y, icon, name, id) {
 img.addEventListener("mouseenter", () => {
     tooltip.innerHTML = `
         <img src="icons/${img.dataset.icon}">
-        <span>${img.title}</span>
+        <span>${img.dataset.name}</span>
     `;
     tooltip.classList.remove("hidden");
 });

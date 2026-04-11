@@ -50,8 +50,6 @@ const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
 const tooltip = document.getElementById("tooltip");
-const searchInput = document.getElementById("search-input");
-const suggestionsBox = document.getElementById("search-suggestions");
 
 /* ============================================================
    ICONES
@@ -216,6 +214,8 @@ function addMarker(x, y, icon, name, id, category) {
   // CLIC DROIT
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
     selectedMarker = img;
 
     markerMenu.style.left = e.pageX + "px";
@@ -313,6 +313,24 @@ document.getElementById("validate-point").addEventListener("click", async () => 
 });
 
 /* ============================================================
+   ANNULER (FIX COMPLET)
+============================================================ */
+document.getElementById("cancel-point").addEventListener("click", () => {
+
+  pointMenu.classList.add("hidden");
+  step1.classList.add("hidden");
+
+  waitingForPlacement = false;
+  editMode = false;
+  moveMode = false;
+  selectedMarker = null;
+
+  pointName.value = "";
+  pointIcon.value = "";
+  if (pointCategory) pointCategory.value = "";
+});
+
+/* ============================================================
    MENU ACTIONS
 ============================================================ */
 deleteBtn.addEventListener("click", async () => {
@@ -334,9 +352,7 @@ editBtn.addEventListener("click", () => {
 
   pointName.value = selectedMarker.dataset.name;
   pointIcon.value = selectedMarker.dataset.icon;
-  if (pointCategory) {
-    pointCategory.value = selectedMarker.dataset.category || "";
-}
+  if (pointCategory) pointCategory.value = selectedMarker.dataset.category;
 
   pointMenu.classList.remove("hidden");
   markerMenu.style.display = "none";
@@ -349,9 +365,21 @@ moveBtn.addEventListener("click", () => {
 });
 
 /* ============================================================
-   TEMPS REEL
+   FERMETURE MENU CLIC DROIT
+============================================================ */
+document.addEventListener("click", (e) => {
+
+  if (e.target.classList.contains("marker")) return;
+  if (markerMenu.contains(e.target)) return;
+
+  markerMenu.style.display = "none";
+});
+
+/* ============================================================
+   TEMPS REEL FIRESTORE
 ============================================================ */
 db.collection("markers").onSnapshot(snapshot => {
+
   snapshot.docChanges().forEach(change => {
 
     const doc = change.doc;
@@ -382,45 +410,5 @@ db.collection("markers").onSnapshot(snapshot => {
     }
 
   });
+
 });
-
-/* ============================================================
-   🔍 RECHERCHE + SUGGESTIONS
-============================================================ */
-searchInput.addEventListener("input", () => {
-
-  const value = searchInput.value.toLowerCase();
-  suggestionsBox.innerHTML = "";
-
-  if (!value) return suggestionsBox.classList.add("hidden");
-
-  const results = markers.filter(m =>
-    m.dataset.name.toLowerCase().includes(value)
-  );
-
-  results.slice(0, 5).forEach(m => {
-
-    const div = document.createElement("div");
-    div.className = "suggestion";
-    div.textContent = m.dataset.name;
-
-    div.addEventListener("click", () => {
-      centerOnMarker(m);
-      suggestionsBox.classList.add("hidden");
-    });
-
-    suggestionsBox.appendChild(div);
-  });
-
-  suggestionsBox.classList.toggle("hidden", results.length === 0);
-});
-
-function centerOnMarker(marker) {
-  const x = parseFloat(marker.dataset.x);
-  const y = parseFloat(marker.dataset.y);
-
-  posX = window.innerWidth / 2 - x * scale;
-  posY = window.innerHeight / 2 - y * scale;
-
-  updateMap();
-}

@@ -334,7 +334,9 @@ editBtn.addEventListener("click", () => {
 
   pointName.value = selectedMarker.dataset.name;
   pointIcon.value = selectedMarker.dataset.icon;
-  pointCategory.value = selectedMarker.dataset.category;
+  if (pointCategory) {
+    pointCategory.value = selectedMarker.dataset.category || "";
+}
 
   pointMenu.classList.remove("hidden");
   markerMenu.style.display = "none";

@@ -19,7 +19,9 @@ body {
     border-radius: 12px;
     z-index: 2000;
 }
-
+#topbar {
+    align-items: center;
+}
 #new-point-btn {
     padding: 6px 14px;
     background: rgba(255, 255, 255, 0.15);
@@ -246,10 +248,13 @@ body {
 }
 
 #search-input {
-    padding: 8px 12px; /* ⬅️ un peu plus d’espace en haut/bas */
-    background: rgba(255,255,255,0.08);
-    border: none;
-    border-radius: 8px;
+    padding: 10px 16px;
+    height: 42px;
+
+    background: rgba(255,255,255,0.12); /* ✅ même esprit que bouton */
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 10px;
+
     color: white;
 
     font-weight: bold;
@@ -257,10 +262,18 @@ body {
     letter-spacing: 1px;
 
     outline: none;
-    text-align: center;
 
-    line-height: 1.2; /* ⬅️ FIX IMPORTANT */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: normal; /* ✅ FIX principal */
+    box-sizing: border-box;
 }
+#search-input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
 #search-input::placeholder {
     color: rgba(255,255,255,0.6);
 }

@@ -239,7 +239,7 @@ body {
 }
 
 #search-input {
-    padding: 6px 12px;
+    padding: 8px 12px; /* ⬅️ un peu plus d’espace en haut/bas */
     background: rgba(255,255,255,0.08);
     border: none;
     border-radius: 8px;
@@ -251,8 +251,9 @@ body {
 
     outline: none;
     text-align: center;
-}
 
+    line-height: 1.2; /* ⬅️ FIX IMPORTANT */
+}
 #search-input::placeholder {
     color: rgba(255,255,255,0.6);
 }

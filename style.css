@@ -90,25 +90,32 @@ body {
 
 #tooltip {
     position: fixed;
-    background: rgba(0,0,0,0.9);
+    background: rgba(20,20,20,0.85);
+    backdrop-filter: blur(6px);
     color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
     font-size: 13px;
     pointer-events: none;
     z-index: 10000;
+
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+
+    opacity: 0;
+    transform: translateY(5px);
+    transition: all 0.15s ease;
+}
+
+#tooltip.show {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 #tooltip img {
-    width: 20px;
-    height: 20px;
-}
-
-#tooltip.hidden {
-    display: none;
+    width: 22px;
+    height: 22px;
 }
 
 /* ================= POINT MENU ================= */

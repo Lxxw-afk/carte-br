@@ -227,21 +227,23 @@ function addMarker(x, y, icon, name, id) {
   img.dataset.id = id;
   img.dataset.name = name;
 
-  /* ===== TOOLTIP FIXE SOUS LE POINT ===== */
-
-  img.addEventListener("mouseenter", () => {
-    const rect = img.getBoundingClientRect();
-
-    tooltip.textContent = img.dataset.name;
+ // TOOLTIP AMÉLIORÉ
+img.addEventListener("mouseenter", () => {
+    tooltip.innerHTML = `
+        <img src="icons/${img.dataset.icon}">
+        <span>${img.title}</span>
+    `;
     tooltip.classList.remove("hidden");
+});
 
-    tooltip.style.left = (rect.left + rect.width / 2) + "px";
-    tooltip.style.top = (rect.bottom + 8) + "px";
-  });
-
-  img.addEventListener("mouseleave", () => {
+img.addEventListener("mouseleave", () => {
     tooltip.classList.add("hidden");
-  });
+});
+
+img.addEventListener("mousemove", (e) => {
+    tooltip.style.left = (e.pageX + 10) + "px";
+    tooltip.style.top = (e.pageY - 20) + "px";
+});
 
   /* ===== CLIC DROIT ===== */
 

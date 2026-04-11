@@ -431,3 +431,43 @@ db.collection("markers").onSnapshot(snapshot => {
   });
 
 });
+
+/* ============================================================
+   🔍 RECHERCHE DE POINT
+============================================================ */
+const searchInput = document.getElementById("search-input");
+
+searchInput.addEventListener("input", () => {
+    const value = searchInput.value.toLowerCase();
+
+    markers.forEach(marker => {
+        const name = marker.title.toLowerCase();
+
+        if (name.includes(value)) {
+            marker.style.opacity = "1";
+        } else {
+            marker.style.opacity = "0.2";
+        }
+    });
+
+/* ENTER = CENTRER SUR LE PREMIER RESULTAT */
+searchInput.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+
+    const value = searchInput.value.toLowerCase();
+
+    const found = markers.find(m =>
+        m.title.toLowerCase().includes(value)
+    );
+
+    if (!found) return;
+
+    const x = parseFloat(found.dataset.x);
+    const y = parseFloat(found.dataset.y);
+
+    // centrer caméra
+    posX = window.innerWidth / 2 - x * scale;
+    posY = window.innerHeight / 2 - y * scale;
+
+    updateMap();
+});

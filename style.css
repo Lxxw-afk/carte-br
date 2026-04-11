@@ -90,25 +90,21 @@ body {
 
 #tooltip {
     position: fixed;
-    padding: 5px 10px;
-
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(0,0,0,0.9);
     color: white;
-
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 8px 12px;
     border-radius: 8px;
-
-    font-size: 11px;      /* 🔥 plus petit */
-    font-weight: 600;     /* un peu moins lourd que bold */
-    text-transform: uppercase;
-
-    backdrop-filter: blur(4px);
-
+    font-size: 13px;
     pointer-events: none;
-    white-space: nowrap;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 
-    transform: translate(-50%, -120%);
-    z-index: 999999;
+#tooltip img {
+    width: 20px;
+    height: 20px;
 }
 
 #tooltip.hidden {

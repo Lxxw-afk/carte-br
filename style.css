@@ -1,3 +1,7 @@
+/* ============================================================
+   BASE
+============================================================ */
+
 body {
     margin: 0;
     padding: 0;
@@ -8,7 +12,9 @@ body {
     background: #003F87;
 }
 
-/* ================= APP ================= */
+/* ============================================================
+   APP
+============================================================ */
 
 #app {
     width: 100vw;
@@ -16,7 +22,9 @@ body {
     position: relative;
 }
 
-/* ================= TOPBAR ================= */
+/* ============================================================
+   TOPBAR
+============================================================ */
 
 #topbar {
     position: fixed;
@@ -33,20 +41,15 @@ body {
     border-radius: 10px;
 
     z-index: 2000;
-    max-width: 95vw;
-    backdrop-filter: blur(6px);
 }
 
-/* TITRE */
 #topbar h1 {
     margin: 0;
     font-size: 18px;
     color: white;
-    font-weight: bold;
     white-space: nowrap;
 }
 
-/* BOUTONS + INPUT */
 #new-point-btn,
 #search-input,
 #toggle-filter {
@@ -57,21 +60,21 @@ body {
     border: none;
 
     font-weight: bold;
-
     background: rgba(255,255,255,0.15);
     color: white;
-
-    outline: none;
 }
 
-/* ================= MAP ================= */
+/* ============================================================
+   MAP
+============================================================ */
 
 #map-container {
     position: absolute;
     inset: 0;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
     cursor: grab;
-    z-index: 1;
 }
 
 #map-inner {
@@ -87,39 +90,38 @@ body {
     pointer-events: none;
 }
 
-/* IMPORTANT LAYER MARKERS */
-#marker-layer {
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-}
-
-/* ================= MARKERS ================= */
+/* ============================================================
+   MARKERS
+============================================================ */
 
 .marker {
     position: absolute;
     transform: translate(-50%, -50%);
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     z-index: 4000;
 }
 
-/* ================= TOOLTIP ================= */
+/* ============================================================
+   TOOLTIP (FIX SOUS LE POINT)
+============================================================ */
 
 #tooltip {
-    position: fixed;
-    background: rgba(0,0,0,0.85);
+    position: absolute; /* 🔥 IMPORTANT */
+    background: rgba(20,20,20,0.9);
     color: white;
 
-    padding: 8px;
-    border-radius: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+
     font-size: 12px;
+    z-index: 10000;
 
     display: none;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
 
-    z-index: 10000;
+    transform: translate(-50%, -120%); /* 🔥 AU DESSUS DU POINT */
 }
 
 #tooltip.show {
@@ -127,11 +129,13 @@ body {
 }
 
 #tooltip img {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
-/* ================= POINT MENU ================= */
+/* ============================================================
+   POINT MENU
+============================================================ */
 
 #point-menu {
     position: fixed;
@@ -147,15 +151,9 @@ body {
     z-index: 5000;
 }
 
-#point-menu input,
-#point-menu select {
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
-    margin: 4px 0;
-}
-
-/* ================= CLIC DROIT ================= */
+/* ============================================================
+   MENU CLIC DROIT
+============================================================ */
 
 #marker-menu {
     position: absolute;
@@ -165,7 +163,7 @@ body {
     display: none;
     flex-direction: column;
 
-    z-index: 99999;
+    z-index: 9999;
 }
 
 #marker-menu button {
@@ -181,7 +179,9 @@ body {
     background: rgba(255,255,255,0.1);
 }
 
-/* ================= FILTER ================= */
+/* ============================================================
+   FILTRES
+============================================================ */
 
 #filter-menu {
     position: relative;
@@ -212,7 +212,9 @@ body {
     font-size: 13px;
 }
 
-/* ================= CREDIT ================= */
+/* ============================================================
+   CREDIT
+============================================================ */
 
 #credit-btn {
     position: fixed;
@@ -229,7 +231,9 @@ body {
     z-index: 9999;
 }
 
-/* ================= LOGIN ================= */
+/* ============================================================
+   LOGIN (FIX ZOOM IMAGE)
+============================================================ */
 
 #login-screen {
     position: fixed;
@@ -237,11 +241,10 @@ body {
     z-index: 99999;
 }
 
-/* IMAGE LOGIN FIX (plus de zoom) */
 #login-screen img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: contain; /* 🔥 FIX ZOOM */
     background: black;
 }
 
@@ -256,7 +259,9 @@ body {
     border-radius: 10px;
 }
 
-/* ================= UTILS ================= */
+/* ============================================================
+   UTILS
+============================================================ */
 
 .hidden {
     display: none !important;

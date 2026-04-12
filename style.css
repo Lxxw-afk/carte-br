@@ -160,7 +160,7 @@ body {
     background: #222;
     border-radius: 6px;
 
-    display: none;
+    display: flex;
     flex-direction: column;
 
     z-index: 9999;

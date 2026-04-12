@@ -103,11 +103,11 @@ body {
 }
 
 /* ============================================================
-   TOOLTIP (FIX SOUS LE POINT)
+   TOOLTIP
 ============================================================ */
 
 #tooltip {
-    position: absolute; /* 🔥 IMPORTANT */
+    position: absolute;
     background: rgba(20,20,20,0.9);
     color: white;
 
@@ -121,7 +121,7 @@ body {
     flex-direction: column;
     align-items: center;
 
-    transform: translate(-50%, -120%); /* 🔥 AU DESSUS DU POINT */
+    transform: translate(-50%, -120%);
 }
 
 #tooltip.show {
@@ -152,7 +152,7 @@ body {
 }
 
 /* ============================================================
-   MENU CLIC DROIT
+   MENU CLIC DROIT (FIX)
 ============================================================ */
 
 #marker-menu {
@@ -160,7 +160,7 @@ body {
     background: #222;
     border-radius: 6px;
 
-    display: flex;
+    display: flex; /* 🔥 FIX IMPORTANT */
     flex-direction: column;
 
     z-index: 9999;
@@ -232,7 +232,7 @@ body {
 }
 
 /* ============================================================
-   LOGIN (FIX ZOOM IMAGE)
+   LOGIN (FIX FOND BLANC)
 ============================================================ */
 
 #login-screen {
@@ -244,8 +244,8 @@ body {
 #login-screen img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* 🔥 FIX ZOOM */
-    background: black;
+    object-fit: contain;
+    background: white; /* 🔥 FIX */
 }
 
 #login-box {

@@ -88,14 +88,14 @@ mapContainer.addEventListener("wheel", (e) => {
   updateMap();
 });
 
-/* UPDATE MAP */
+/* MAP */
 function updateMap() {
   mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
   markerLayer.style.transform = `translate(${posX}px, ${posY}px)`;
   updateMarkers();
 }
 
-/* MARKERS FIX (IMPORTANT) */
+/* FIX IMPORTANT MARKERS */
 function updateMarkers() {
   markers.forEach(m => {
     const x = parseFloat(m.dataset.x);
@@ -112,7 +112,7 @@ function updateMarkers() {
   });
 }
 
-/* ADD MARKER */
+/* MARKER */
 function addMarker(x, y, icon, name, id, category) {
 
   const img = document.createElement("img");

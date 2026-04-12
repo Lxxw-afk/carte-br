@@ -1,22 +1,24 @@
-/* ============================================================
-   🔐 LOGIN
-============================================================ */
-const ACCESS_CODE = "BRIGADE2026";
+document.addEventListener("DOMContentLoaded", () => {
 
-loginBtn.onclick = () => {
-  const value = document.getElementById("access-code").value.trim();
-  const loginScreen = document.getElementById("login-screen");
+/* ============================================================
+   🔐 SYSTEME DE CONNEXION (FIX)
+============================================================ */
+
+const loginScreen = document.getElementById("login-screen");
 const app = document.getElementById("app");
 const loginBtn = document.getElementById("login-btn");
 const loginError = document.getElementById("login-error");
-   
-  if (value === ACCESS_CODE) {
+
+loginBtn.addEventListener("click", () => {
+  const value = document.getElementById("access-code").value.trim();
+
+  if (value === "BRIGADE2026") {
     loginScreen.remove();
     app.classList.remove("hidden");
   } else {
     loginError.textContent = "Code incorrect";
   }
-};
+});
 
 /* ============================================================
    FIREBASE INIT (FIX)

@@ -83,7 +83,7 @@ body {
 }
 
 .hidden {
-    display: none !important;
+    display: none;
 }
 
 /* ================= MAP ================= */
@@ -93,6 +93,7 @@ body {
     height: 100vh;
     overflow: hidden;
     position: relative;
+    cursor: grab;
 }
 
 #map-inner {
@@ -100,9 +101,19 @@ body {
     transform-origin: 0 0;
 }
 
+#map {
+    pointer-events: none;
+    user-select: none;
+}
+
+/* ================= MARKERS ================= */
+
 .marker {
     position: absolute;
     transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    z-index: 4000;
 }
 
 /* ================= TOOLTIP STYLE (TRANSPARENT BUTTON STYLE) ================= */
@@ -110,15 +121,26 @@ body {
 #tooltip {
     position: fixed;
     background: rgba(20,20,20,0.85);
+    backdrop-filter: blur(6px);
     color: white;
-    padding: 10px;
+    padding: 10px 14px;
     border-radius: 10px;
-    display: none;
+    font-size: 13px;
+    pointer-events: none;
     z-index: 10000;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    opacity: 0;
+    transform: translateY(5px);
+    transition: all 0.15s ease;
 }
 
 #tooltip.show {
-    display: flex;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 #tooltip img {
@@ -332,72 +354,4 @@ body {
 #point-menu label {
     font-size: 13px;
     margin-top: 5px;
-}
-#filter-menu {
-    position: relative;
-}
-
-#toggle-filter {
-    height: 44px;
-    padding: 0 15px;
-    border-radius: 10px;
-    border: none;
-    background: rgba(255,255,255,0.15);
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-#filter-panel {
-    position: absolute;
-    top: 55px;
-    left: 0;
-
-    background: rgba(255,255,255,0.15); /* 🔥 même que bouton */
-    backdrop-filter: blur(10px);
-
-    border-radius: 10px;
-    padding: 10px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    min-width: 200px;
-    color: white;
-}
-
-/* items */
-#filter-panel label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    font-weight: bold;
-    text-transform: uppercase;
-
-    cursor: pointer;
-}
-
-/* checkbox style */
-#filter-panel input {
-    cursor: pointer;
-}
-#filter-panel {
-    transition: opacity 0.2s ease;
-}
-
-.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-.hidden {
-    display: none !important;
-}
-#tooltip {
-    display: none;
-}
-
-#tooltip.show {
-    display: flex;
 }

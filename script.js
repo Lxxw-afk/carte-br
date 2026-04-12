@@ -1,35 +1,27 @@
 /* ============================================================
-   🔐 SYSTEME DE CONNEXION
+   🔥 FIREBASE INIT (optionnel)
 ============================================================ */
-const ACCESS_CODE = "BRIGADE2026";
+let db = null;
+let firebaseReady = false;
 
-const loginScreen = document.getElementById("login-screen");
-const app = document.getElementById("app");
-const loginBtn = document.getElementById("login-btn");
-const loginError = document.getElementById("login-error");
-
-loginBtn.addEventListener("click", () => {
-  const value = document.getElementById("access-code").value.trim();
-
-  if (value === ACCESS_CODE) {
-    loginScreen.remove();
-    app.classList.remove("hidden");
-  } else {
-    loginError.textContent = "Code d'accès incorrect";
-  }
-});
-
-/* ============================================================
-   🔥 FIREBASE INIT
-============================================================ */
+// ⚠️ Remplace par TON vrai config Firebase :
 const firebaseConfig = {
-  apiKey: "AIzaSyAoiD4sgUaamp0SGOBvx3A7FGjw4E3K4TE",
-  authDomain: "carte-br.firebaseapp.com",
-  projectId: "carte-br",
+  apiKey: "XXX",
+  authDomain: "XXX",
+  projectId: "XXX",
+  storageBucket: "XXX",
+  messagingSenderId: "XXX",
+  appId: "XXX"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  firebaseReady = true;
+  console.log("Firebase OK");
+} catch (err) {
+  console.warn("Firebase désactivé :", err);
+}
 
 /* ============================================================
    VARIABLES DOM
@@ -42,7 +34,7 @@ const step1 = document.getElementById("step1");
 const pointMenu = document.getElementById("point-menu");
 const pointName = document.getElementById("point-name");
 const pointIcon = document.getElementById("point-icon");
-const pointCategory = document.getElementById("point-category");
+const iconPreview = document.getElementById("icon-preview");
 
 const markerMenu = document.getElementById("marker-menu");
 const editBtn = document.getElementById("edit-marker");
@@ -52,19 +44,21 @@ const deleteBtn = document.getElementById("delete-marker");
 const tooltip = document.getElementById("tooltip");
 
 /* ============================================================
-   ICONES
+   LISTE DES ICONES
 ============================================================ */
 const iconList = [
-  "Meth.png","cocaine.png","Munitions.png","organes.png",
-  "Weed.png","Entrepot.png","Acier.png","Heroine.png",
-  "LSD.png","bijoux.png","Metal.png","Titane.png","QG.png"
+  "Meth.png",
+  "cocaine.png",
+  "Munitions.png",
+  "organes.png",
+  "Weed.png"
 ];
 
 iconList.forEach(icon => {
-  const opt = document.createElement("option");
-  opt.value = icon;
-  opt.textContent = icon.replace(".png", "");
-  pointIcon.appendChild(opt);
+  const option = document.createElement("option");
+  option.value = icon;
+  option.textContent = icon.replace(".png", "");
+  pointIcon.appendChild(option);
 });
 
 /* ============================================================
@@ -88,17 +82,11 @@ let tempX = 0, tempY = 0;
 ============================================================ */
 mapContainer.addEventListener("mousedown", (e) => {
   if (waitingForPlacement || moveMode) return;
+
   isDragging = true;
   dragStartX = e.clientX - posX;
   dragStartY = e.clientY - posY;
   mapContainer.style.cursor = "grabbing";
-});
-
-window.addEventListener("mousemove", (e) => {
-  if (!isDragging) return;
-  posX = e.clientX - dragStartX;
-  posY = e.clientY - dragStartY;
-  updateMap();
 });
 
 window.addEventListener("mouseup", () => {
@@ -106,14 +94,25 @@ window.addEventListener("mouseup", () => {
   mapContainer.style.cursor = "grab";
 });
 
+window.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
+
+  posX = e.clientX - dragStartX;
+  posY = e.clientY - dragStartY;
+
+  updateMap();
+});
+
 /* ============================================================
-   ZOOM
+   ZOOM (centré sur la souris)
 ============================================================ */
 mapContainer.addEventListener("wheel", (e) => {
   e.preventDefault();
 
   const oldScale = scale;
-  scale += (e.deltaY < 0 ? 0.1 : -0.1);
+  const zoomSpeed = 0.1;
+
+  scale += (e.deltaY < 0 ? zoomSpeed : -zoomSpeed);
   scale = Math.max(0.5, Math.min(4, scale));
 
   const mx = e.clientX - posX;
@@ -126,7 +125,7 @@ mapContainer.addEventListener("wheel", (e) => {
 });
 
 /* ============================================================
-   UPDATE MAP
+   MISE À JOUR CARTE + MARQUEURS
 ============================================================ */
 function updateMap() {
   mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
@@ -142,8 +141,10 @@ function updateMarkerDisplay() {
     marker.style.left = (x * scale) + "px";
     marker.style.top = (y * scale) + "px";
 
-    let size = 28 / scale;
-    size = Math.max(18, Math.min(32, size));
+    // taille adaptée au zoom
+    let size = 45 / scale;
+    size = Math.max(25, size);
+    size = Math.min(60, size);
 
     marker.style.width = size + "px";
     marker.style.height = size + "px";
@@ -151,72 +152,90 @@ function updateMarkerDisplay() {
 }
 
 /* ============================================================
-   FIREBASE
+   FIREBASE HELPERS (protégés par try/catch)
 ============================================================ */
-async function createMarkerInFirebase(x, y, icon, name, category) {
-  const doc = await db.collection("markers").add({
-    x, y, icon, name, category
-  });
-  return doc.id;
+async function createMarkerInFirebase(x, y, icon, name) {
+  if (!firebaseReady) return null;
+  try {
+    const docRef = await db.collection("markers").add({ x, y, icon, name });
+    return docRef.id;
+  } catch (err) {
+    console.warn("Erreur Firestore (create) -> marqueur LOCAL uniquement :", err);
+    return null;
+  }
 }
 
 async function updateMarkerInFirebase(marker, data) {
+  if (!firebaseReady) return;
   const id = marker.dataset.id;
-  if (id) await db.collection("markers").doc(id).update(data);
+  if (!id) return;
+  try {
+    await db.collection("markers").doc(id).update(data);
+  } catch (err) {
+    console.warn("Erreur Firestore (update) ignorée :", err);
+  }
 }
 
 async function deleteMarkerInFirebase(marker) {
+  if (!firebaseReady) return;
   const id = marker.dataset.id;
-  if (id) await db.collection("markers").doc(id).delete();
+  if (!id) return;
+  try {
+    await db.collection("markers").doc(id).delete();
+  } catch (err) {
+    console.warn("Erreur Firestore (delete) ignorée :", err);
+  }
+}
+
+async function loadMarkersFromFirebase() {
+  if (!firebaseReady) return;
+  try {
+    const snapshot = await db.collection("markers").get();
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      addMarker(d.x, d.y, d.icon, d.name, doc.id);
+    });
+  } catch (err) {
+    console.warn("Erreur Firestore (load) -> on continue sans :", err);
+  }
 }
 
 /* ============================================================
-   AJOUT MARKER
+   AJOUT DOM DU MARQUEUR
 ============================================================ */
-function addMarker(x, y, icon, name, id, category) {
-
-  if (markers.some(m => m.dataset.id === id)) return;
-
+function addMarker(x, y, icon, name, id = null) {
   const img = document.createElement("img");
   img.src = "icons/" + icon;
   img.className = "marker";
+  img.title = name;
 
   img.dataset.x = x;
   img.dataset.y = y;
   img.dataset.icon = icon;
-  img.dataset.id = id;
-  img.dataset.name = name;
-  img.dataset.category = category || "Non défini";
+  if (id) img.dataset.id = id;
 
-  // TOOLTIP
-  img.addEventListener("mouseenter", () => {
-    tooltip.innerHTML = `
-      <img src="icons/${img.dataset.icon}">
-      <div>
-        <div style="font-weight:bold;">${img.dataset.name}</div>
-        <div style="font-size:11px;opacity:0.7;">
-          ${img.dataset.category}
-        </div>
-      </div>
-    `;
-    tooltip.classList.add("show");
-  });
+  // tooltip (si présent dans le HTML)
+  if (tooltip) {
+    img.addEventListener("mouseenter", () => {
+      tooltip.textContent = img.title;
+      tooltip.classList.remove("hidden");
+    });
 
-  img.addEventListener("mouseleave", () => {
-    tooltip.classList.remove("show");
-  });
+    img.addEventListener("mouseleave", () => {
+      tooltip.classList.add("hidden");
+    });
 
-  img.addEventListener("mousemove", (e) => {
-    tooltip.style.left = (e.pageX + 12) + "px";
-    tooltip.style.top = (e.pageY - 20) + "px";
-  });
+    img.addEventListener("mousemove", (e) => {
+      tooltip.style.left = e.pageX + "px";
+      tooltip.style.top = (e.pageY - 25) + "px";
+    });
+  }
 
-  // CLIC DROIT
+  // menu clic droit sur marqueur
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
-    e.stopPropagation();
-
     selectedMarker = img;
+    moveMode = false;
 
     markerMenu.style.left = e.pageX + "px";
     markerMenu.style.top = e.pageY + "px";
@@ -225,21 +244,25 @@ function addMarker(x, y, icon, name, id, category) {
 
   markerLayer.appendChild(img);
   markers.push(img);
+
   updateMarkerDisplay();
 }
 
 /* ============================================================
-   NOUVEAU POINT
+   BOUTON : NOUVEAU POINT
 ============================================================ */
 document.getElementById("new-point-btn").addEventListener("click", () => {
   waitingForPlacement = true;
   step1.classList.remove("hidden");
 });
 
-mapContainer.addEventListener("click", async (e) => {
-
+/* ============================================================
+   CLICK SUR LA CARTE
+============================================================ */
+mapContainer.addEventListener("click", (e) => {
   if (isDragging) return;
 
+  // déplacement d'un marqueur existant
   if (moveMode && selectedMarker) {
     const rect = mapContainer.getBoundingClientRect();
     const x = (e.clientX - rect.left - posX) / scale;
@@ -248,14 +271,14 @@ mapContainer.addEventListener("click", async (e) => {
     selectedMarker.dataset.x = x;
     selectedMarker.dataset.y = y;
 
-    await updateMarkerInFirebase(selectedMarker, { x, y });
-
     moveMode = false;
-    selectedMarker = null;
     updateMarkerDisplay();
+    updateMarkerInFirebase(selectedMarker, { x, y });
+    selectedMarker = null;
     return;
   }
 
+  // mode ajout
   if (!waitingForPlacement) return;
 
   const rect = mapContainer.getBoundingClientRect();
@@ -268,22 +291,39 @@ mapContainer.addEventListener("click", async (e) => {
 });
 
 /* ============================================================
-   VALIDATION
+   PREVIEW ICONE
 ============================================================ */
-document.getElementById("validate-point").addEventListener("click", async () => {
+pointIcon.addEventListener("change", () => {
+  if (!pointIcon.value) {
+    iconPreview.classList.add("hidden");
+    return;
+  }
+  iconPreview.src = "icons/" + pointIcon.value;
+  iconPreview.classList.remove("hidden");
+});
 
-  if (!pointName.value || !pointIcon.value) return;
+/* ============================================================
+   VALIDATION POINT (CREATION + MODIF)
+============================================================ */
+const validateBtn =
+  document.getElementById("validate-point") ||
+  document.getElementById("save-point"); // sécurité si ancien id
 
+validateBtn.addEventListener("click", async () => {
+  if (!pointName.value || !pointIcon.value) {
+    alert("Nom + Icône obligatoires !");
+    return;
+  }
+
+  /* --- MODE MODIFICATION --- */
   if (editMode && selectedMarker) {
-
-    selectedMarker.dataset.name = pointName.value;
-    selectedMarker.dataset.category = pointCategory.value;
+    selectedMarker.title = pointName.value;
     selectedMarker.src = "icons/" + pointIcon.value;
+    selectedMarker.dataset.icon = pointIcon.value;
 
     await updateMarkerInFirebase(selectedMarker, {
       name: pointName.value,
-      icon: pointIcon.value,
-      category: pointCategory.value
+      icon: pointIcon.value
     });
 
     editMode = false;
@@ -292,70 +332,62 @@ document.getElementById("validate-point").addEventListener("click", async () => 
     return;
   }
 
-  const id = await createMarkerInFirebase(
-    tempX,
-    tempY,
-    pointIcon.value,
-    pointName.value,
-    pointCategory.value
-  );
+  /* --- MODE CREATION --- */
+  let id = null;
+  if (firebaseReady) {
+    id = await createMarkerInFirebase(
+      tempX,
+      tempY,
+      pointIcon.value,
+      pointName.value
+    );
+  }
 
-  addMarker(
-    tempX,
-    tempY,
-    pointIcon.value,
-    pointName.value,
-    id,
-    pointCategory.value
-  );
+  // même si Firebase a échoué, on ajoute le point en local
+  addMarker(tempX, tempY, pointIcon.value, pointName.value, id);
 
   pointMenu.classList.add("hidden");
 });
 
 /* ============================================================
-   ANNULER (FIX COMPLET)
+   ANNULER
 ============================================================ */
 document.getElementById("cancel-point").addEventListener("click", () => {
-
   pointMenu.classList.add("hidden");
   step1.classList.add("hidden");
-
   waitingForPlacement = false;
   editMode = false;
   moveMode = false;
   selectedMarker = null;
-
-  pointName.value = "";
-  pointIcon.value = "";
-  if (pointCategory) pointCategory.value = "";
 });
 
 /* ============================================================
-   MENU ACTIONS
+   MENU CLIC DROIT
 ============================================================ */
 deleteBtn.addEventListener("click", async () => {
   if (!selectedMarker) return;
 
   await deleteMarkerInFirebase(selectedMarker);
-
   selectedMarker.remove();
   markers = markers.filter(m => m !== selectedMarker);
 
-  selectedMarker = null;
   markerMenu.style.display = "none";
+  selectedMarker = null;
 });
 
 editBtn.addEventListener("click", () => {
   if (!selectedMarker) return;
 
   editMode = true;
+  markerMenu.style.display = "none";
 
-  pointName.value = selectedMarker.dataset.name;
+  pointName.value = selectedMarker.title;
   pointIcon.value = selectedMarker.dataset.icon;
-  if (pointCategory) pointCategory.value = selectedMarker.dataset.category;
+
+  iconPreview.src = selectedMarker.src;
+  iconPreview.classList.remove("hidden");
 
   pointMenu.classList.remove("hidden");
-  markerMenu.style.display = "none";
 });
 
 moveBtn.addEventListener("click", () => {
@@ -364,51 +396,12 @@ moveBtn.addEventListener("click", () => {
   markerMenu.style.display = "none";
 });
 
-/* ============================================================
-   FERMETURE MENU CLIC DROIT
-============================================================ */
-document.addEventListener("click", (e) => {
-
-  if (e.target.classList.contains("marker")) return;
-  if (markerMenu.contains(e.target)) return;
-
-  markerMenu.style.display = "none";
+/* Fermer menu clic droit si on clique ailleurs */
+window.addEventListener("click", () => {
+  if (!moveMode) markerMenu.style.display = "none";
 });
 
 /* ============================================================
-   TEMPS REEL FIRESTORE
+   CHARGEMENT INITIAL DES MARKERS
 ============================================================ */
-db.collection("markers").onSnapshot(snapshot => {
-
-  snapshot.docChanges().forEach(change => {
-
-    const doc = change.doc;
-    const d = doc.data();
-
-    if (change.type === "added") {
-      addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category);
-    }
-
-    if (change.type === "modified") {
-      const marker = markers.find(m => m.dataset.id === doc.id);
-      if (marker) {
-        marker.dataset.x = d.x;
-        marker.dataset.y = d.y;
-        marker.dataset.name = d.name;
-        marker.dataset.category = d.category;
-        marker.src = "icons/" + d.icon;
-        updateMarkerDisplay();
-      }
-    }
-
-    if (change.type === "removed") {
-      const marker = markers.find(m => m.dataset.id === doc.id);
-      if (marker) {
-        marker.remove();
-        markers = markers.filter(m => m !== marker);
-      }
-    }
-
-  });
-
-});
+loadMarkersFromFirebase();

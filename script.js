@@ -194,46 +194,46 @@ async function deleteMarkerInFirebase(marker) {
 ============================================================ */
 function addMarker(x, y, icon, name, id, category) {
 
-  if (markers.some(m => m.dataset.id === id)) return;
-
   const img = document.createElement("img");
   img.src = "icons/" + icon;
   img.className = "marker";
 
+  // DATA
   img.dataset.x = x;
   img.dataset.y = y;
-  img.dataset.icon = icon;
   img.dataset.id = id;
   img.dataset.name = name;
   img.dataset.category = category || "Non défini";
+  img.dataset.icon = icon;
 
-  // TOOLTIP
-img.addEventListener("mouseenter", () => {
+  img.title = name; // sécurité navigateur
 
-    const markerName = img.dataset.name || "Sans nom";
-    const markerCategory = img.dataset.category || "Non défini";
-
+  /* =========================
+     TOOLTIP
+  ========================= */
+  img.addEventListener("mouseenter", () => {
     tooltip.innerHTML = `
-        <div style="font-weight:bold;">${markerName}</div>
-        <div style="font-size:12px; opacity:0.8;">${markerCategory}</div>
+      <div style="font-weight:bold;">${img.dataset.name}</div>
+      <div style="font-size:12px;opacity:0.8;">${img.dataset.category}</div>
     `;
-
     tooltip.classList.remove("hidden");
-});
+  });
 
   img.addEventListener("mouseleave", () => {
-    tooltip.classList.remove("show");
+    tooltip.classList.add("hidden");
   });
 
   img.addEventListener("mousemove", (e) => {
-    tooltip.style.left = (e.pageX + 12) + "px";
+    tooltip.style.left = (e.pageX + 10) + "px";
     tooltip.style.top = (e.pageY - 20) + "px";
   });
 
-  // CLIC DROIT
+  /* =========================
+     CLIC DROIT (FIX)
+  ========================= */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation(); // 🔥 TRÈS IMPORTANT
 
     selectedMarker = img;
 
@@ -244,6 +244,7 @@ img.addEventListener("mouseenter", () => {
 
   markerLayer.appendChild(img);
   markers.push(img);
+
   updateMarkerDisplay();
   buildFilterMenu();
 
@@ -389,11 +390,12 @@ moveBtn.addEventListener("click", () => {
    FERMETURE MENU CLIC DROIT
 ============================================================ */
 document.addEventListener("click", (e) => {
-
-  if (e.target.classList.contains("marker")) return;
-  if (markerMenu.contains(e.target)) return;
-
-  markerMenu.style.display = "none";
+  if (
+    !markerMenu.contains(e.target) &&
+    !e.target.classList.contains("marker")
+  ) {
+    markerMenu.style.display = "none";
+  }
 });
 
 /* ============================================================

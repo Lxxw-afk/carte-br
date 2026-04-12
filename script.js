@@ -77,6 +77,11 @@ document.addEventListener("click", (e) => {
   if (!filterPanel.contains(e.target) && e.target !== toggleFilterBtn) {
     filterPanel.classList.add("hidden");
   }
+
+  /* 🔥 FERME LE MENU CLIC DROIT */
+  if (!markerMenu.contains(e.target)) {
+    markerMenu.classList.add("hidden");
+  }
 });
 
 function buildFilterMenu() {
@@ -211,14 +216,12 @@ function addMarker(x, y, icon, name, id, category) {
   img.dataset.category = category || "Non défini";
 
   img.addEventListener("mouseenter", () => {
-
     tooltip.innerHTML = `
       <div style="text-align:center;">
         <b>${name}</b><br>
         ${category}
       </div>
     `;
-
     tooltip.classList.add("show");
 
     const xPos = (parseFloat(img.dataset.x) * scale) + posX;
@@ -232,14 +235,15 @@ function addMarker(x, y, icon, name, id, category) {
     tooltip.classList.remove("show");
   });
 
+  /* 🔥 FIX CLIC DROIT */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
 
     selectedMarker = img;
 
+    markerMenu.classList.remove("hidden");
     markerMenu.style.left = e.pageX + "px";
     markerMenu.style.top = e.pageY + "px";
-    markerMenu.style.display = "flex";
   });
 
   markerLayer.appendChild(img);

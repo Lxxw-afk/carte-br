@@ -13,7 +13,7 @@ html, body {
 }
 
 /* ============================================================
-   APP (IMPORTANT POUR PLEIN ÉCRAN)
+   APP
 ============================================================ */
 
 #app {
@@ -23,7 +23,7 @@ html, body {
 }
 
 /* ============================================================
-   TOPBAR (overlay propre, PAS de réduction de map)
+   TOPBAR
 ============================================================ */
 
 #topbar {
@@ -41,11 +41,9 @@ html, body {
     border-radius: 10px;
 
     z-index: 2000;
-
     max-width: 95vw;
 }
 
-/* titre */
 #topbar h1 {
     margin: 0;
     font-size: 18px;
@@ -53,7 +51,6 @@ html, body {
     white-space: nowrap;
 }
 
-/* boutons / input */
 #new-point-btn,
 #search-input,
 #toggle-filter {
@@ -71,7 +68,7 @@ html, body {
 }
 
 /* ============================================================
-   MAP (FIX PRINCIPAL)
+   MAP
 ============================================================ */
 
 #map-container {
@@ -84,7 +81,6 @@ html, body {
     cursor: grab;
 }
 
-/* IMPORTANT : pas de contrainte */
 #map-inner {
     position: absolute;
     top: 0;
@@ -93,7 +89,6 @@ html, body {
     transform-origin: 0 0;
 }
 
-/* IMAGE MAP = taille réelle contrôlée par JS */
 #map {
     display: block;
     user-select: none;
@@ -130,6 +125,8 @@ html, body {
     display: none;
     gap: 8px;
     align-items: center;
+
+    pointer-events: none;
 }
 
 #tooltip.show {
@@ -165,7 +162,6 @@ html, body {
     gap: 8px;
 }
 
-/* inputs */
 #point-menu input,
 #point-menu select {
     padding: 8px;
@@ -174,18 +170,18 @@ html, body {
 }
 
 /* ============================================================
-   MENU CLIC DROIT
+   MENU CLIC DROIT (FIX IMPORTANT)
 ============================================================ */
 
 #marker-menu {
-    position: absolute;
+    position: fixed; /* 🔥 FIX IMPORTANT */
     background: #222;
     border-radius: 6px;
 
     display: none;
     flex-direction: column;
 
-    z-index: 9999;
+    z-index: 999999; /* 🔥 AU DESSUS DE TOUT */
 }
 
 #marker-menu button {
@@ -254,7 +250,7 @@ html, body {
 }
 
 /* ============================================================
-   LOGIN
+   LOGIN (FIX IMAGE)
 ============================================================ */
 
 #login-screen {
@@ -263,10 +259,12 @@ html, body {
     z-index: 99999;
 }
 
+/* 🔥 FIX IMPORTANT : plus de zoom */
 #login-screen img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* au lieu de cover */
+    background: black;
 }
 
 #login-box {

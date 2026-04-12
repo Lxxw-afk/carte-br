@@ -485,4 +485,4 @@ function applyFilters() {
     }
 
   });
-}
+

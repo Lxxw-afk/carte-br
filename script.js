@@ -94,22 +94,15 @@ document.addEventListener("click", (e) => {
 
 function buildFilterMenu() {
 
-  const categories = new Map();
+  const categories = new Set();
 
-  // compter les markers par catégorie
   markers.forEach(m => {
-    const cat = m.dataset.category || "Non défini";
-
-    if (!categories.has(cat)) {
-      categories.set(cat, 1);
-    } else {
-      categories.set(cat, categories.get(cat) + 1);
-    
-  };
+    categories.add(m.dataset.category || "Non défini");
+  });
 
   filterPanel.innerHTML = "";
 
-  categories.forEach((count, cat) => {
+  categories.forEach(cat => {
 
     if (!activeCategories.has(cat)) {
       activeCategories.add(cat);
@@ -118,7 +111,7 @@ function buildFilterMenu() {
     const label = document.createElement("label");
 
     const text = document.createElement("span");
-    text.textContent = `${cat} (${count})`;
+    text.textContent = cat;
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -139,12 +132,6 @@ function buildFilterMenu() {
   });
 
   applyFilters();
-    });
-
-    label.appendChild(text);
-    label.appendChild(checkbox);
-    filterPanel.appendChild(label);
-  });
 }
 
 function applyFilters() {

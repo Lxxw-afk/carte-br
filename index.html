@@ -8,7 +8,7 @@
 
 <body>
 
-<!-- LOGIN -->
+<!-- ================= LOGIN ================= -->
 <div id="login-screen">
     <img src="images/Brigade2recherches.png" id="login-bg">
 
@@ -19,18 +19,17 @@
     </div>
 </div>
 
-<!-- APP -->
+<!-- ================= APP ================= -->
 <div id="app" class="hidden">
 
     <div id="topbar">
         <h1>BRIGADE DE RECHERCHE</h1>
 
         <button id="new-point-btn">Nouveau point</button>
-
-        <input type="text" id="search-input" placeholder="Rechercher un point">
+        <input id="search-input" placeholder="Rechercher">
 
         <div id="filter-menu">
-            <button id="toggle-filter">☰ CATÉGORIES</button>
+            <button id="toggle-filter">Catégories</button>
             <div id="filter-panel" class="hidden"></div>
         </div>
     </div>
@@ -49,29 +48,26 @@
     </div>
 
     <div id="point-menu" class="hidden">
-        <div class="point-box">
+        <input id="point-name" placeholder="Nom">
+        <select id="point-icon"></select>
 
-            <label>Nom :</label>
-            <input id="point-name" type="text">
+        <select id="point-category">
+            <option value="">Choisir</option>
+            <option value="Drogue">Drogue</option>
+            <option value="Entrepôt">Entrepôt</option>
+            <option value="QG">QG</option>
+            <option value="Munition">Munition</option>
+            <option value="PNJ">PNJ</option>
+        </select>
 
-            <label>Icône :</label>
-            <select id="point-icon"></select>
+        <button id="validate-point">Valider</button>
+        <button id="cancel-point">Annuler</button>
+    </div>
 
-            <label>Catégorie :</label>
-            <select id="point-category">
-                <option value="">Choisir</option>
-                <option value="Drogue">Drogue</option>
-                <option value="Entrepôt">Entrepôt</option>
-                <option value="QG">QG</option>
-                <option value="Munition">Munition</option>
-                <option value="Trafic d'organe">Trafic d'organe</option>
-                <option value="PNJ">PNJ</option>
-            </select>
-
-            <button id="validate-point">Valider</button>
-            <button id="cancel-point">Annuler</button>
-
-        </div>
+    <div id="marker-menu" class="hidden">
+        <button id="edit-marker">Modifier</button>
+        <button id="move-marker">Déplacer</button>
+        <button id="delete-marker">Supprimer</button>
     </div>
 
     <div id="tooltip"></div>

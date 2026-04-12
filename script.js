@@ -139,7 +139,6 @@ function buildFilterMenu() {
   });
 
   applyFilters();
-}
     });
 
     label.appendChild(text);

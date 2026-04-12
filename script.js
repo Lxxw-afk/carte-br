@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-/* ================= DOM ================= */
+/* ============================================================
+   VARIABLES DOM
+============================================================ */
 
 const mapContainer = document.getElementById("map-container");
 const mapInner = document.getElementById("map-inner");
@@ -20,7 +22,12 @@ const editBtn = document.getElementById("edit-marker");
 const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
-/* ================= LOGIN ================= */
+const validateBtn = document.getElementById("validate-point");
+const cancelBtn = document.getElementById("cancel-point");
+
+/* ============================================================
+   LOGIN
+============================================================ */
 
 const loginScreen = document.getElementById("login-screen");
 const app = document.getElementById("app");
@@ -38,7 +45,9 @@ loginBtn.addEventListener("click", () => {
   }
 });
 
-/* ================= FIREBASE ================= */
+/* ============================================================
+   FIREBASE
+============================================================ */
 
 const firebaseConfig = {
   apiKey: "AIzaSyAoiD4sgUaamp0SGOBvx3A7FGjw4E3K4TE",
@@ -49,7 +58,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* ================= VARIABLES ================= */
+/* ============================================================
+   VARIABLES
+============================================================ */
 
 let posX = 0, posY = 0;
 let scale = 1;
@@ -61,9 +72,12 @@ let editMode = false;
 
 let selectedMarker = null;
 let markers = [];
+
 let tempX = 0, tempY = 0;
 
-/* ================= DRAG ================= */
+/* ============================================================
+   DRAG + LIMITES (MUR INVISIBLE FIX)
+============================================================ */
 
 mapContainer.addEventListener("mousedown", (e) => {
   if (waitingForPlacement || moveMode) return;
@@ -89,7 +103,9 @@ window.addEventListener("mouseup", () => {
   mapContainer.style.cursor = "grab";
 });
 
-/* ================= ZOOM ================= */
+/* ============================================================
+   ZOOM
+============================================================ */
 
 mapContainer.addEventListener("wheel", (e) => {
   e.preventDefault();
@@ -107,7 +123,9 @@ mapContainer.addEventListener("wheel", (e) => {
   updateMap();
 });
 
-/* ================= MAP ================= */
+/* ============================================================
+   UPDATE MAP (LIMITES FIX)
+============================================================ */
 
 function updateMap() {
 
@@ -129,6 +147,10 @@ function updateMap() {
   updateMarkerDisplay();
 }
 
+/* ============================================================
+   MARKERS DISPLAY
+============================================================ */
+
 function updateMarkerDisplay() {
   markers.forEach(marker => {
     const x = parseFloat(marker.dataset.x);
@@ -136,16 +158,12 @@ function updateMarkerDisplay() {
 
     marker.style.left = (x * scale) + "px";
     marker.style.top = (y * scale) + "px";
-
-    let size = 26 / scale;
-    size = Math.max(18, Math.min(32, size));
-
-    marker.style.width = size + "px";
-    marker.style.height = size + "px";
   });
 }
 
-/* ================= MARKERS ================= */
+/* ============================================================
+   ADD MARKER
+============================================================ */
 
 function addMarker(x, y, icon, name, id, category) {
 
@@ -169,7 +187,7 @@ function addMarker(x, y, icon, name, id, category) {
     const yPos = (y * scale) + posY;
 
     tooltip.style.left = xPos + "px";
-    tooltip.style.top = (yPos - 10) + "px";
+    tooltip.style.top = (yPos - 20) + "px";
   });
 
   img.addEventListener("mouseleave", () => {
@@ -193,48 +211,13 @@ function addMarker(x, y, icon, name, id, category) {
   updateMarkerDisplay();
 }
 
-/* ================= CLICK MAP ================= */
+/* ============================================================
+   ACTIONS MENU (🔥 FIX)
+============================================================ */
 
-mapContainer.addEventListener("click", async (e) => {
-
-  // 🔥 DEPLACEMENT
-  if (moveMode && selectedMarker) {
-
-    const rect = mapContainer.getBoundingClientRect();
-
-    const x = (e.clientX - rect.left - posX) / scale;
-    const y = (e.clientY - rect.top - posY) / scale;
-
-    selectedMarker.dataset.x = x;
-    selectedMarker.dataset.y = y;
-
-    const id = selectedMarker.dataset.id;
-
-    await db.collection("markers").doc(id).update({ x, y });
-
-    moveMode = false;
-    selectedMarker = null;
-
-    updateMarkerDisplay();
-    return;
-  }
-
-  // 🔥 AJOUT
-  if (!waitingForPlacement) return;
-
-  const rect = mapContainer.getBoundingClientRect();
-
-  tempX = (e.clientX - rect.left - posX) / scale;
-  tempY = (e.clientY - rect.top - posY) / scale;
-
-  waitingForPlacement = false;
-  step1.classList.add("hidden");
-  pointMenu.classList.remove("hidden");
-});
-
-/* ================= ACTIONS MENU ================= */
-
+/* MODIFIER */
 editBtn.addEventListener("click", () => {
+
   if (!selectedMarker) return;
 
   editMode = true;
@@ -247,28 +230,126 @@ editBtn.addEventListener("click", () => {
   markerMenu.classList.add("hidden");
 });
 
+/* SUPPRIMER */
+deleteBtn.addEventListener("click", async () => {
+
+  if (!selectedMarker) return;
+
+  await db.collection("markers").doc(selectedMarker.dataset.id).delete();
+
+  selectedMarker.remove();
+  markers = markers.filter(m => m !== selectedMarker);
+
+  markerMenu.classList.add("hidden");
+});
+
+/* DEPLACER */
 moveBtn.addEventListener("click", () => {
+
   if (!selectedMarker) return;
 
   moveMode = true;
   markerMenu.classList.add("hidden");
 });
 
-deleteBtn.addEventListener("click", async () => {
-  if (!selectedMarker) return;
+/* ============================================================
+   CLICK MAP
+============================================================ */
 
-  const id = selectedMarker.dataset.id;
+mapContainer.addEventListener("click", async (e) => {
 
-  await db.collection("markers").doc(id).delete();
+  const rect = mapContainer.getBoundingClientRect();
 
-  selectedMarker.remove();
-  markers = markers.filter(m => m !== selectedMarker);
+  const x = (e.clientX - rect.left - posX) / scale;
+  const y = (e.clientY - rect.top - posY) / scale;
 
-  selectedMarker = null;
-  markerMenu.classList.add("hidden");
+  /* MOVE */
+  if (moveMode && selectedMarker) {
+
+    selectedMarker.dataset.x = x;
+    selectedMarker.dataset.y = y;
+
+    await db.collection("markers").doc(selectedMarker.dataset.id).update({ x, y });
+
+    moveMode = false;
+    selectedMarker = null;
+
+    updateMarkerDisplay();
+    return;
+  }
+
+  /* NEW POINT */
+  if (!waitingForPlacement) return;
+
+  tempX = x;
+  tempY = y;
+
+  waitingForPlacement = false;
+  step1.classList.add("hidden");
+  pointMenu.classList.remove("hidden");
 });
 
-/* ================= FIREBASE ================= */
+/* ============================================================
+   VALIDER (🔥 FIX COMPLET)
+============================================================ */
+
+validateBtn.addEventListener("click", async () => {
+
+  if (!pointName.value) return;
+
+  /* EDIT */
+  if (editMode && selectedMarker) {
+
+    selectedMarker.dataset.name = pointName.value;
+    selectedMarker.dataset.category = pointCategory.value;
+    selectedMarker.dataset.icon = pointIcon.value;
+    selectedMarker.src = "icons/" + pointIcon.value;
+
+    await db.collection("markers").doc(selectedMarker.dataset.id).update({
+      name: pointName.value,
+      category: pointCategory.value,
+      icon: pointIcon.value
+    });
+
+    editMode = false;
+    selectedMarker = null;
+
+    pointMenu.classList.add("hidden");
+    return;
+  }
+
+  /* CREATE */
+  const doc = await db.collection("markers").add({
+    x: tempX,
+    y: tempY,
+    name: pointName.value,
+    icon: pointIcon.value,
+    category: pointCategory.value
+  });
+
+  addMarker(tempX, tempY, pointIcon.value, pointName.value, doc.id, pointCategory.value);
+
+  pointMenu.classList.add("hidden");
+});
+
+/* ============================================================
+   ANNULER (🔥 FIX)
+============================================================ */
+
+cancelBtn.addEventListener("click", () => {
+
+  pointMenu.classList.add("hidden");
+  step1.classList.add("hidden");
+
+  waitingForPlacement = false;
+  editMode = false;
+  moveMode = false;
+  selectedMarker = null;
+});
+
+/* ============================================================
+   FIRESTORE LIVE
+============================================================ */
 
 db.collection("markers").onSnapshot(snapshot => {
 
@@ -280,6 +361,25 @@ db.collection("markers").onSnapshot(snapshot => {
     addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category);
   });
 
+});
+
+/* ============================================================
+   NEW POINT BUTTON
+============================================================ */
+
+document.getElementById("new-point-btn").addEventListener("click", () => {
+  waitingForPlacement = true;
+  step1.classList.remove("hidden");
+});
+
+/* ============================================================
+   CLOSE MENU
+============================================================ */
+
+document.addEventListener("click", (e) => {
+  if (!markerMenu.contains(e.target)) {
+    markerMenu.classList.add("hidden");
+  }
 });
 
 });

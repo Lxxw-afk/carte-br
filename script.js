@@ -203,8 +203,33 @@ function addMarker(x, y, icon, name, id, category) {
 
   img.dataset.x = x;
   img.dataset.y = y;
+  img.dataset.id = id;
   img.dataset.name = name;
   img.dataset.category = category || "Non défini";
+  img.dataset.icon = icon;
+
+  img.addEventListener("mouseenter", () => {
+
+    tooltip.innerHTML = `
+      <img src="icons/${icon}">
+      <div>
+        <b>${name}</b><br>
+        ${category}
+      </div>
+    `;
+
+    tooltip.classList.add("show");
+
+    /* 🔥 POSITION SOUS LE POINT */
+    const rect = img.getBoundingClientRect();
+
+    tooltip.style.left = rect.left + rect.width / 2 + "px";
+    tooltip.style.top = rect.top + "px";
+  });
+
+  img.addEventListener("mouseleave", () => {
+    tooltip.classList.remove("show");
+  });
 
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
@@ -216,22 +241,13 @@ function addMarker(x, y, icon, name, id, category) {
     markerMenu.style.display = "flex";
   });
 
-  img.addEventListener("mouseenter", () => {
-    tooltip.innerHTML = name;
-    tooltip.classList.add("show");
-  });
-
-  img.addEventListener("mouseleave", () => {
-    tooltip.classList.remove("show");
-  });
-
   markerLayer.appendChild(img);
   markers.push(img);
 
+  updateMarkerDisplay();
   buildFilterMenu();
   applyFilters();
 }
-
 /* ================= CLICK MAP ================= */
 
 mapContainer.addEventListener("click", (e) => {

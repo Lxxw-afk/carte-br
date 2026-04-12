@@ -1,30 +1,11 @@
-/* ============================================================
-   BASE
-============================================================ */
-
-html, body {
+body {
     margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
     background: #003F87;
+    overflow: hidden;
+    font-family: Arial;
 }
 
-/* ============================================================
-   APP (IMPORTANT POUR PLEIN ÉCRAN)
-============================================================ */
-
-#app {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-}
-
-/* ============================================================
-   TOPBAR (overlay propre, PAS de réduction de map)
-============================================================ */
+/* ================= TOP BAR ================= */
 
 #topbar {
     position: fixed;
@@ -33,76 +14,81 @@ html, body {
 
     display: flex;
     align-items: center;
-    gap: 12px;
 
-    padding: 8px 12px;
+    gap: 20px;
 
-    background: rgba(0,0,0,0.55);
-    border-radius: 10px;
+    padding: 10px 20px;
+
+    background: rgba(0,0,0,0.5);
+    border-radius: 12px;
 
     z-index: 2000;
-
-    max-width: 95vw;
 }
 
-/* titre */
+/* TITRE */
 #topbar h1 {
     margin: 0;
-    font-size: 18px;
+    font-size: 26px;
+    font-weight: bold;
     color: white;
-    white-space: nowrap;
 }
 
-/* boutons / input */
+/* BOUTONS */
 #new-point-btn,
-#search-input,
-#toggle-filter {
-    height: 38px;
-    padding: 0 12px;
+#search-input {
+    height: 44px;
+    padding: 0 18px;
 
-    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
     border: none;
 
     font-weight: bold;
-    background: rgba(255,255,255,0.15);
-    color: white;
+    text-transform: uppercase;
 
-    outline: none;
+    box-sizing: border-box;
+
+    line-height: 1;
 }
 
-/* ============================================================
-   MAP (FIX PRINCIPAL)
-============================================================ */
+/* NOUVEAU POINT */
+#new-point-btn {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    cursor: pointer;
+}
+
+/* RECHERCHE */
+#search-input {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    text-align: center;
+}
+
+/* ================= MAP ================= */
 
 #map-container {
-    position: absolute;
-    inset: 0;
     width: 100vw;
     height: 100vh;
-
     overflow: hidden;
+    position: relative;
     cursor: grab;
 }
 
-/* IMPORTANT : pas de contrainte */
 #map-inner {
     position: absolute;
-    top: 0;
-    left: 0;
-
     transform-origin: 0 0;
 }
 
-/* IMAGE MAP = taille réelle contrôlée par JS */
 #map {
-    display: block;
-    user-select: none;
     pointer-events: none;
+    user-select: none;
 }
 
-/* ============================================================
-   MARKERS
-============================================================ */
+/* ================= MARKERS ================= */
 
 .marker {
     position: absolute;
@@ -112,178 +98,44 @@ html, body {
     z-index: 4000;
 }
 
-/* ============================================================
-   TOOLTIP
-============================================================ */
+/* ================= TOOLTIP ================= */
 
 #tooltip {
     position: fixed;
-    background: rgba(20,20,20,0.9);
+    background: rgba(20,20,20,0.85);
     color: white;
-
-    padding: 8px 10px;
-    border-radius: 8px;
-
-    font-size: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    pointer-events: none;
     z-index: 10000;
-
     display: none;
-    gap: 8px;
-    align-items: center;
 }
 
 #tooltip.show {
     display: flex;
 }
 
-#tooltip img {
-    width: 20px;
-    height: 20px;
-}
-
-/* ============================================================
-   POINT MENU
-============================================================ */
+/* ================= POINT MENU ================= */
 
 #point-menu {
     position: fixed;
-    bottom: 30px;
+    bottom: 40px;
     left: 50%;
     transform: translateX(-50%);
-
     background: rgba(0,0,0,0.9);
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
-
     color: white;
     z-index: 5000;
 }
 
-.point-box {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-/* inputs */
-#point-menu input,
-#point-menu select {
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
-}
-
-/* ============================================================
-   MENU CLIC DROIT
-============================================================ */
+/* ================= MENU ================= */
 
 #marker-menu {
     position: absolute;
     background: #222;
-    border-radius: 6px;
-
     display: none;
     flex-direction: column;
-
     z-index: 9999;
-}
-
-#marker-menu button {
-    background: none;
-    border: none;
-    color: white;
-
-    padding: 8px 12px;
-    cursor: pointer;
-}
-
-#marker-menu button:hover {
-    background: rgba(255,255,255,0.1);
-}
-
-/* ============================================================
-   FILTRES
-============================================================ */
-
-#filter-menu {
-    position: relative;
-}
-
-#filter-panel {
-    position: absolute;
-    top: 45px;
-    left: 0;
-
-    background: rgba(0,0,0,0.85);
-    padding: 10px;
-
-    border-radius: 8px;
-    min-width: 180px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-
-    z-index: 3000;
-}
-
-#filter-panel label {
-    display: flex;
-    justify-content: space-between;
-    color: white;
-    font-size: 13px;
-}
-
-/* ============================================================
-   CREDIT
-============================================================ */
-
-#credit-btn {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-
-    background: rgba(0,0,0,0.6);
-    color: white;
-
-    border: none;
-    padding: 6px 10px;
-
-    border-radius: 6px;
-    z-index: 9999;
-}
-
-/* ============================================================
-   LOGIN
-============================================================ */
-
-#login-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-}
-
-#login-screen img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-#login-box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    background: rgba(0,0,0,0.75);
-    padding: 20px;
-    border-radius: 10px;
-}
-
-/* ============================================================
-   UTILS
-============================================================ */
-
-.hidden {
-    display: none !important;
 }

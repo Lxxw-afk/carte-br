@@ -104,7 +104,7 @@ function buildFilterMenu() {
       categories.set(cat, 1);
     } else {
       categories.set(cat, categories.get(cat) + 1);
-    }
+    
   });
 
   filterPanel.innerHTML = "";

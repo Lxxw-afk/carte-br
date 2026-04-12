@@ -7,16 +7,61 @@ const markerLayer = document.getElementById("marker-layer");
 const tooltip = document.getElementById("tooltip");
 const markerMenu = document.getElementById("marker-menu");
 
-const step1 = document.getElementById("step1");
-const pointMenu = document.getElementById("point-menu");
+const searchInput = document.getElementById("search-input");
 
-const pointName = document.getElementById("point-name");
-const pointIcon = document.getElementById("point-icon");
-const pointCategory = document.getElementById("point-category");
+let markers = [];
+let selectedMarker = null;
 
-const editBtn = document.getElementById("edit-marker");
-const moveBtn = document.getElementById("move-marker");
-const deleteBtn = document.getElementById("delete-marker");
+/* ================= SEARCH FIX ================= */
+searchInput.addEventListener("input", () => {
+  const value = searchInput.value.toLowerCase();
+
+  markers.forEach(m => {
+    const name = (m.dataset.name || "").toLowerCase();
+    m.style.display = name.includes(value) ? "block" : "none";
+  });
+});
+
+/* ================= RIGHT CLICK FIX ================= */
+function addMarker(x, y, icon, name) {
+
+  const img = document.createElement("img");
+  img.src = "icons/" + icon;
+  img.className = "marker";
+
+  img.dataset.x = x;
+  img.dataset.y = y;
+  img.dataset.name = name;
+
+  img.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+
+    selectedMarker = img;
+
+    markerMenu.style.left = e.pageX + "px";
+    markerMenu.style.top = e.pageY + "px";
+    markerMenu.style.display = "flex";
+  });
+
+  img.addEventListener("mouseenter", () => {
+    tooltip.innerHTML = name;
+    tooltip.classList.add("show");
+  });
+
+  img.addEventListener("mouseleave", () => {
+    tooltip.classList.remove("show");
+  });
+
+  markerLayer.appendChild(img);
+  markers.push(img);
+}
+
+/* fermer menu clic droit */
+document.addEventListener("click", () => {
+  markerMenu.style.display = "none";
+});
+
+});
 
 /* ============================================================
    🔐 LOGIN

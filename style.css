@@ -5,41 +5,89 @@ body {
     font-family: Arial;
 }
 
-/* ================= TOPBAR ================= */
+/* ================= TOP BAR ================= */
+
 #topbar {
     position: fixed;
     top: 15px;
     left: 20px;
 
     display: flex;
-    align-items: center;
-    gap: 15px;
+    align-items: center; /* 🔥 aligne verticalement */
+
+    gap: 20px;
 
     padding: 10px 20px;
+
     background: rgba(0,0,0,0.5);
     border-radius: 12px;
+
     z-index: 2000;
 }
 
+/* TITRE */
 #topbar h1 {
-    color: white;
     margin: 0;
-    font-size: 20px;
+    font-size: 26px;
+    font-weight: bold;
+    color: white;
 }
 
+/* BOUTONS */
 #new-point-btn,
-#search-input,
-#toggle-filter {
-    height: 40px;
+#search-input {
+    height: 44px; /* 🔥 plus haut = plus de coupe */
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
     border: none;
-    border-radius: 8px;
-    padding: 0 12px;
+
+    font-weight: bold;
+    text-transform: uppercase;
+
+    box-sizing: border-box;
+
+    line-height: 1; /* 🔥 FIX DU TEXTE COUPÉ */
+}
+
+/* NOUVEAU POINT */
+#new-point-btn {
     background: rgba(255,255,255,0.15);
     color: white;
-    font-weight: bold;
+    cursor: pointer;
+}
+
+/* RECHERCHE */
+#search-input {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    text-align: center;
+}
+/* ================= MESSAGE STEP ================= */
+
+#step1 {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 18px;
+    z-index: 3000;
+}
+
+.hidden {
+    display: none;
 }
 
 /* ================= MAP ================= */
+
 #map-container {
     width: 100vw;
     height: 100vh;
@@ -55,114 +103,305 @@ body {
 
 #map {
     pointer-events: none;
+    user-select: none;
 }
 
 /* ================= MARKERS ================= */
+
 .marker {
     position: absolute;
     transform: translate(-50%, -50%);
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
+    z-index: 4000;
 }
 
-/* ================= TOOLTIP ================= */
+/* ================= TOOLTIP STYLE (TRANSPARENT BUTTON STYLE) ================= */
+
 #tooltip {
     position: fixed;
-    background: rgba(0,0,0,0.8);
+    background: rgba(20,20,20,0.85);
+    backdrop-filter: blur(6px);
     color: white;
-    padding: 8px;
-    border-radius: 8px;
-    font-size: 12px;
-    display: none;
-    z-index: 9999;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 10000;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    opacity: 0;
+    transform: translateY(5px);
+    transition: all 0.15s ease;
 }
 
 #tooltip.show {
-    display: flex;
-    gap: 8px;
-    align-items: center;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#tooltip img {
+    width: 22px;
+    height: 22px;
 }
 
 /* ================= POINT MENU ================= */
+
 #point-menu {
     position: fixed;
     bottom: 40px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0,0,0,0.9);
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
     color: white;
+    z-index: 5000;
 }
 
-/* ================= MARKER MENU ================= */
+.point-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.preview {
+    width: 40px;
+    height: 40px;
+    margin-top: 5px;
+}
+
+/* ================= RIGHT CLICK MENU ================= */
+
 #marker-menu {
     position: absolute;
     background: #222;
-    border-radius: 6px;
+    border: 1px solid #555;
     padding: 5px;
+    border-radius: 4px;
     display: none;
     flex-direction: column;
-    z-index: 9999;
+    z-index: 99999;
 }
 
 #marker-menu button {
-    background: none;
-    border: none;
+    background: #444;
     color: white;
-    padding: 6px;
+    border: none;
+    padding: 6px 12px;
+    text-align: left;
     cursor: pointer;
 }
 
 #marker-menu button:hover {
-    background: #444;
+    background: #666;
 }
 
-/* ================= FILTRES ================= */
-#filter-menu {
-    position: relative;
-}
+/* ================= CREDIT ================= */
 
-#filter-panel {
-    position: absolute;
-    top: 45px;
-    left: 0;
-    background: rgba(0,0,0,0.85);
-    padding: 10px;
-    border-radius: 8px;
-    min-width: 180px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-#filter-panel label {
+#credit-btn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
     color: white;
-    display: flex;
-    justify-content: space-between;
-    cursor: pointer;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: default;
+    z-index: 9999;
 }
 
-/* ================= HIDDEN ================= */
-.hidden {
-    display: none !important;
+#credit-btn:hover {
+    background: rgba(0,0,0,0.8);
 }
 
-/* ================= LOGIN ================= */
+/* ================= LOGIN SCREEN ================= */
+
 #login-screen {
     position: fixed;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 99999;
+}
+
+/* Image 1920x1080 affichée entièrement */
+#login-screen img {
+    position: absolute;
     width: 100%;
     height: 100%;
-    background: black;
-    z-index: 99999;
+    object-fit: contain;
+    background: white;
 }
 
 #login-box {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);
-    background: rgba(0,0,0,0.8);
-    padding: 20px;
+    transform: translate(-50%, -50%);
+    
+    background: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+#login-box input {
+    padding: 10px;
+    width: 200px;
+    border-radius: 6px;
+    border: none;
+    margin-bottom: 10px;
+}
+
+#login-box button {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    background: #005eff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#login-error {
+    color: red;
+    text-align: center;
+    font-weight: bold;
+}
+
+#search-input {
+    padding: 10px 16px;
+    height: 42px;
+
+    background: rgba(255,255,255,0.12); /* ✅ même esprit que bouton */
+    border: 1px solid rgba(255,255,255,0.25);
     border-radius: 10px;
+
+    color: white;
+
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    outline: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: normal; /* ✅ FIX principal */
+    box-sizing: border-box;
+}
+#search-input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+#search-input::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+
+#search-suggestions {
+    position: absolute;
+    top: 55px;
+    left: 0;
+    width: 200px;
+    background: rgba(0,0,0,0.9);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.suggestion {
+    padding: 8px 10px;
+    cursor: pointer;
+    color: white;
+    font-size: 13px;
+}
+
+.suggestion:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.hidden {
+    display: none;
+}
+#point-category {
+    padding: 6px;
+    border-radius: 5px;
+    border: none;
+    background: #ddd;
+    font-size: 14px;
+}
+#point-menu input,
+#point-menu select {
+    width: 100%;
+    padding: 8px 10px;
+
+    border-radius: 6px;
+    border: none;
+
+    background: #ddd;
+    font-size: 14px;
+
+    box-sizing: border-box;
+}
+#point-menu label {
+    font-size: 13px;
+    margin-top: 5px;
+}
+#filter-menu {
+    position: relative;
+}
+
+#toggle-filter {
+    height: 44px;
+    padding: 0 15px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#filter-panel {
+    position: absolute;
+    top: 55px;
+    left: 0;
+
+    background: rgba(255,255,255,0.15); /* 🔥 même que bouton */
+    backdrop-filter: blur(10px);
+
+    border-radius: 10px;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    min-width: 200px;
+    color: white;
+}
+
+/* items */
+#filter-panel label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-weight: bold;
+    text-transform: uppercase;
+
+    cursor: pointer;
+}
+
+/* checkbox style */
+#filter-panel input {
+    cursor: pointer;
 }

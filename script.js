@@ -76,8 +76,20 @@ const filterPanel = document.getElementById("filter-panel");
 
 let activeCategories = new Set();
 
-toggleFilterBtn.addEventListener("click", () => {
+/* =============================
+   OUVERTURE / FERMETURE MENU
+============================= */
+
+toggleFilterBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
   filterPanel.classList.toggle("hidden");
+});
+
+/* fermer si clic extérieur */
+document.addEventListener("click", (e) => {
+  if (!filterPanel.contains(e.target) && e.target !== toggleFilterBtn) {
+    filterPanel.classList.add("hidden");
+  }
 });
 
 function buildFilterMenu() {

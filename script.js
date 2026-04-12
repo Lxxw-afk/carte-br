@@ -72,13 +72,13 @@ let markers = [];
 
 let activeCategories = new Set();
 
-/* ================= TOGGLE MENU (FIX) ================= */
+/* ================= FILTER TOGGLE (FIX BUG OUVERTURE AUTO) ================= */
 
 toggleFilterBtn.addEventListener("click", () => {
-  filterPanel.classList.toggle("hidden"); // FIX IMPORTANT
+  filterPanel.classList.toggle("show");
 });
 
-/* ================= BUILD MENU ================= */
+/* ================= BUILD FILTER MENU ================= */
 
 function buildFilterMenu() {
 
@@ -92,21 +92,20 @@ function buildFilterMenu() {
 
   categories.forEach(cat => {
 
-    const count = markers.filter(m => (m.dataset.category || "Non défini") === cat).length;
-
-    // si nouvelle catégorie → activée par défaut
-    if (!activeCategories.has(cat)) {
-      activeCategories.add(cat);
-    }
+    const count = markers.filter(m =>
+      (m.dataset.category || "Non défini") === cat
+    ).length;
 
     const label = document.createElement("label");
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = activeCategories.has(cat);
-
     const text = document.createElement("span");
     text.textContent = `${cat} (${count})`;
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+
+    // IMPORTANT FIX : ne pas forcer ajout automatique cassant
+    checkbox.checked = activeCategories.has(cat);
 
     checkbox.addEventListener("change", () => {
       if (checkbox.checked) {
@@ -117,8 +116,8 @@ function buildFilterMenu() {
       applyFilters();
     });
 
-    label.appendChild(checkbox);
     label.appendChild(text);
+    label.appendChild(checkbox);
 
     filterPanel.appendChild(label);
   });
@@ -141,6 +140,8 @@ mapContainer.addEventListener("mousedown", (e) => {
   isDragging = true;
   dragStartX = e.clientX - posX;
   dragStartY = e.clientY - posY;
+
+  mapContainer.style.cursor = "grabbing";
 });
 
 window.addEventListener("mousemove", (e) => {
@@ -154,6 +155,7 @@ window.addEventListener("mousemove", (e) => {
 
 window.addEventListener("mouseup", () => {
   isDragging = false;
+  mapContainer.style.cursor = "grab";
 });
 
 /* ================= ZOOM ================= */
@@ -180,10 +182,11 @@ mapContainer.addEventListener("wheel", (e) => {
 function updateMap() {
   mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
   markerLayer.style.transform = `translate(${posX}px, ${posY}px)`;
+
   updateMarkers();
 }
 
-/* ================= MARKERS ================= */
+/* ================= UPDATE MARKERS ================= */
 
 function updateMarkers() {
   markers.forEach(m => {
@@ -201,7 +204,7 @@ function updateMarkers() {
   });
 }
 
-/* ================= ADD MARKER ================= */
+/* ================= ADD MARKER (TOOLTIP FIX + NO BREAK) ================= */
 
 function addMarker(x, y, icon, name, id, category) {
 
@@ -216,12 +219,13 @@ function addMarker(x, y, icon, name, id, category) {
   img.dataset.name = name;
   img.dataset.category = category || "Non défini";
 
+  /* TOOLTIP FIX */
   img.addEventListener("mouseenter", () => {
     tooltip.innerHTML = `
-      <img src="icons/${icon}">
+      <img src="icons/${img.dataset.icon}">
       <div>
-        <b>${name}</b><br>
-        ${category}
+        <b>${img.dataset.name}</b><br>
+        ${img.dataset.category}
       </div>
     `;
     tooltip.classList.add("show");
@@ -232,12 +236,14 @@ function addMarker(x, y, icon, name, id, category) {
   });
 
   img.addEventListener("mousemove", (e) => {
-    tooltip.style.left = (e.pageX + 10) + "px";
-    tooltip.style.top = (e.pageY + 10) + "px";
+    tooltip.style.left = (e.pageX + 12) + "px";
+    tooltip.style.top = (e.pageY + 12) + "px";
   });
 
+  /* MENU CLICK DROIT */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
+
     selectedMarker = img;
 
     markerMenu.style.left = e.pageX + "px";

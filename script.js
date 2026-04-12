@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-
+const mapContainer = document.getElementById("map-container");
+const mapInner = document.getElementById("map-inner");
+const markerLayer = document.getElementById("marker-layer");
 const mapContainer = document.getElementById("map-container");
 const mapInner = document.getElementById("map-inner");
 const markerLayer = document.getElementById("marker-layer");

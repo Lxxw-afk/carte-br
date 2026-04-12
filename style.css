@@ -94,17 +94,19 @@ position:absolute;
 transform:translate(-50%,-50%);
 width:28px;
 height:28px;
+z-index:5000;
 }
 
 /* TOOLTIP */
 #tooltip {
 position:fixed;
-background:rgba(0,0,0,0.8);
+background:rgba(0,0,0,0.85);
 color:white;
 padding:8px;
 border-radius:6px;
 font-size:12px;
 display:none;
+z-index:99999;
 }
 
 /* CREDIT */
@@ -124,11 +126,11 @@ border-radius:8px;
 display:none;
 }
 
-/* FILTER PANEL */
+/* FILTER */
 #filter-panel {
 position:absolute;
 top:40px;
-background:rgba(0,0,0,0.7);
+background:rgba(0,0,0,0.8);
 padding:10px;
 border-radius:8px;
 color:white;

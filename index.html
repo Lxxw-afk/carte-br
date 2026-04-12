@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<title>BRIGADE DE RECHERCHES</title>
+<meta charset="UTF-8">
+<title>BRIGADE DE RECHERCHE</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -10,54 +10,61 @@
 
 <!-- LOGIN -->
 <div id="login-screen">
-    <img src="images/Brigade2recherches.png" id="login-bg">
-
-    <div id="login-box">
-        <input type="password" id="access-code" placeholder="Code d'accès">
-        <button id="login-btn">Connexion</button>
-        <div id="login-error"></div>
-    </div>
+  <div id="login-box">
+    <input type="password" id="access-code" placeholder="Code">
+    <button id="login-btn">Connexion</button>
+    <div id="login-error"></div>
+  </div>
 </div>
 
 <!-- APP -->
 <div id="app" class="hidden">
 
-    <div id="topbar">
-        <h1>BRIGADE DE RECHERCHE</h1>
-        <button id="new-point-btn">Nouveau point</button>
-        <input id="search-input" placeholder="Rechercher">
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <h1>BRIGADE</h1>
+
+    <button id="new-point-btn">Nouveau point</button>
+
+    <input id="search-input" placeholder="Rechercher">
+
+    <div id="filter-menu">
+      <button id="toggle-filter">CATÉGORIES</button>
+      <div id="filter-panel" class="hidden"></div>
     </div>
+  </div>
 
-    <button id="credit-btn">Créé par Julien Flament | Lxxw.</button>
+  <button id="credit-btn">Créé par Julien Flament</button>
 
-    <div id="step1" class="hidden">
-        👉 Cliquez sur la carte pour placer votre point.
+  <div id="step1" class="hidden">Cliquez sur la carte</div>
+
+  <div id="map-container">
+    <div id="map-inner">
+      <img id="map" src="images/map.png">
     </div>
+    <div id="marker-layer"></div>
+  </div>
 
-    <div id="map-container">
-        <div id="map-inner">
-            <img id="map" src="images/map.png">
-        </div>
-        <div id="marker-layer"></div>
-    </div>
+  <div id="point-menu" class="hidden">
+    <input id="point-name" placeholder="Nom">
+    <select id="point-icon"></select>
+    <select id="point-category">
+      <option>Drogue</option>
+      <option>Entrepôt</option>
+      <option>QG</option>
+      <option>Munition</option>
+      <option>PNJ</option>
+    </select>
 
-    <div id="point-menu" class="hidden">
-        <input id="point-name" placeholder="Nom">
+    <button id="validate-point">Valider</button>
+    <button id="cancel-point">Annuler</button>
+  </div>
 
-        <select id="point-icon"></select>
+  <div id="marker-menu" class="hidden">
+    <button id="delete-marker">Supprimer</button>
+  </div>
 
-        <select id="point-category">
-            <option value="">Choisir</option>
-            <option value="Drogue">Drogue</option>
-            <option value="Entrepôt">Entrepôt</option>
-            <option value="QG">QG</option>
-            <option value="Munition">Munition</option>
-            <option value="PNJ">PNJ</option>
-        </select>
-
-        <button id="validate-point">Valider</button>
-        <button id="cancel-point">Annuler</button>
-    </div>
+  <div id="tooltip"></div>
 
 </div>
 
@@ -68,5 +75,4 @@
 
 </body>
 </html>
-
 

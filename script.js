@@ -94,15 +94,22 @@ document.addEventListener("click", (e) => {
 
 function buildFilterMenu() {
 
-  const categories = new Set();
+  const categories = new Map();
 
+  // compter les markers par catégorie
   markers.forEach(m => {
-    categories.add(m.dataset.category || "Non défini");
+    const cat = m.dataset.category || "Non défini";
+
+    if (!categories.has(cat)) {
+      categories.set(cat, 1);
+    } else {
+      categories.set(cat, categories.get(cat) + 1);
+    }
   });
 
   filterPanel.innerHTML = "";
 
-  categories.forEach(cat => {
+  categories.forEach((count, cat) => {
 
     if (!activeCategories.has(cat)) {
       activeCategories.add(cat);
@@ -111,11 +118,11 @@ function buildFilterMenu() {
     const label = document.createElement("label");
 
     const text = document.createElement("span");
-    text.textContent = cat;
+    text.textContent = `${cat} (${count})`;
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.checked = true;
+    checkbox.checked = activeCategories.has(cat);
 
     checkbox.addEventListener("change", () => {
       if (checkbox.checked) {
@@ -124,6 +131,15 @@ function buildFilterMenu() {
         activeCategories.delete(cat);
       }
       applyFilters();
+    });
+
+    label.appendChild(text);
+    label.appendChild(checkbox);
+    filterPanel.appendChild(label);
+  });
+
+  applyFilters();
+}
     });
 
     label.appendChild(text);

@@ -22,17 +22,15 @@ const deleteBtn = document.getElementById("delete-marker");
 
 const loginScreen = document.getElementById("login-screen");
 const app = document.getElementById("app");
-const loginBtn = document.getElementById("login-btn");
-const loginError = document.getElementById("login-error");
 
-loginBtn.addEventListener("click", () => {
+document.getElementById("login-btn").addEventListener("click", () => {
   const value = document.getElementById("access-code").value.trim();
 
   if (value === "BRIGADE2026") {
     loginScreen.remove();
     app.classList.remove("hidden");
   } else {
-    loginError.textContent = "Code incorrect";
+    document.getElementById("login-error").textContent = "Code incorrect";
   }
 });
 
@@ -54,93 +52,17 @@ let scale = 1;
 let isDragging = false;
 
 let waitingForPlacement = false;
-let moveMode = false;
-let editMode = false;
-
 let selectedMarker = null;
+
 let markers = [];
 let tempX = 0, tempY = 0;
-
-/* FILTRES */
-
-const toggleFilterBtn = document.getElementById("toggle-filter");
-const filterPanel = document.getElementById("filter-panel");
-
-let activeCategories = new Set();
-
-toggleFilterBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  filterPanel.classList.toggle("hidden");
-});
-
-document.addEventListener("click", (e) => {
-  if (!filterPanel.contains(e.target) && e.target !== toggleFilterBtn) {
-    filterPanel.classList.add("hidden");
-  }
-
-  /* 🔥 FERME LE MENU CLIC DROIT */
-  if (!markerMenu.contains(e.target)) {
-    markerMenu.classList.add("hidden");
-  }
-});
-
-function buildFilterMenu() {
-
-  const categories = new Set();
-
-  markers.forEach(m => {
-    categories.add(m.dataset.category || "Non défini");
-  });
-
-  filterPanel.innerHTML = "";
-
-  categories.forEach(cat => {
-
-    if (!activeCategories.has(cat)) {
-      activeCategories.add(cat);
-    }
-
-    const label = document.createElement("label");
-
-    const text = document.createElement("span");
-    text.textContent = cat;
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = activeCategories.has(cat);
-
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        activeCategories.add(cat);
-      } else {
-        activeCategories.delete(cat);
-      }
-      applyFilters();
-    });
-
-    label.appendChild(text);
-    label.appendChild(checkbox);
-    filterPanel.appendChild(label);
-  });
-
-  applyFilters();
-}
-
-function applyFilters() {
-  markers.forEach(marker => {
-    const cat = marker.dataset.category || "Non défini";
-    marker.style.display = activeCategories.has(cat) ? "block" : "none";
-  });
-}
 
 /* DRAG */
 
 mapContainer.addEventListener("mousedown", (e) => {
-  if (waitingForPlacement || moveMode) return;
+  if (waitingForPlacement) return;
 
   isDragging = true;
-  mapContainer.style.cursor = "grabbing";
-
   mapContainer.dataset.startX = e.clientX - posX;
   mapContainer.dataset.startY = e.clientY - posY;
 });
@@ -156,7 +78,6 @@ window.addEventListener("mousemove", (e) => {
 
 window.addEventListener("mouseup", () => {
   isDragging = false;
-  mapContainer.style.cursor = "grab";
 });
 
 /* ZOOM */
@@ -182,26 +103,27 @@ mapContainer.addEventListener("wheel", (e) => {
 function updateMap() {
   mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
   markerLayer.style.transform = `translate(${posX}px, ${posY}px)`;
-  updateMarkerDisplay();
+
+  updateMarkers();
 }
 
-function updateMarkerDisplay() {
-  markers.forEach(marker => {
-    const x = parseFloat(marker.dataset.x);
-    const y = parseFloat(marker.dataset.y);
+function updateMarkers() {
+  markers.forEach(m => {
+    const x = parseFloat(m.dataset.x);
+    const y = parseFloat(m.dataset.y);
 
-    marker.style.left = (x * scale) + "px";
-    marker.style.top = (y * scale) + "px";
+    m.style.left = (x * scale) + "px";
+    m.style.top = (y * scale) + "px";
 
     let size = 26 / scale;
     size = Math.max(18, Math.min(32, size));
 
-    marker.style.width = size + "px";
-    marker.style.height = size + "px";
+    m.style.width = size + "px";
+    m.style.height = size + "px";
   });
 }
 
-/* MARKERS */
+/* ADD MARKER */
 
 function addMarker(x, y, icon, name, id, category) {
 
@@ -215,6 +137,7 @@ function addMarker(x, y, icon, name, id, category) {
   img.dataset.name = name;
   img.dataset.category = category || "Non défini";
 
+  /* TOOLTIP */
   img.addEventListener("mouseenter", () => {
     tooltip.innerHTML = `
       <div style="text-align:center;">
@@ -223,38 +146,49 @@ function addMarker(x, y, icon, name, id, category) {
       </div>
     `;
     tooltip.classList.add("show");
-
-    const xPos = (parseFloat(img.dataset.x) * scale) + posX;
-    const yPos = (parseFloat(img.dataset.y) * scale) + posY;
-
-    tooltip.style.left = xPos + "px";
-    tooltip.style.top = (yPos - 10) + "px";
   });
 
   img.addEventListener("mouseleave", () => {
     tooltip.classList.remove("show");
   });
 
-  /* 🔥 FIX CLIC DROIT */
+  img.addEventListener("mousemove", (e) => {
+    tooltip.style.left = (e.pageX + 10) + "px";
+    tooltip.style.top = (e.pageY + 10) + "px";
+  });
+
+  /* ✅ CLIC DROIT FIX */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
 
     selectedMarker = img;
 
-    markerMenu.classList.remove("hidden");
     markerMenu.style.left = e.pageX + "px";
     markerMenu.style.top = e.pageY + "px";
+
+    markerMenu.classList.remove("hidden"); // ✅ FIX ICI
   });
 
   markerLayer.appendChild(img);
   markers.push(img);
 
-  updateMarkerDisplay();
-  buildFilterMenu();
-  applyFilters();
+  updateMarkers();
 }
 
-/* CLICK MAP */
+/* FERMER MENU CLIC DROIT SI ON CLIQUE AILLEURS */
+
+document.addEventListener("click", () => {
+  markerMenu.classList.add("hidden");
+});
+
+/* NEW POINT */
+
+document.getElementById("new-point-btn").addEventListener("click", () => {
+  waitingForPlacement = true;
+  step1.classList.remove("hidden");
+});
+
+/* PLACE POINT */
 
 mapContainer.addEventListener("click", (e) => {
 
@@ -270,7 +204,28 @@ mapContainer.addEventListener("click", (e) => {
   pointMenu.classList.remove("hidden");
 });
 
-/* FIREBASE */
+/* VALIDATE */
+
+document.getElementById("validate-point").addEventListener("click", async () => {
+
+  const name = pointName.value;
+  const icon = pointIcon.value;
+  const cat = pointCategory.value;
+
+  const doc = await db.collection("markers").add({
+    x: tempX,
+    y: tempY,
+    icon,
+    name,
+    category: cat
+  });
+
+  addMarker(tempX, tempY, icon, name, doc.id, cat);
+
+  pointMenu.classList.add("hidden");
+});
+
+/* FIRESTORE */
 
 db.collection("markers").onSnapshot(snapshot => {
 
@@ -282,8 +237,6 @@ db.collection("markers").onSnapshot(snapshot => {
     addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category);
   });
 
-  buildFilterMenu();
-  applyFilters();
 });
 
 });

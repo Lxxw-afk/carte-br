@@ -129,8 +129,27 @@ mapContainer.addEventListener("wheel", (e) => {
    UPDATE MAP
 ============================================================ */
 function updateMap() {
+
+  const containerWidth = mapContainer.clientWidth;
+  const containerHeight = mapContainer.clientHeight;
+
+  const mapWidth = mapInner.offsetWidth * scale;
+  const mapHeight = mapInner.offsetHeight * scale;
+
+  // limites
+  const minX = Math.min(0, containerWidth - mapWidth);
+  const minY = Math.min(0, containerHeight - mapHeight);
+
+  const maxX = 0;
+  const maxY = 0;
+
+  // clamp
+  posX = Math.max(minX, Math.min(maxX, posX));
+  posY = Math.max(minY, Math.min(maxY, posY));
+
   mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
   markerLayer.style.transform = `translate(${posX}px, ${posY}px)`;
+
   updateMarkerDisplay();
 }
 
@@ -454,8 +473,16 @@ let activeFilters = {};
 categories.forEach(cat => activeFilters[cat] = true);
 
 /* TOGGLE MENU */
-toggleFilter.addEventListener("click", () => {
+toggleFilter.addEventListener("click", (e) => {
+  e.stopPropagation(); // 🔥 empêche fermeture instant
   filterPanel.classList.toggle("hidden");
+});
+
+/* fermer si clic ailleurs */
+document.addEventListener("click", (e) => {
+  if (!filterPanel.contains(e.target) && e.target !== toggleFilter) {
+    filterPanel.classList.add("hidden");
+  }
 });
 
 /* CONSTRUIRE MENU */

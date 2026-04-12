@@ -72,10 +72,10 @@ let markers = [];
 
 let activeCategories = new Set();
 
-/* ================= TOGGLE MENU ================= */
+/* ================= TOGGLE MENU (FIX) ================= */
 
 toggleFilterBtn.addEventListener("click", () => {
-  filterPanel.classList.toggle("show");
+  filterPanel.classList.toggle("hidden"); // FIX IMPORTANT
 });
 
 /* ================= BUILD MENU ================= */
@@ -92,20 +92,21 @@ function buildFilterMenu() {
 
   categories.forEach(cat => {
 
+    const count = markers.filter(m => (m.dataset.category || "Non défini") === cat).length;
+
+    // si nouvelle catégorie → activée par défaut
     if (!activeCategories.has(cat)) {
       activeCategories.add(cat);
     }
 
     const label = document.createElement("label");
 
-    const count = markers.filter(m => (m.dataset.category || "Non défini") === cat).length;
-
-    const text = document.createElement("span");
-    text.textContent = `${cat} (${count})`;
-
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = activeCategories.has(cat);
+
+    const text = document.createElement("span");
+    text.textContent = `${cat} (${count})`;
 
     checkbox.addEventListener("change", () => {
       if (checkbox.checked) {
@@ -116,8 +117,9 @@ function buildFilterMenu() {
       applyFilters();
     });
 
-    label.appendChild(text);
     label.appendChild(checkbox);
+    label.appendChild(text);
+
     filterPanel.appendChild(label);
   });
 }

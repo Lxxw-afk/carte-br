@@ -18,9 +18,7 @@ const editBtn = document.getElementById("edit-marker");
 const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
-/* ============================================================
-   🔐 LOGIN
-============================================================ */
+/* LOGIN */
 
 const loginScreen = document.getElementById("login-screen");
 const app = document.getElementById("app");
@@ -38,9 +36,7 @@ loginBtn.addEventListener("click", () => {
   }
 });
 
-/* ============================================================
-   🔥 FIREBASE
-============================================================ */
+/* FIREBASE */
 
 const firebaseConfig = {
   apiKey: "AIzaSyAoiD4sgUaamp0SGOBvx3A7FGjw4E3K4TE",
@@ -51,9 +47,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* ============================================================
-   VARIABLES
-============================================================ */
+/* VARIABLES */
 
 let posX = 0, posY = 0;
 let scale = 1;
@@ -67,22 +61,18 @@ let selectedMarker = null;
 let markers = [];
 let tempX = 0, tempY = 0;
 
-/* ============================================================
-   🧭 FILTRES
-============================================================ */
+/* FILTRES */
 
 const toggleFilterBtn = document.getElementById("toggle-filter");
 const filterPanel = document.getElementById("filter-panel");
 
 let activeCategories = new Set();
 
-/* toggle menu */
 toggleFilterBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   filterPanel.classList.toggle("hidden");
 });
 
-/* close outside */
 document.addEventListener("click", (e) => {
   if (!filterPanel.contains(e.target) && e.target !== toggleFilterBtn) {
     filterPanel.classList.add("hidden");
@@ -138,9 +128,7 @@ function applyFilters() {
   });
 }
 
-/* ============================================================
-   DRAG
-============================================================ */
+/* DRAG */
 
 mapContainer.addEventListener("mousedown", (e) => {
   if (waitingForPlacement || moveMode) return;
@@ -166,9 +154,7 @@ window.addEventListener("mouseup", () => {
   mapContainer.style.cursor = "grab";
 });
 
-/* ============================================================
-   ZOOM
-============================================================ */
+/* ZOOM */
 
 mapContainer.addEventListener("wheel", (e) => {
   e.preventDefault();
@@ -186,9 +172,7 @@ mapContainer.addEventListener("wheel", (e) => {
   updateMap();
 });
 
-/* ============================================================
-   UPDATE MAP
-============================================================ */
+/* UPDATE MAP */
 
 function updateMap() {
   mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
@@ -212,9 +196,7 @@ function updateMarkerDisplay() {
   });
 }
 
-/* ============================================================
-   MARKERS (FIX TOOLTIP PROPRE)
-============================================================ */
+/* MARKERS */
 
 function addMarker(x, y, icon, name, id, category) {
 
@@ -227,13 +209,11 @@ function addMarker(x, y, icon, name, id, category) {
   img.dataset.id = id;
   img.dataset.name = name;
   img.dataset.category = category || "Non défini";
-  img.dataset.icon = icon;
 
   img.addEventListener("mouseenter", () => {
 
     tooltip.innerHTML = `
-      <img src="icons/${icon}">
-      <div>
+      <div style="text-align:center;">
         <b>${name}</b><br>
         ${category}
       </div>
@@ -270,9 +250,7 @@ function addMarker(x, y, icon, name, id, category) {
   applyFilters();
 }
 
-/* ============================================================
-   CLICK MAP
-============================================================ */
+/* CLICK MAP */
 
 mapContainer.addEventListener("click", (e) => {
 
@@ -288,9 +266,7 @@ mapContainer.addEventListener("click", (e) => {
   pointMenu.classList.remove("hidden");
 });
 
-/* ============================================================
-   FIREBASE REALTIME
-============================================================ */
+/* FIREBASE */
 
 db.collection("markers").onSnapshot(snapshot => {
 

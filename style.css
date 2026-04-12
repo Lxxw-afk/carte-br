@@ -1,92 +1,126 @@
 body {
-margin:0;
-overflow:hidden;
-font-family:Arial;
-background:#003F87;
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial;
+  background: #003F87;
 }
 
 /* LOGIN */
 #login-screen {
-position:fixed;
-width:100vw;
-height:100vh;
-z-index:99999;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #login-box {
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:rgba(0,0,0,0.7);
-padding:20px;
-border-radius:10px;
+  background: rgba(0,0,0,0.7);
+  padding: 20px;
+  border-radius: 10px;
 }
 
-/* TOPBAR FIX OVER MAP */
+/* TOPBAR */
 #topbar {
-position:fixed;
-top:10px;
-left:10px;
-display:flex;
-gap:10px;
-align-items:center;
-background:rgba(0,0,0,0.5);
-padding:10px;
-border-radius:10px;
-z-index:2000;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(0,0,0,0.5);
+  padding: 10px;
+  border-radius: 10px;
+  z-index: 2000;
+  color: white;
 }
 
-#topbar h1 {
-color:white;
-font-size:16px;
-margin:0;
-}
-
-/* MAP FIX IMPORTANT */
+/* MAP FULL FIX */
 #map-container {
-position:absolute;
-top:0;
-left:0;
-width:100vw;
-height:100vh;
-overflow:hidden;
-cursor:grab;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  cursor: grab;
 }
 
 #map-inner {
-position:absolute;
-transform-origin:0 0;
+  position: absolute;
+  transform-origin: 0 0;
 }
 
 #map {
-width:100%;
-height:100%;
-pointer-events:none;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
-/* MARKER */
+/* MARKERS */
 .marker {
-position:absolute;
-width:28px;
-height:28px;
-transform:translate(-50%,-50%);
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%, -50%);
 }
 
-/* CREDIT FIX */
+/* TOOLTIP */
+#tooltip {
+  position: fixed;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* FILTER MENU */
+#filter-menu {
+  position: relative;
+}
+
+#filter-panel {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background: rgba(0,0,0,0.9);
+  padding: 10px;
+  border-radius: 10px;
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+}
+
+#filter-panel.show {
+  display: flex;
+}
+
+/* POINT MENU */
+#point-menu {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.9);
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+}
+
+/* CREDIT */
 #credit-btn {
-position:fixed;
-bottom:10px;
-right:10px;
-z-index:9999;
-background:rgba(0,0,0,0.6);
-color:white;
-border:none;
-padding:8px 10px;
-border-radius:8px;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  color: white;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
 }
 
-/* MENU */
 .hidden {
-display:none;
+  display: none !important;
 }

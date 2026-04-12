@@ -5,7 +5,11 @@ const ACCESS_CODE = "BRIGADE2026";
 
 loginBtn.onclick = () => {
   const value = document.getElementById("access-code").value.trim();
-
+  const loginScreen = document.getElementById("login-screen");
+const app = document.getElementById("app");
+const loginBtn = document.getElementById("login-btn");
+const loginError = document.getElementById("login-error");
+   
   if (value === ACCESS_CODE) {
     loginScreen.remove();
     app.classList.remove("hidden");
@@ -15,8 +19,14 @@ loginBtn.onclick = () => {
 };
 
 /* ============================================================
-   FIREBASE
+   FIREBASE INIT (FIX)
 ============================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyAoiD4sgUaamp0SGOBvx3A7FGjw4E3K4TE",
+  authDomain: "carte-br.firebaseapp.com",
+  projectId: "carte-br",
+};
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 

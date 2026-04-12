@@ -68,17 +68,17 @@ let selectedMarker = null;
 
 let markers = [];
 
-/* ================= FILTRES ================= */
+/* ================= CATEGORIES ================= */
 
 let activeCategories = new Set();
 
-/* ================= TOGGLE FILTRE ================= */
+/* ================= TOGGLE MENU ================= */
 
 toggleFilterBtn.addEventListener("click", () => {
-  filterPanel.classList.toggle("hidden");
+  filterPanel.classList.toggle("show");
 });
 
-/* ================= BUILD FILTRES ================= */
+/* ================= BUILD MENU ================= */
 
 function buildFilterMenu() {
 
@@ -98,8 +98,10 @@ function buildFilterMenu() {
 
     const label = document.createElement("label");
 
+    const count = markers.filter(m => (m.dataset.category || "Non défini") === cat).length;
+
     const text = document.createElement("span");
-    text.textContent = cat;
+    text.textContent = `${cat} (${count})`;
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -120,7 +122,7 @@ function buildFilterMenu() {
   });
 }
 
-/* ================= FILTER APPLY ================= */
+/* ================= APPLY FILTER ================= */
 
 function applyFilters() {
   markers.forEach(marker => {
@@ -129,7 +131,7 @@ function applyFilters() {
   });
 }
 
-/* ================= MAP DRAG ================= */
+/* ================= DRAG MAP ================= */
 
 mapContainer.addEventListener("mousedown", (e) => {
   if (waitingForPlacement || moveMode) return;
@@ -179,7 +181,7 @@ function updateMap() {
   updateMarkers();
 }
 
-/* ================= MARKERS DISPLAY ================= */
+/* ================= MARKERS ================= */
 
 function updateMarkers() {
   markers.forEach(m => {
@@ -272,7 +274,7 @@ mapContainer.addEventListener("click", (e) => {
   pointMenu.classList.remove("hidden");
 });
 
-/* ================= VALIDATE POINT ================= */
+/* ================= VALIDATE ================= */
 
 document.getElementById("validate-point").addEventListener("click", async () => {
 

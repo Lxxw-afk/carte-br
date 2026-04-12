@@ -52,19 +52,6 @@ const deleteBtn = document.getElementById("delete-marker");
 const tooltip = document.getElementById("tooltip");
 
 /* ============================================================
-   🔥 FILTRES CATEGORIES
-============================================================ */
-const toggleFilterBtn = document.getElementById("toggle-filter");
-const filterPanel = document.getElementById("filter-panel");
-
-let activeCategories = new Set();
-
-/* OUVERTURE MENU FILTRE */
-toggleFilterBtn.addEventListener("click", () => {
-  filterPanel.classList.toggle("hidden");
-});
-
-/* ============================================================
    ICONES
 ============================================================ */
 const iconList = [
@@ -86,6 +73,7 @@ iconList.forEach(icon => {
 let posX = 0, posY = 0;
 let scale = 1;
 let isDragging = false;
+let dragStartX = 0, dragStartY = 0;
 
 let waitingForPlacement = false;
 let moveMode = false;
@@ -100,20 +88,16 @@ let tempX = 0, tempY = 0;
 ============================================================ */
 mapContainer.addEventListener("mousedown", (e) => {
   if (waitingForPlacement || moveMode) return;
-
   isDragging = true;
+  dragStartX = e.clientX - posX;
+  dragStartY = e.clientY - posY;
   mapContainer.style.cursor = "grabbing";
-
-  mapContainer.dataset.startX = e.clientX - posX;
-  mapContainer.dataset.startY = e.clientY - posY;
 });
 
 window.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
-
-  posX = e.clientX - mapContainer.dataset.startX;
-  posY = e.clientY - mapContainer.dataset.startY;
-
+  posX = e.clientX - dragStartX;
+  posY = e.clientY - dragStartY;
   updateMap();
 });
 
@@ -167,76 +151,27 @@ function updateMarkerDisplay() {
 }
 
 /* ============================================================
-   FILTRES LOGIQUE
+   FIREBASE
 ============================================================ */
-function buildFilterMenu() {
-
-  const categories = new Set();
-
-  markers.forEach(m => {
-    categories.add(m.dataset.category || "Non défini");
+async function createMarkerInFirebase(x, y, icon, name, category) {
+  const doc = await db.collection("markers").add({
+    x, y, icon, name, category
   });
-
-  filterPanel.innerHTML = "";
-
-  categories.forEach(cat => {
-
-    activeCategories.add(cat);
-
-    const label = document.createElement("label");
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = true;
-
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        activeCategories.add(cat);
-      } else {
-        activeCategories.delete(cat);
-      }
-      applyFilters();
-    });
-
-    label.appendChild(document.createTextNode(cat));
-    label.appendChild(checkbox);
-
-    filterPanel.appendChild(label);
-  });
+  return doc.id;
 }
 
-function applyFilters() {
-  markers.forEach(marker => {
-    const cat = marker.dataset.category || "Non défini";
-    marker.style.display = activeCategories.has(cat) ? "block" : "none";
-  });
+async function updateMarkerInFirebase(marker, data) {
+  const id = marker.dataset.id;
+  if (id) await db.collection("markers").doc(id).update(data);
+}
+
+async function deleteMarkerInFirebase(marker) {
+  const id = marker.dataset.id;
+  if (id) await db.collection("markers").doc(id).delete();
 }
 
 /* ============================================================
-   TOOLTIP
-============================================================ */
-function showTooltip(marker, e) {
-  tooltip.innerHTML = `
-    <img src="icons/${marker.dataset.icon}">
-    <div>
-      <b>${marker.dataset.name}</b><br>
-      ${marker.dataset.category}
-    </div>
-  `;
-  tooltip.classList.add("show");
-}
-
-function moveTooltip(e) {
-  tooltip.style.left = (e.pageX + 12) + "px";
-  tooltip.style.top = (e.pageY - 20) + "px";
-}
-
-function hideTooltip() {
-  tooltip.classList.remove("show");
-}
-
-/* ============================================================
-   ADD MARKER
+   AJOUT MARKER
 ============================================================ */
 function addMarker(x, y, icon, name, id, category) {
 
@@ -253,12 +188,33 @@ function addMarker(x, y, icon, name, id, category) {
   img.dataset.name = name;
   img.dataset.category = category || "Non défini";
 
-  img.addEventListener("mouseenter", (e) => showTooltip(img, e));
-  img.addEventListener("mousemove", moveTooltip);
-  img.addEventListener("mouseleave", hideTooltip);
+  // TOOLTIP
+  img.addEventListener("mouseenter", () => {
+    tooltip.innerHTML = `
+      <img src="icons/${img.dataset.icon}">
+      <div>
+        <div style="font-weight:bold;">${img.dataset.name}</div>
+        <div style="font-size:11px;opacity:0.7;">
+          ${img.dataset.category}
+        </div>
+      </div>
+    `;
+    tooltip.classList.add("show");
+  });
 
+  img.addEventListener("mouseleave", () => {
+    tooltip.classList.remove("show");
+  });
+
+  img.addEventListener("mousemove", (e) => {
+    tooltip.style.left = (e.pageX + 12) + "px";
+    tooltip.style.top = (e.pageY - 20) + "px";
+  });
+
+  // CLIC DROIT
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
+    e.stopPropagation();
 
     selectedMarker = img;
 
@@ -269,20 +225,42 @@ function addMarker(x, y, icon, name, id, category) {
 
   markerLayer.appendChild(img);
   markers.push(img);
-
   updateMarkerDisplay();
-  applyFilters();
+  buildFilterMenu();
+
 }
 
 /* ============================================================
-   CLICK MAP
+   NOUVEAU POINT
 ============================================================ */
-mapContainer.addEventListener("click", (e) => {
+document.getElementById("new-point-btn").addEventListener("click", () => {
+  waitingForPlacement = true;
+  step1.classList.remove("hidden");
+});
+
+mapContainer.addEventListener("click", async (e) => {
+
+  if (isDragging) return;
+
+  if (moveMode && selectedMarker) {
+    const rect = mapContainer.getBoundingClientRect();
+    const x = (e.clientX - rect.left - posX) / scale;
+    const y = (e.clientY - rect.top - posY) / scale;
+
+    selectedMarker.dataset.x = x;
+    selectedMarker.dataset.y = y;
+
+    await updateMarkerInFirebase(selectedMarker, { x, y });
+
+    moveMode = false;
+    selectedMarker = null;
+    updateMarkerDisplay();
+    return;
+  }
 
   if (!waitingForPlacement) return;
 
   const rect = mapContainer.getBoundingClientRect();
-
   tempX = (e.clientX - rect.left - posX) / scale;
   tempY = (e.clientY - rect.top - posY) / scale;
 
@@ -292,48 +270,219 @@ mapContainer.addEventListener("click", (e) => {
 });
 
 /* ============================================================
-   SAVE POINT
+   VALIDATION
 ============================================================ */
-document.getElementById("validate-point").onclick = async () => {
+document.getElementById("validate-point").addEventListener("click", async () => {
 
-  const id = await db.collection("markers").add({
-    x: tempX,
-    y: tempY,
-    icon: pointIcon.value,
-    name: pointName.value,
-    category: pointCategory.value
-  }).then(doc => doc.id);
+  if (!pointName.value || !pointIcon.value) return;
 
-  addMarker(tempX, tempY, pointIcon.value, pointName.value, id, pointCategory.value);
+  if (editMode && selectedMarker) {
+
+    selectedMarker.dataset.name = pointName.value;
+    selectedMarker.dataset.category = pointCategory.value;
+    selectedMarker.src = "icons/" + pointIcon.value;
+
+    await updateMarkerInFirebase(selectedMarker, {
+      name: pointName.value,
+      icon: pointIcon.value,
+      category: pointCategory.value
+    });
+
+    editMode = false;
+    selectedMarker = null;
+    pointMenu.classList.add("hidden");
+    return;
+  }
+
+  const id = await createMarkerInFirebase(
+    tempX,
+    tempY,
+    pointIcon.value,
+    pointName.value,
+    pointCategory.value
+  );
+
+  addMarker(
+    tempX,
+    tempY,
+    pointIcon.value,
+    pointName.value,
+    id,
+    pointCategory.value
+  );
 
   pointMenu.classList.add("hidden");
-};
+});
 
 /* ============================================================
-   CANCEL
+   ANNULER (FIX COMPLET)
 ============================================================ */
-document.getElementById("cancel-point").onclick = () => {
+document.getElementById("cancel-point").addEventListener("click", () => {
+
   pointMenu.classList.add("hidden");
   step1.classList.add("hidden");
 
   waitingForPlacement = false;
   editMode = false;
   moveMode = false;
-};
+  selectedMarker = null;
+
+  pointName.value = "";
+  pointIcon.value = "";
+  if (pointCategory) pointCategory.value = "";
+});
 
 /* ============================================================
-   FIREBASE REALTIME
+   MENU ACTIONS
+============================================================ */
+deleteBtn.addEventListener("click", async () => {
+  if (!selectedMarker) return;
+
+  await deleteMarkerInFirebase(selectedMarker);
+
+  selectedMarker.remove();
+  markers = markers.filter(m => m !== selectedMarker);
+
+  selectedMarker = null;
+  markerMenu.style.display = "none";
+});
+
+editBtn.addEventListener("click", () => {
+  if (!selectedMarker) return;
+
+  editMode = true;
+
+  pointName.value = selectedMarker.dataset.name;
+  pointIcon.value = selectedMarker.dataset.icon;
+  if (pointCategory) pointCategory.value = selectedMarker.dataset.category;
+
+  pointMenu.classList.remove("hidden");
+  markerMenu.style.display = "none";
+});
+
+moveBtn.addEventListener("click", () => {
+  if (!selectedMarker) return;
+  moveMode = true;
+  markerMenu.style.display = "none";
+});
+
+/* ============================================================
+   FERMETURE MENU CLIC DROIT
+============================================================ */
+document.addEventListener("click", (e) => {
+
+  if (e.target.classList.contains("marker")) return;
+  if (markerMenu.contains(e.target)) return;
+
+  markerMenu.style.display = "none";
+});
+
+/* ============================================================
+   TEMPS REEL FIRESTORE
 ============================================================ */
 db.collection("markers").onSnapshot(snapshot => {
 
-  markers.forEach(m => m.remove());
-  markers = [];
+  snapshot.docChanges().forEach(change => {
 
-  snapshot.forEach(doc => {
+    const doc = change.doc;
     const d = doc.data();
-    addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category);
+
+    if (change.type === "added") {
+      addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category);
+    }
+
+    if (change.type === "modified") {
+      const marker = markers.find(m => m.dataset.id === doc.id);
+      if (marker) {
+        marker.dataset.x = d.x;
+        marker.dataset.y = d.y;
+        marker.dataset.name = d.name;
+        marker.dataset.category = d.category;
+        marker.src = "icons/" + d.icon;
+        updateMarkerDisplay();
+      }
+    }
+
+    if (change.type === "removed") {
+      const marker = markers.find(m => m.dataset.id === doc.id);
+      if (marker) {
+        marker.remove();
+        markers = markers.filter(m => m !== marker);
+      }
+    }
+
   });
 
-  buildFilterMenu();
-  applyFilters();
 });
+/* ============================================================
+   FILTRE PAR CATEGORIE
+============================================================ */
+
+const filterPanel = document.getElementById("filter-panel");
+const toggleFilter = document.getElementById("toggle-filter");
+
+// toutes les catégories
+const categories = [
+  "Drogue",
+  "Entrepôt",
+  "QG",
+  "Munition",
+  "Trafic d'organe",
+  "PNJ"
+];
+
+// état des filtres
+let activeFilters = {};
+
+// init
+categories.forEach(cat => activeFilters[cat] = true);
+
+/* TOGGLE MENU */
+toggleFilter.addEventListener("click", () => {
+  filterPanel.classList.toggle("hidden");
+});
+
+/* CONSTRUIRE MENU */
+function buildFilterMenu() {
+
+  filterPanel.innerHTML = "";
+
+  categories.forEach(cat => {
+
+    const count = markers.filter(m =>
+      m.dataset.category === cat
+    ).length;
+
+    const label = document.createElement("label");
+
+    label.innerHTML = `
+      <span>${cat} (${count})</span>
+      <input type="checkbox" ${activeFilters[cat] ? "checked" : ""}>
+    `;
+
+    const checkbox = label.querySelector("input");
+
+    checkbox.addEventListener("change", () => {
+      activeFilters[cat] = checkbox.checked;
+      applyFilters();
+    });
+
+    filterPanel.appendChild(label);
+  });
+}
+
+/* APPLIQUER FILTRE */
+function applyFilters() {
+
+  markers.forEach(marker => {
+
+    const cat = marker.dataset.category;
+
+    if (activeFilters[cat]) {
+      marker.style.display = "block";
+    } else {
+      marker.style.display = "none";
+    }
+
+  });
+}

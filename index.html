@@ -27,13 +27,6 @@
         <h1>BRIGADE DE RECHERCHE</h1>
         <button id="new-point-btn">Nouveau point</button>
         <input type="text" id="search-input" placeholder="Rechercher un point">
-        <div id="filter-menu">
-    <button id="toggle-filter">☰ CATÉGORIES</button>
-
-    <div id="filter-panel" class="hidden">
-        <!-- rempli en JS -->
-    </div>
-</div>
     </div>
 
     <button id="credit-btn">Créé par Julien Flament | Lxxw.</button>
@@ -66,8 +59,8 @@
     <option value="QG">QG</option>
     <option value="Munition">Munition</option>
     <option value="Trafic d'organe">Trafic d'organe</option>
-    <option value="PNJ">PNJ</option>
 </select>
+            </select>
             <img id="icon-preview" class="preview hidden" src="">
             <button id="validate-point">Valider</button>
             <button id="cancel-point">Annuler</button>
@@ -89,12 +82,11 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-<script src="script.js" defer></script>
+<script src="script.js"></script>
 
     <div id="search-suggestions" class="hidden"></div>
 </body>
 </html>
-
 
 
 

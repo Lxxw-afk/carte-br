@@ -13,7 +13,7 @@ body {
     left: 20px;
 
     display: flex;
-    align-items: center; /* 🔥 aligne verticalement */
+    align-items: center; 
 
     gap: 20px;
 

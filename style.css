@@ -5,7 +5,33 @@ body {
     font-family: Arial;
 }
 
-/* ================= TOP BAR (FIX COMPACT) ================= */
+/* ============================================================
+   🔥 LAYERS FIX (IMPORTANT)
+============================================================ */
+
+#map-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+    z-index: 1;
+}
+
+#map-inner {
+    position: absolute;
+    transform-origin: 0 0;
+    z-index: 1;
+}
+
+#marker-layer {
+    position: absolute;
+    z-index: 2;
+}
+
+/* ============================================================
+   🔝 TOP BAR (UI AU-DESSUS)
+============================================================ */
 
 #topbar {
     position: fixed;
@@ -21,7 +47,7 @@ body {
     background: rgba(0,0,0,0.45);
     border-radius: 10px;
 
-    z-index: 2000;
+    z-index: 99999; /* 🔥 IMPORTANT */
 
     max-height: 50px;
 }
@@ -34,7 +60,9 @@ body {
     white-space: nowrap;
 }
 
-/* ================= BUTTONS / INPUT ================= */
+/* ============================================================
+   🔘 BUTTONS / INPUT
+============================================================ */
 
 #new-point-btn,
 #search-input,
@@ -42,20 +70,18 @@ body {
     height: 34px;
     padding: 0 10px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     border-radius: 8px;
     border: none;
 
     font-size: 12px;
     font-weight: bold;
 
-    box-sizing: border-box;
-
     background: rgba(255,255,255,0.15);
     color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #search-input {
@@ -63,42 +89,18 @@ body {
     text-align: center;
 }
 
-/* ================= STEP MESSAGE ================= */
-
-#step1 {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.85);
-    color: white;
-    padding: 12px 18px;
-    border-radius: 10px;
-    font-size: 18px;
-    z-index: 3000;
-}
-
-/* ================= MAP ================= */
-
-#map-container {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    position: relative;
-    cursor: grab;
-}
-
-#map-inner {
-    position: absolute;
-    transform-origin: 0 0;
-}
+/* ============================================================
+   📍 MAP
+============================================================ */
 
 #map {
     pointer-events: none;
     user-select: none;
 }
 
-/* ================= MARKERS ================= */
+/* ============================================================
+   📌 MARKERS
+============================================================ */
 
 .marker {
     position: absolute;
@@ -108,18 +110,22 @@ body {
     z-index: 4000;
 }
 
-/* ================= TOOLTIP ================= */
+/* ============================================================
+   💬 TOOLTIP
+============================================================ */
 
 #tooltip {
     position: fixed;
     background: rgba(20,20,20,0.85);
     backdrop-filter: blur(6px);
     color: white;
+
     padding: 10px 14px;
     border-radius: 10px;
     font-size: 13px;
+
     pointer-events: none;
-    z-index: 10000;
+    z-index: 99999;
 
     display: flex;
     align-items: center;
@@ -140,18 +146,22 @@ body {
     height: 22px;
 }
 
-/* ================= POINT MENU ================= */
+/* ============================================================
+   📍 POINT MENU
+============================================================ */
 
 #point-menu {
     position: fixed;
     bottom: 40px;
     left: 50%;
     transform: translateX(-50%);
+
     background: rgba(0,0,0,0.9);
     padding: 20px;
     border-radius: 10px;
+
     color: white;
-    z-index: 5000;
+    z-index: 99999;
 }
 
 .point-box {
@@ -166,16 +176,21 @@ body {
     margin-top: 5px;
 }
 
-/* ================= RIGHT CLICK MENU ================= */
+/* ============================================================
+   🖱 RIGHT CLICK MENU
+============================================================ */
 
 #marker-menu {
     position: absolute;
     background: #222;
     border: 1px solid #555;
+
     padding: 5px;
     border-radius: 4px;
+
     display: none;
     flex-direction: column;
+
     z-index: 99999;
 }
 
@@ -192,30 +207,16 @@ body {
     background: #666;
 }
 
-/* ================= CREDIT ================= */
-
-#credit-btn {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: default;
-    z-index: 9999;
-}
-
-/* ================= LOGIN SCREEN ================= */
+/* ============================================================
+   🔐 LOGIN
+============================================================ */
 
 #login-screen {
     position: fixed;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    z-index: 99999;
+    z-index: 999999;
 }
 
 #login-screen img {
@@ -231,7 +232,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    
+
     background: rgba(0, 0, 0, 0.7);
     padding: 30px;
     border-radius: 12px;
@@ -261,31 +262,9 @@ body {
     font-weight: bold;
 }
 
-/* ================= SEARCH ================= */
-
-#search-suggestions {
-    position: absolute;
-    top: 55px;
-    left: 0;
-    width: 200px;
-    background: rgba(0,0,0,0.9);
-    border-radius: 8px;
-    overflow: hidden;
-    z-index: 9999;
-}
-
-.suggestion {
-    padding: 8px 10px;
-    cursor: pointer;
-    color: white;
-    font-size: 13px;
-}
-
-.suggestion:hover {
-    background: rgba(255,255,255,0.1);
-}
-
-/* ================= FILTER MENU FIX ================= */
+/* ============================================================
+   📂 FILTER MENU
+============================================================ */
 
 #filter-menu {
     position: relative;
@@ -308,6 +287,8 @@ body {
 
     min-width: 180px;
     color: white;
+
+    z-index: 99999;
 }
 
 #filter-panel label {
@@ -324,8 +305,60 @@ body {
     cursor: pointer;
 }
 
-/* ================= HIDDEN FIX ================= */
+/* ============================================================
+   🚫 HIDDEN FIX
+============================================================ */
 
 .hidden {
     display: none !important;
+}
+
+/* ============================================================
+   🏷 CREDIT
+============================================================ */
+
+#credit-btn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+
+    background: rgba(0,0,0,0.6);
+    color: white;
+
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    cursor: default;
+    z-index: 99999;
+}
+
+/* ============================================================
+   🔎 SEARCH SUGGESTIONS
+============================================================ */
+
+#search-suggestions {
+    position: absolute;
+    top: 55px;
+    left: 0;
+
+    width: 200px;
+    background: rgba(0,0,0,0.9);
+    border-radius: 8px;
+
+    overflow: hidden;
+    z-index: 99999;
+}
+
+.suggestion {
+    padding: 8px 10px;
+    cursor: pointer;
+    color: white;
+    font-size: 13px;
+}
+
+.suggestion:hover {
+    background: rgba(255,255,255,0.1);
 }

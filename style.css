@@ -5,69 +5,65 @@ body {
     font-family: Arial;
 }
 
-/* ================= TOP BAR ================= */
+/* ================= TOP BAR (FIX COMPACT) ================= */
 
 #topbar {
     position: fixed;
-    top: 15px;
-    left: 20px;
+    top: 10px;
+    left: 10px;
 
     display: flex;
-    align-items: center; 
+    align-items: center;
+    gap: 10px;
 
-    gap: 20px;
+    padding: 8px 12px;
 
-    padding: 10px 20px;
-
-    background: rgba(0,0,0,0.5);
-    border-radius: 12px;
+    background: rgba(0,0,0,0.45);
+    border-radius: 10px;
 
     z-index: 2000;
+
+    max-height: 50px;
 }
 
-/* TITRE */
 #topbar h1 {
     margin: 0;
-    font-size: 26px;
+    font-size: 16px;
     font-weight: bold;
     color: white;
+    white-space: nowrap;
 }
 
-/* BOUTONS */
+/* ================= BUTTONS / INPUT ================= */
+
 #new-point-btn,
-#search-input {
-    height: 44px; /* 🔥 plus haut = plus de coupe */
-    padding: 0 18px;
+#search-input,
+#toggle-filter {
+    height: 34px;
+    padding: 0 10px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 10px;
+    border-radius: 8px;
     border: none;
 
+    font-size: 12px;
     font-weight: bold;
-    text-transform: uppercase;
 
     box-sizing: border-box;
 
-    line-height: 1; /* 🔥 FIX DU TEXTE COUPÉ */
-}
-
-/* NOUVEAU POINT */
-#new-point-btn {
     background: rgba(255,255,255,0.15);
     color: white;
-    cursor: pointer;
 }
 
-/* RECHERCHE */
 #search-input {
-    background: rgba(255,255,255,0.15);
-    color: white;
+    width: 180px;
     text-align: center;
 }
-/* ================= MESSAGE STEP ================= */
+
+/* ================= STEP MESSAGE ================= */
 
 #step1 {
     position: fixed;
@@ -80,10 +76,6 @@ body {
     border-radius: 10px;
     font-size: 18px;
     z-index: 3000;
-}
-
-.hidden {
-    display: none;
 }
 
 /* ================= MAP ================= */
@@ -116,7 +108,7 @@ body {
     z-index: 4000;
 }
 
-/* ================= TOOLTIP STYLE (TRANSPARENT BUTTON STYLE) ================= */
+/* ================= TOOLTIP ================= */
 
 #tooltip {
     position: fixed;
@@ -216,10 +208,6 @@ body {
     z-index: 9999;
 }
 
-#credit-btn:hover {
-    background: rgba(0,0,0,0.8);
-}
-
 /* ================= LOGIN SCREEN ================= */
 
 #login-screen {
@@ -230,7 +218,6 @@ body {
     z-index: 99999;
 }
 
-/* Image 1920x1080 affichée entièrement */
 #login-screen img {
     position: absolute;
     width: 100%;
@@ -271,40 +258,10 @@ body {
 
 #login-error {
     color: red;
-    text-align: center;
     font-weight: bold;
 }
 
-#search-input {
-    padding: 10px 16px;
-    height: 42px;
-
-    background: rgba(255,255,255,0.12); /* ✅ même esprit que bouton */
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 10px;
-
-    color: white;
-
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-
-    outline: none;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    line-height: normal; /* ✅ FIX principal */
-    box-sizing: border-box;
-}
-#search-input::placeholder {
-    color: rgba(255,255,255,0.7);
-}
-
-#search-input::placeholder {
-    color: rgba(255,255,255,0.6);
-}
+/* ================= SEARCH ================= */
 
 #search-suggestions {
     position: absolute;
@@ -328,54 +285,18 @@ body {
     background: rgba(255,255,255,0.1);
 }
 
-.hidden {
-    display: none;
-}
-#point-category {
-    padding: 6px;
-    border-radius: 5px;
-    border: none;
-    background: #ddd;
-    font-size: 14px;
-}
-#point-menu input,
-#point-menu select {
-    width: 100%;
-    padding: 8px 10px;
+/* ================= FILTER MENU FIX ================= */
 
-    border-radius: 6px;
-    border: none;
-
-    background: #ddd;
-    font-size: 14px;
-
-    box-sizing: border-box;
-}
-#point-menu label {
-    font-size: 13px;
-    margin-top: 5px;
-}
 #filter-menu {
     position: relative;
 }
 
-#toggle-filter {
-    height: 44px;
-    padding: 0 15px;
-    border-radius: 10px;
-    border: none;
-    background: rgba(255,255,255,0.15);
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-
 #filter-panel {
     position: absolute;
-    top: 55px;
+    top: 45px;
     left: 0;
 
-    background: rgba(255,255,255,0.15); /* 🔥 même que bouton */
+    background: rgba(255,255,255,0.15);
     backdrop-filter: blur(10px);
 
     border-radius: 10px;
@@ -385,11 +306,10 @@ body {
     flex-direction: column;
     gap: 8px;
 
-    min-width: 200px;
+    min-width: 180px;
     color: white;
 }
 
-/* items */
 #filter-panel label {
     display: flex;
     justify-content: space-between;
@@ -397,40 +317,15 @@ body {
 
     font-weight: bold;
     text-transform: uppercase;
-
     cursor: pointer;
 }
 
-/* checkbox style */
 #filter-panel input {
     cursor: pointer;
 }
-/* ================= FILTER FIX ================= */
 
-#filter-panel.hidden {
-    display: none;
-}
+/* ================= HIDDEN FIX ================= */
 
-#filter-panel {
-    position: absolute;
-    top: 55px;
-    left: 0;
-
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-
-    border-radius: 10px;
-    padding: 10px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    min-width: 200px;
-    color: white;
-}
-
-/* animation optionnelle */
-#filter-panel.show {
-    display: flex;
+.hidden {
+    display: none !important;
 }

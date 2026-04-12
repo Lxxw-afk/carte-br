@@ -387,28 +387,44 @@ db.collection("markers").onSnapshot(snapshot => {
     const doc = change.doc;
     const d = doc.data();
 
+    /* =========================
+       AJOUT
+    ========================= */
     if (change.type === "added") {
       addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category);
+      buildFilterMenu(); // 🔥 MAJ MENU
     }
 
+    /* =========================
+       MODIFICATION
+    ========================= */
     if (change.type === "modified") {
       const marker = markers.find(m => m.dataset.id === doc.id);
+
       if (marker) {
         marker.dataset.x = d.x;
         marker.dataset.y = d.y;
         marker.dataset.name = d.name;
         marker.dataset.category = d.category;
         marker.src = "icons/" + d.icon;
+
         updateMarkerDisplay();
+        buildFilterMenu(); // 🔥 MAJ MENU
       }
     }
 
+    /* =========================
+       SUPPRESSION
+    ========================= */
     if (change.type === "removed") {
       const marker = markers.find(m => m.dataset.id === doc.id);
+
       if (marker) {
         marker.remove();
         markers = markers.filter(m => m !== marker);
       }
+
+      buildFilterMenu(); // 🔥 MAJ MENU
     }
 
   });

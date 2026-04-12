@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+/* ================= DOM ================= */
+
 const mapContainer = document.getElementById("map-container");
 const mapInner = document.getElementById("map-inner");
 const markerLayer = document.getElementById("marker-layer");
@@ -18,7 +20,8 @@ const editBtn = document.getElementById("edit-marker");
 const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
-/* LOGIN */
+/* ================= LOGIN ================= */
+
 const loginScreen = document.getElementById("login-screen");
 const app = document.getElementById("app");
 const loginBtn = document.getElementById("login-btn");
@@ -35,7 +38,8 @@ loginBtn.addEventListener("click", () => {
   }
 });
 
-/* FIREBASE */
+/* ================= FIREBASE ================= */
+
 const firebaseConfig = {
   apiKey: "AIzaSyAoiD4sgUaamp0SGOBvx3A7FGjw4E3K4TE",
   authDomain: "carte-br.firebaseapp.com",
@@ -45,7 +49,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* VARIABLES */
+/* ================= VARIABLES ================= */
+
 let posX = 0, posY = 0;
 let scale = 1;
 let isDragging = false;
@@ -58,76 +63,8 @@ let selectedMarker = null;
 let markers = [];
 let tempX = 0, tempY = 0;
 
-/* FILTRES */
-const toggleFilterBtn = document.getElementById("toggle-filter");
-const filterPanel = document.getElementById("filter-panel");
+/* ================= DRAG ================= */
 
-let activeCategories = new Set();
-
-toggleFilterBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  filterPanel.classList.toggle("hidden");
-});
-
-document.addEventListener("click", (e) => {
-
-  if (!filterPanel.contains(e.target) && e.target !== toggleFilterBtn) {
-    filterPanel.classList.add("hidden");
-  }
-
-  // 🔥 FIX CLIC DROIT
-  if (!markerMenu.contains(e.target) && !e.target.classList.contains("marker")) {
-    markerMenu.classList.add("hidden");
-  }
-});
-
-function buildFilterMenu() {
-
-  const categories = new Set();
-
-  markers.forEach(m => {
-    categories.add(m.dataset.category || "Non défini");
-  });
-
-  filterPanel.innerHTML = "";
-
-  categories.forEach(cat => {
-
-    if (!activeCategories.has(cat)) {
-      activeCategories.add(cat);
-    }
-
-    const label = document.createElement("label");
-
-    const text = document.createElement("span");
-    text.textContent = cat;
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = activeCategories.has(cat);
-
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) activeCategories.add(cat);
-      else activeCategories.delete(cat);
-      applyFilters();
-    });
-
-    label.appendChild(text);
-    label.appendChild(checkbox);
-    filterPanel.appendChild(label);
-  });
-
-  applyFilters();
-}
-
-function applyFilters() {
-  markers.forEach(marker => {
-    const cat = marker.dataset.category || "Non défini";
-    marker.style.display = activeCategories.has(cat) ? "block" : "none";
-  });
-}
-
-/* DRAG */
 mapContainer.addEventListener("mousedown", (e) => {
   if (waitingForPlacement || moveMode) return;
 
@@ -152,7 +89,8 @@ window.addEventListener("mouseup", () => {
   mapContainer.style.cursor = "grab";
 });
 
-/* ZOOM */
+/* ================= ZOOM ================= */
+
 mapContainer.addEventListener("wheel", (e) => {
   e.preventDefault();
 
@@ -169,7 +107,8 @@ mapContainer.addEventListener("wheel", (e) => {
   updateMap();
 });
 
-/* 🔥 FIX LIMITES MAP */
+/* ================= MAP ================= */
+
 function updateMap() {
 
   const containerWidth = mapContainer.clientWidth;
@@ -206,7 +145,8 @@ function updateMarkerDisplay() {
   });
 }
 
-/* MARKERS */
+/* ================= MARKERS ================= */
+
 function addMarker(x, y, icon, name, id, category) {
 
   const img = document.createElement("img");
@@ -218,13 +158,15 @@ function addMarker(x, y, icon, name, id, category) {
   img.dataset.id = id;
   img.dataset.name = name;
   img.dataset.category = category || "Non défini";
+  img.dataset.icon = icon;
 
+  /* TOOLTIP */
   img.addEventListener("mouseenter", () => {
     tooltip.innerHTML = `<b>${name}</b><br>${category}`;
     tooltip.classList.add("show");
 
-    const xPos = (parseFloat(img.dataset.x) * scale) + posX;
-    const yPos = (parseFloat(img.dataset.y) * scale) + posY;
+    const xPos = (x * scale) + posX;
+    const yPos = (y * scale) + posY;
 
     tooltip.style.left = xPos + "px";
     tooltip.style.top = (yPos - 10) + "px";
@@ -234,6 +176,7 @@ function addMarker(x, y, icon, name, id, category) {
     tooltip.classList.remove("show");
   });
 
+  /* CLIC DROIT */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
 
@@ -248,27 +191,48 @@ function addMarker(x, y, icon, name, id, category) {
   markers.push(img);
 
   updateMarkerDisplay();
-  buildFilterMenu();
 }
 
-/* FIREBASE */
-db.collection("markers").onSnapshot(snapshot => {
+/* ================= CLICK MAP ================= */
 
-  markers.forEach(m => m.remove());
-  markers = [];
+mapContainer.addEventListener("click", async (e) => {
 
-  snapshot.forEach(doc => {
-    const d = doc.data();
-    addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category);
-  });
+  // 🔥 DEPLACEMENT
+  if (moveMode && selectedMarker) {
 
-  buildFilterMenu();
+    const rect = mapContainer.getBoundingClientRect();
+
+    const x = (e.clientX - rect.left - posX) / scale;
+    const y = (e.clientY - rect.top - posY) / scale;
+
+    selectedMarker.dataset.x = x;
+    selectedMarker.dataset.y = y;
+
+    const id = selectedMarker.dataset.id;
+
+    await db.collection("markers").doc(id).update({ x, y });
+
+    moveMode = false;
+    selectedMarker = null;
+
+    updateMarkerDisplay();
+    return;
+  }
+
+  // 🔥 AJOUT
+  if (!waitingForPlacement) return;
+
+  const rect = mapContainer.getBoundingClientRect();
+
+  tempX = (e.clientX - rect.left - posX) / scale;
+  tempY = (e.clientY - rect.top - posY) / scale;
+
+  waitingForPlacement = false;
+  step1.classList.add("hidden");
+  pointMenu.classList.remove("hidden");
 });
 
-});
-/* ============================================================
-   ACTIONS MENU CLIC DROIT
-============================================================ */
+/* ================= ACTIONS MENU ================= */
 
 editBtn.addEventListener("click", () => {
   if (!selectedMarker) return;
@@ -302,4 +266,20 @@ deleteBtn.addEventListener("click", async () => {
 
   selectedMarker = null;
   markerMenu.classList.add("hidden");
+});
+
+/* ================= FIREBASE ================= */
+
+db.collection("markers").onSnapshot(snapshot => {
+
+  markers.forEach(m => m.remove());
+  markers = [];
+
+  snapshot.forEach(doc => {
+    const d = doc.data();
+    addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category);
+  });
+
+});
+
 });

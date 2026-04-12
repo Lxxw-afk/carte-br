@@ -19,7 +19,6 @@ const moveBtn = document.getElementById("move-marker");
 const deleteBtn = document.getElementById("delete-marker");
 
 /* LOGIN */
-
 const loginScreen = document.getElementById("login-screen");
 const app = document.getElementById("app");
 const loginBtn = document.getElementById("login-btn");
@@ -37,7 +36,6 @@ loginBtn.addEventListener("click", () => {
 });
 
 /* FIREBASE */
-
 const firebaseConfig = {
   apiKey: "AIzaSyAoiD4sgUaamp0SGOBvx3A7FGjw4E3K4TE",
   authDomain: "carte-br.firebaseapp.com",
@@ -48,7 +46,6 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 /* VARIABLES */
-
 let posX = 0, posY = 0;
 let scale = 1;
 let isDragging = false;
@@ -62,7 +59,6 @@ let markers = [];
 let tempX = 0, tempY = 0;
 
 /* FILTRES */
-
 const toggleFilterBtn = document.getElementById("toggle-filter");
 const filterPanel = document.getElementById("filter-panel");
 
@@ -74,12 +70,13 @@ toggleFilterBtn.addEventListener("click", (e) => {
 });
 
 document.addEventListener("click", (e) => {
+
   if (!filterPanel.contains(e.target) && e.target !== toggleFilterBtn) {
     filterPanel.classList.add("hidden");
   }
 
-  /* 🔥 FERME LE MENU CLIC DROIT */
-  if (!markerMenu.contains(e.target)) {
+  // 🔥 FIX CLIC DROIT
+  if (!markerMenu.contains(e.target) && !e.target.classList.contains("marker")) {
     markerMenu.classList.add("hidden");
   }
 });
@@ -110,11 +107,8 @@ function buildFilterMenu() {
     checkbox.checked = activeCategories.has(cat);
 
     checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        activeCategories.add(cat);
-      } else {
-        activeCategories.delete(cat);
-      }
+      if (checkbox.checked) activeCategories.add(cat);
+      else activeCategories.delete(cat);
       applyFilters();
     });
 
@@ -134,7 +128,6 @@ function applyFilters() {
 }
 
 /* DRAG */
-
 mapContainer.addEventListener("mousedown", (e) => {
   if (waitingForPlacement || moveMode) return;
 
@@ -160,7 +153,6 @@ window.addEventListener("mouseup", () => {
 });
 
 /* ZOOM */
-
 mapContainer.addEventListener("wheel", (e) => {
   e.preventDefault();
 
@@ -177,11 +169,24 @@ mapContainer.addEventListener("wheel", (e) => {
   updateMap();
 });
 
-/* UPDATE MAP */
-
+/* 🔥 FIX LIMITES MAP */
 function updateMap() {
+
+  const containerWidth = mapContainer.clientWidth;
+  const containerHeight = mapContainer.clientHeight;
+
+  const mapWidth = mapInner.offsetWidth * scale;
+  const mapHeight = mapInner.offsetHeight * scale;
+
+  const minX = Math.min(0, containerWidth - mapWidth);
+  const minY = Math.min(0, containerHeight - mapHeight);
+
+  posX = Math.max(minX, Math.min(0, posX));
+  posY = Math.max(minY, Math.min(0, posY));
+
   mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
   markerLayer.style.transform = `translate(${posX}px, ${posY}px)`;
+
   updateMarkerDisplay();
 }
 
@@ -202,7 +207,6 @@ function updateMarkerDisplay() {
 }
 
 /* MARKERS */
-
 function addMarker(x, y, icon, name, id, category) {
 
   const img = document.createElement("img");
@@ -216,12 +220,7 @@ function addMarker(x, y, icon, name, id, category) {
   img.dataset.category = category || "Non défini";
 
   img.addEventListener("mouseenter", () => {
-    tooltip.innerHTML = `
-      <div style="text-align:center;">
-        <b>${name}</b><br>
-        ${category}
-      </div>
-    `;
+    tooltip.innerHTML = `<b>${name}</b><br>${category}`;
     tooltip.classList.add("show");
 
     const xPos = (parseFloat(img.dataset.x) * scale) + posX;
@@ -235,7 +234,6 @@ function addMarker(x, y, icon, name, id, category) {
     tooltip.classList.remove("show");
   });
 
-  /* 🔥 FIX CLIC DROIT */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
 
@@ -251,27 +249,9 @@ function addMarker(x, y, icon, name, id, category) {
 
   updateMarkerDisplay();
   buildFilterMenu();
-  applyFilters();
 }
 
-/* CLICK MAP */
-
-mapContainer.addEventListener("click", (e) => {
-
-  if (!waitingForPlacement) return;
-
-  const rect = mapContainer.getBoundingClientRect();
-
-  tempX = (e.clientX - rect.left - posX) / scale;
-  tempY = (e.clientY - rect.top - posY) / scale;
-
-  waitingForPlacement = false;
-  step1.classList.add("hidden");
-  pointMenu.classList.remove("hidden");
-});
-
 /* FIREBASE */
-
 db.collection("markers").onSnapshot(snapshot => {
 
   markers.forEach(m => m.remove());
@@ -283,7 +263,6 @@ db.collection("markers").onSnapshot(snapshot => {
   });
 
   buildFilterMenu();
-  applyFilters();
 });
 
 });

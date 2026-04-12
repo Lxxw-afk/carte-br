@@ -5,10 +5,10 @@
     <title>BRIGADE DE RECHERCHES</title>
     <link rel="stylesheet" href="style.css">
 </head>
-    
+
 <body>
 
-<!-- ================= LOGIN SCREEN ================= -->
+<!-- ================= LOGIN ================= -->
 <div id="login-screen">
     <img src="images/Brigade2recherches.png" id="login-bg">
 
@@ -22,62 +22,63 @@
 <!-- ================= APP ================= -->
 <div id="app" class="hidden">
 
-    <!-- BARRE DU HAUT -->
+    <!-- TOPBAR -->
     <div id="topbar">
         <h1>BRIGADE DE RECHERCHE</h1>
+
         <button id="new-point-btn">Nouveau point</button>
-        <input type="text" id="search-input" placeholder="Rechercher un point">
+
+        <input type="text" id="search-input" placeholder="Rechercher">
+
+        <!-- FILTRES -->
         <div id="filter-menu">
-   <div id="filter-menu">
-    <button id="toggle-filter">☰ CATÉGORIES</button>
-
-    <div id="filter-panel" class="hidden"></div>
-</div>
-
-        <!-- rempli en JS -->
-    </div>
-</div>
+            <button id="toggle-filter">☰ CATÉGORIES</button>
+            <div id="filter-panel" class="hidden"></div>
+        </div>
     </div>
 
     <button id="credit-btn">Créé par Julien Flament | Lxxw.</button>
 
     <div id="step1" class="hidden">
-        👉 Cliquez sur la carte pour placer votre point.
+        👉 Cliquez sur la carte pour placer votre point
     </div>
 
+    <!-- MAP -->
     <div id="map-container">
         <div id="map-inner">
-            <img id="map" src="images/map.png" alt="Carte RP">
+            <img id="map" src="images/map.png">
         </div>
         <div id="marker-layer"></div>
     </div>
 
+    <!-- POINT MENU -->
     <div id="point-menu" class="hidden">
         <div class="point-box">
-            <h3>Configurer le point</h3>
-           <label>Nom :</label>
-<input id="point-name" type="text">
+            <h3>Créer un point</h3>
 
-<label>Icône :</label>
-<select id="point-icon"></select>
+            <label>Nom</label>
+            <input id="point-name" type="text">
 
-<label>Catégorie :</label>
-<select id="point-category">
-    <option value="">Choisir</option>
-    <option value="Drogue">Drogue</option>
-    <option value="Entrepôt">Entrepôt</option>
-    <option value="QG">QG</option>
-    <option value="Munition">Munition</option>
-    <option value="Trafic d'organe">Trafic d'organe</option>
-    <option value="PNJ">PNJ</option>
-</select>
+            <label>Icône</label>
+            <select id="point-icon"></select>
+
+            <label>Catégorie</label>
+            <select id="point-category">
+                <option value="">Choisir</option>
+                <option value="Drogue">Drogue</option>
+                <option value="Entrepôt">Entrepôt</option>
+                <option value="QG">QG</option>
+                <option value="Munition">Munition</option>
+                <option value="Trafic d'organe">Trafic d'organe</option>
+                <option value="PNJ">PNJ</option>
             </select>
-            <img id="icon-preview" class="preview hidden" src="">
+
             <button id="validate-point">Valider</button>
             <button id="cancel-point">Annuler</button>
         </div>
     </div>
 
+    <!-- MENU CLIC DROIT -->
     <div id="marker-menu" class="hidden">
         <button id="edit-marker">Modifier</button>
         <button id="move-marker">Déplacer</button>
@@ -88,17 +89,14 @@
 
 </div>
 
-<!-- Firebase -->
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-<script src="script.js" defer></script>
+<script src="script.js"></script>
 
-    <div id="search-suggestions" class="hidden"></div>
 </body>
 </html>
-
 
 
 

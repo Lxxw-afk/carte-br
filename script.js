@@ -266,3 +266,40 @@ db.collection("markers").onSnapshot(snapshot => {
 });
 
 });
+/* ============================================================
+   ACTIONS MENU CLIC DROIT
+============================================================ */
+
+editBtn.addEventListener("click", () => {
+  if (!selectedMarker) return;
+
+  editMode = true;
+
+  pointName.value = selectedMarker.dataset.name;
+  pointIcon.value = selectedMarker.dataset.icon;
+  pointCategory.value = selectedMarker.dataset.category;
+
+  pointMenu.classList.remove("hidden");
+  markerMenu.classList.add("hidden");
+});
+
+moveBtn.addEventListener("click", () => {
+  if (!selectedMarker) return;
+
+  moveMode = true;
+  markerMenu.classList.add("hidden");
+});
+
+deleteBtn.addEventListener("click", async () => {
+  if (!selectedMarker) return;
+
+  const id = selectedMarker.dataset.id;
+
+  await db.collection("markers").doc(id).delete();
+
+  selectedMarker.remove();
+  markers = markers.filter(m => m !== selectedMarker);
+
+  selectedMarker = null;
+  markerMenu.classList.add("hidden");
+});

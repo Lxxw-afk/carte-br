@@ -24,11 +24,10 @@ const deleteBtn = document.getElementById("delete-marker");
 
 const validateBtn = document.getElementById("validate-point");
 const cancelBtn = document.getElementById("cancel-point");
-
 const newPointBtn = document.getElementById("new-point-btn");
 
 /* ============================================================
-   ICONES (FIX)
+   ICONES
 ============================================================ */
 
 const iconList = [
@@ -94,7 +93,81 @@ let markers = [];
 let tempX = 0, tempY = 0;
 
 /* ============================================================
-   DRAG + LIMITE (FIX MUR INVISIBLE)
+   FILTRES (CATÉGORIES)
+============================================================ */
+
+const toggleFilterBtn = document.getElementById("toggle-filter");
+const filterPanel = document.getElementById("filter-panel");
+
+let activeCategories = new Set();
+
+toggleFilterBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  filterPanel.classList.toggle("hidden");
+});
+
+document.addEventListener("click", (e) => {
+
+  if (!filterPanel.contains(e.target) && e.target !== toggleFilterBtn) {
+    filterPanel.classList.add("hidden");
+  }
+
+  if (!markerMenu.contains(e.target)) {
+    markerMenu.classList.add("hidden");
+  }
+});
+
+function buildFilterMenu() {
+
+  const categories = new Set();
+
+  markers.forEach(m => {
+    categories.add(m.dataset.category || "Non défini");
+  });
+
+  filterPanel.innerHTML = "";
+
+  categories.forEach(cat => {
+
+    if (!activeCategories.has(cat)) {
+      activeCategories.add(cat);
+    }
+
+    const label = document.createElement("label");
+
+    const text = document.createElement("span");
+    text.textContent = cat;
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = activeCategories.has(cat);
+
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        activeCategories.add(cat);
+      } else {
+        activeCategories.delete(cat);
+      }
+      applyFilters();
+    });
+
+    label.appendChild(text);
+    label.appendChild(checkbox);
+    filterPanel.appendChild(label);
+  });
+
+  applyFilters();
+}
+
+function applyFilters() {
+  markers.forEach(marker => {
+    const cat = marker.dataset.category || "Non défini";
+    marker.style.display = activeCategories.has(cat) ? "block" : "none";
+  });
+}
+
+/* ============================================================
+   DRAG + LIMITES
 ============================================================ */
 
 mapContainer.addEventListener("mousedown", (e) => {
@@ -128,7 +201,6 @@ window.addEventListener("mouseup", () => {
 mapContainer.addEventListener("wheel", (e) => {
   e.preventDefault();
 
-  const oldScale = scale;
   scale += (e.deltaY < 0 ? 0.1 : -0.1);
   scale = Math.max(0.5, Math.min(4, scale));
 
@@ -136,7 +208,7 @@ mapContainer.addEventListener("wheel", (e) => {
 });
 
 /* ============================================================
-   UPDATE MAP + LIMITES
+   UPDATE MAP (MUR INVISIBLE FIX)
 ============================================================ */
 
 function updateMap() {
@@ -160,11 +232,12 @@ function updateMap() {
 }
 
 /* ============================================================
-   MARKERS DISPLAY
+   MARKERS
 ============================================================ */
 
 function updateMarkerDisplay() {
   markers.forEach(marker => {
+
     const x = parseFloat(marker.dataset.x);
     const y = parseFloat(marker.dataset.y);
 
@@ -178,10 +251,6 @@ function updateMarkerDisplay() {
     marker.style.height = size + "px";
   });
 }
-
-/* ============================================================
-   ADD MARKER
-============================================================ */
 
 function addMarker(x, y, icon, name, id, category) {
 
@@ -227,6 +296,8 @@ function addMarker(x, y, icon, name, id, category) {
   markers.push(img);
 
   updateMarkerDisplay();
+  buildFilterMenu();
+  applyFilters();
 }
 
 /* ============================================================
@@ -272,7 +343,7 @@ mapContainer.addEventListener("click", (e) => {
 });
 
 /* ============================================================
-   VALIDER
+   VALIDER / MODIFIER
 ============================================================ */
 
 validateBtn.addEventListener("click", async () => {
@@ -329,7 +400,7 @@ cancelBtn.addEventListener("click", () => {
 });
 
 /* ============================================================
-   MENU CLIC DROIT ACTIONS
+   MENU ACTIONS
 ============================================================ */
 
 editBtn.addEventListener("click", () => {
@@ -364,15 +435,8 @@ deleteBtn.addEventListener("click", async () => {
   markerMenu.classList.add("hidden");
 });
 
-/* FERME MENU SI CLIC AILLEURS */
-document.addEventListener("click", (e) => {
-  if (!markerMenu.contains(e.target)) {
-    markerMenu.classList.add("hidden");
-  }
-});
-
 /* ============================================================
-   FIRESTORE TEMPS REEL
+   FIRESTORE
 ============================================================ */
 
 db.collection("markers").onSnapshot(snapshot => {

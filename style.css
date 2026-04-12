@@ -1,44 +1,107 @@
-body {
+/* ============================================================
+   BASE
+============================================================ */
+
+html, body {
     margin: 0;
-    background: #003F87;
+    padding: 0;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
-    font-family: Arial;
+    font-family: Arial, sans-serif;
+    background: #003F87;
 }
 
 /* ============================================================
-   🗺 MAP LAYERS (FIX MAP PETITE)
+   APP (IMPORTANT POUR PLEIN ÉCRAN)
+============================================================ */
+
+#app {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+/* ============================================================
+   TOPBAR (overlay propre, PAS de réduction de map)
+============================================================ */
+
+#topbar {
+    position: fixed;
+    top: 15px;
+    left: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 8px 12px;
+
+    background: rgba(0,0,0,0.55);
+    border-radius: 10px;
+
+    z-index: 2000;
+
+    max-width: 95vw;
+}
+
+/* titre */
+#topbar h1 {
+    margin: 0;
+    font-size: 18px;
+    color: white;
+    white-space: nowrap;
+}
+
+/* boutons / input */
+#new-point-btn,
+#search-input,
+#toggle-filter {
+    height: 38px;
+    padding: 0 12px;
+
+    border-radius: 8px;
+    border: none;
+
+    font-weight: bold;
+    background: rgba(255,255,255,0.15);
+    color: white;
+
+    outline: none;
+}
+
+/* ============================================================
+   MAP (FIX PRINCIPAL)
 ============================================================ */
 
 #map-container {
+    position: absolute;
+    inset: 0;
     width: 100vw;
     height: 100vh;
+
     overflow: hidden;
-    position: relative;
     cursor: grab;
-    z-index: 1;
 }
 
+/* IMPORTANT : pas de contrainte */
 #map-inner {
     position: absolute;
     top: 0;
     left: 0;
 
-    width: 100%;
-    height: 100%;
+    transform-origin: 0 0;
 }
 
-/* 🔥 FIX IMPORTANT MAP PLEIN ÉCRAN */
+/* IMAGE MAP = taille réelle contrôlée par JS */
 #map {
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
     display: block;
     user-select: none;
     pointer-events: none;
 }
 
 /* ============================================================
-   📍 MARKERS
+   MARKERS
 ============================================================ */
 
 .marker {
@@ -50,219 +113,96 @@ body {
 }
 
 /* ============================================================
-   🔝 TOP BAR (UI AU-DESSUS)
-============================================================ */
-
-#topbar {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    padding: 8px 12px;
-
-    background: rgba(0,0,0,0.45);
-    border-radius: 10px;
-
-    z-index: 99999;
-
-    max-height: 50px;
-}
-
-#topbar h1 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    white-space: nowrap;
-}
-
-/* ============================================================
-   🔘 BUTTONS / INPUTS
-============================================================ */
-
-#new-point-btn,
-#search-input,
-#toggle-filter {
-    height: 34px;
-    padding: 0 10px;
-
-    border-radius: 8px;
-    border: none;
-
-    font-size: 12px;
-    font-weight: bold;
-
-    background: rgba(255,255,255,0.15);
-    color: white;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#search-input {
-    width: 180px;
-    text-align: center;
-}
-
-/* ============================================================
-   💬 TOOLTIP
+   TOOLTIP
 ============================================================ */
 
 #tooltip {
     position: fixed;
-    background: rgba(20,20,20,0.85);
-    backdrop-filter: blur(6px);
+    background: rgba(20,20,20,0.9);
     color: white;
 
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 8px;
 
-    pointer-events: none;
-    z-index: 99999;
+    font-size: 12px;
+    z-index: 10000;
 
-    display: flex;
+    display: none;
+    gap: 8px;
     align-items: center;
-    gap: 10px;
-
-    opacity: 0;
-    transform: translateY(5px);
-    transition: all 0.15s ease;
 }
 
 #tooltip.show {
-    opacity: 1;
-    transform: translateY(0);
+    display: flex;
 }
 
 #tooltip img {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
 }
 
 /* ============================================================
-   📍 POINT MENU
+   POINT MENU
 ============================================================ */
 
 #point-menu {
     position: fixed;
-    bottom: 40px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
 
     background: rgba(0,0,0,0.9);
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
 
     color: white;
-    z-index: 99999;
+    z-index: 5000;
 }
 
 .point-box {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
-.preview {
-    width: 40px;
-    height: 40px;
-    margin-top: 5px;
+/* inputs */
+#point-menu input,
+#point-menu select {
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
 }
 
 /* ============================================================
-   🖱 RIGHT CLICK MENU
+   MENU CLIC DROIT
 ============================================================ */
 
 #marker-menu {
     position: absolute;
     background: #222;
-    border: 1px solid #555;
-
-    padding: 5px;
-    border-radius: 4px;
+    border-radius: 6px;
 
     display: none;
     flex-direction: column;
 
-    z-index: 99999;
+    z-index: 9999;
 }
 
 #marker-menu button {
-    background: #444;
-    color: white;
+    background: none;
     border: none;
-    padding: 6px 12px;
-    text-align: left;
+    color: white;
+
+    padding: 8px 12px;
     cursor: pointer;
 }
 
 #marker-menu button:hover {
-    background: #666;
+    background: rgba(255,255,255,0.1);
 }
 
 /* ============================================================
-   🔐 LOGIN SCREEN
-============================================================ */
-
-#login-screen {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    z-index: 999999;
-}
-
-#login-screen img {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: white;
-}
-
-#login-box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    background: rgba(0, 0, 0, 0.7);
-    padding: 30px;
-    border-radius: 12px;
-    text-align: center;
-}
-
-#login-box input {
-    padding: 10px;
-    width: 200px;
-    border-radius: 6px;
-    border: none;
-    margin-bottom: 10px;
-}
-
-#login-box button {
-    padding: 10px 20px;
-    border-radius: 6px;
-    border: none;
-    background: #005eff;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-#login-error {
-    color: red;
-    font-weight: bold;
-}
-
-/* ============================================================
-   📂 FILTER MENU
+   FILTRES
 ============================================================ */
 
 #filter-menu {
@@ -274,46 +214,28 @@ body {
     top: 45px;
     left: 0;
 
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-
-    border-radius: 10px;
+    background: rgba(0,0,0,0.85);
     padding: 10px;
+
+    border-radius: 8px;
+    min-width: 180px;
 
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 
-    min-width: 180px;
-    color: white;
-
-    z-index: 99999;
+    z-index: 3000;
 }
 
 #filter-panel label {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-}
-
-#filter-panel input {
-    cursor: pointer;
+    color: white;
+    font-size: 13px;
 }
 
 /* ============================================================
-   🚫 HIDDEN
-============================================================ */
-
-.hidden {
-    display: none !important;
-}
-
-/* ============================================================
-   🏷 CREDIT
+   CREDIT
 ============================================================ */
 
 #credit-btn {
@@ -325,39 +247,43 @@ body {
     color: white;
 
     border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
+    padding: 6px 10px;
 
-    font-size: 14px;
-
-    cursor: default;
-    z-index: 99999;
+    border-radius: 6px;
+    z-index: 9999;
 }
 
 /* ============================================================
-   🔎 SEARCH SUGGESTIONS
+   LOGIN
 ============================================================ */
 
-#search-suggestions {
-    position: absolute;
-    top: 55px;
-    left: 0;
-
-    width: 200px;
-    background: rgba(0,0,0,0.9);
-    border-radius: 8px;
-
-    overflow: hidden;
+#login-screen {
+    position: fixed;
+    inset: 0;
     z-index: 99999;
 }
 
-.suggestion {
-    padding: 8px 10px;
-    cursor: pointer;
-    color: white;
-    font-size: 13px;
+#login-screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.suggestion:hover {
-    background: rgba(255,255,255,0.1);
+#login-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background: rgba(0,0,0,0.75);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* ============================================================
+   UTILS
+============================================================ */
+
+.hidden {
+    display: none !important;
 }

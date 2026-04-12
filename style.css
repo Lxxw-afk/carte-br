@@ -416,3 +416,10 @@ body {
 .hidden {
     display: none !important;
 }
+#tooltip {
+    display: none;
+}
+
+#tooltip.show {
+    display: flex;
+}

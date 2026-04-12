@@ -208,18 +208,18 @@ function addMarker(x, y, icon, name, id, category) {
   img.dataset.category = category || "Non défini";
 
   // TOOLTIP
-  img.addEventListener("mouseenter", () => {
+img.addEventListener("mouseenter", () => {
+
+    const markerName = img.dataset.name || "Sans nom";
+    const markerCategory = img.dataset.category || "Non défini";
+
     tooltip.innerHTML = `
-      <img src="icons/${img.dataset.icon}">
-      <div>
-        <div style="font-weight:bold;">${img.dataset.name}</div>
-        <div style="font-size:11px;opacity:0.7;">
-          ${img.dataset.category}
-        </div>
-      </div>
+        <div style="font-weight:bold;">${markerName}</div>
+        <div style="font-size:12px; opacity:0.8;">${markerCategory}</div>
     `;
-    tooltip.classList.add("show");
-  });
+
+    tooltip.classList.remove("hidden");
+});
 
   img.addEventListener("mouseleave", () => {
     tooltip.classList.remove("show");

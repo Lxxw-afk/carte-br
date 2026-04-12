@@ -226,6 +226,8 @@ function addMarker(x, y, icon, name, id, category) {
   markerLayer.appendChild(img);
   markers.push(img);
   updateMarkerDisplay();
+  buildFilterMenu();
+
 }
 
 /* ============================================================
@@ -412,3 +414,75 @@ db.collection("markers").onSnapshot(snapshot => {
   });
 
 });
+/* ============================================================
+   FILTRE PAR CATEGORIE
+============================================================ */
+
+const filterPanel = document.getElementById("filter-panel");
+const toggleFilter = document.getElementById("toggle-filter");
+
+// toutes les catégories
+const categories = [
+  "Drogue",
+  "Entrepôt",
+  "QG",
+  "Munition",
+  "Trafic d'organe",
+  "PNJ"
+];
+
+// état des filtres
+let activeFilters = {};
+
+// init
+categories.forEach(cat => activeFilters[cat] = true);
+
+/* TOGGLE MENU */
+toggleFilter.addEventListener("click", () => {
+  filterPanel.classList.toggle("hidden");
+});
+
+/* CONSTRUIRE MENU */
+function buildFilterMenu() {
+
+  filterPanel.innerHTML = "";
+
+  categories.forEach(cat => {
+
+    const count = markers.filter(m =>
+      m.dataset.category === cat
+    ).length;
+
+    const label = document.createElement("label");
+
+    label.innerHTML = `
+      <span>${cat} (${count})</span>
+      <input type="checkbox" ${activeFilters[cat] ? "checked" : ""}>
+    `;
+
+    const checkbox = label.querySelector("input");
+
+    checkbox.addEventListener("change", () => {
+      activeFilters[cat] = checkbox.checked;
+      applyFilters();
+    });
+
+    filterPanel.appendChild(label);
+  });
+}
+
+/* APPLIQUER FILTRE */
+function applyFilters() {
+
+  markers.forEach(marker => {
+
+    const cat = marker.dataset.category;
+
+    if (activeFilters[cat]) {
+      marker.style.display = "block";
+    } else {
+      marker.style.display = "none";
+    }
+
+  });
+}

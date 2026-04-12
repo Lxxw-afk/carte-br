@@ -57,7 +57,7 @@ const tooltip = document.getElementById("tooltip");
 const iconList = [
   "Meth.png","cocaine.png","Munitions.png","organes.png",
   "Weed.png","Entrepot.png","Acier.png","Heroine.png",
-  "LSD.png","bijoux.png","Metal.png","Titane.png","QG.png"
+  "LSD.png","bijoux.png","Metal.png","Titane.png","QG.png","criminel.png"
 ];
 
 iconList.forEach(icon => {

@@ -372,23 +372,36 @@ body {
 
 #filter-panel {
     position: absolute;
-    top: 50px;
+    top: 55px;
     left: 0;
 
-    background: rgba(0,0,0,0.9);
-    padding: 10px;
+    background: rgba(255,255,255,0.15); /* 🔥 même que bouton */
+    backdrop-filter: blur(10px);
+
     border-radius: 10px;
+    padding: 10px;
 
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
 
-    min-width: 180px;
+    min-width: 200px;
+    color: white;
 }
 
+/* items */
 #filter-panel label {
     display: flex;
     justify-content: space-between;
-    font-size: 14px;
+    align-items: center;
+
+    font-weight: bold;
+    text-transform: uppercase;
+
+    cursor: pointer;
+}
+
+/* checkbox style */
+#filter-panel input {
     cursor: pointer;
 }

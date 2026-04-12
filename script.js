@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+/* ================= ELEMENTS ================= */
+
 const mapContainer = document.getElementById("map-container");
 const mapInner = document.getElementById("map-inner");
 const markerLayer = document.getElementById("marker-layer");
@@ -13,12 +16,14 @@ const pointName = document.getElementById("point-name");
 const pointIcon = document.getElementById("point-icon");
 const pointCategory = document.getElementById("point-category");
 
-const editBtn = document.getElementById("edit-btn");
-const moveBtn = document.getElementById("move-btn");
-const deleteBtn = document.getElementById("delete-btn");
-/* ============================================================
-   🔐 SYSTEME DE CONNEXION (FIX)
-============================================================ */
+const editBtn = document.getElementById("edit-marker");
+const moveBtn = document.getElementById("move-marker");
+const deleteBtn = document.getElementById("delete-marker");
+
+const validateBtn = document.getElementById("validate-point");
+const cancelBtn = document.getElementById("cancel-point");
+
+/* ================= LOGIN ================= */
 
 const loginScreen = document.getElementById("login-screen");
 const app = document.getElementById("app");
@@ -36,9 +41,8 @@ loginBtn.addEventListener("click", () => {
   }
 });
 
-/* ============================================================
-   FIREBASE INIT (FIX)
-============================================================ */
+/* ================= FIREBASE ================= */
+
 const firebaseConfig = {
   apiKey: "AIzaSyAoiD4sgUaamp0SGOBvx3A7FGjw4E3K4TE",
   authDomain: "carte-br.firebaseapp.com",
@@ -48,13 +52,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* ============================================================
-   VARIABLES
-============================================================ */
+/* ================= STATE ================= */
+
 let posX = 0, posY = 0;
 let scale = 1;
 let isDragging = false;
-let dragStartX = 0, dragStartY = 0;
 
 let waitingForPlacement = false;
 let moveMode = false;
@@ -62,35 +64,32 @@ let editMode = false;
 
 let selectedMarker = null;
 let markers = [];
+
 let tempX = 0, tempY = 0;
 
-/* ============================================================
-   DRAG FIX
-============================================================ */
+/* ================= MAP DRAG ================= */
+
 mapContainer.addEventListener("mousedown", (e) => {
   if (waitingForPlacement || moveMode) return;
 
   isDragging = true;
-  dragStartX = e.clientX - posX;
-  dragStartY = e.clientY - posY;
+  mapContainer.dataset.startX = e.clientX - posX;
+  mapContainer.dataset.startY = e.clientY - posY;
 });
 
 window.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
 
-  posX = e.clientX - dragStartX;
-  posY = e.clientY - dragStartY;
+  posX = e.clientX - mapContainer.dataset.startX;
+  posY = e.clientY - mapContainer.dataset.startY;
 
   updateMap();
 });
 
-window.addEventListener("mouseup", () => {
-  isDragging = false;
-});
+window.addEventListener("mouseup", () => isDragging = false);
 
-/* ============================================================
-   ZOOM PROPRE
-============================================================ */
+/* ================= ZOOM ================= */
+
 mapContainer.addEventListener("wheel", (e) => {
   e.preventDefault();
 
@@ -107,57 +106,19 @@ mapContainer.addEventListener("wheel", (e) => {
   updateMap();
 });
 
-/* ============================================================
-   UPDATE MAP + MUR INVISIBLE FIX
-============================================================ */
+/* ================= UPDATE MAP ================= */
+
 function updateMap() {
-  const containerWidth = mapContainer.clientWidth;
-  const containerHeight = mapContainer.clientHeight;
-
-  const mapWidth = mapInner.offsetWidth * scale;
-  const mapHeight = mapInner.offsetHeight * scale;
-
-  const minX = Math.min(0, containerWidth - mapWidth);
-  const minY = Math.min(0, containerHeight - mapHeight);
-
-  posX = Math.max(minX, Math.min(0, posX));
-  posY = Math.max(minY, Math.min(0, posY));
-
   mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
   markerLayer.style.transform = `translate(${posX}px, ${posY}px)`;
-
-  updateMarkerDisplay();
 }
 
-/* ============================================================
-   MARKERS
-============================================================ */
-function updateMarkerDisplay() {
-  markers.forEach(marker => {
-    const x = parseFloat(marker.dataset.x);
-    const y = parseFloat(marker.dataset.y);
+/* ================= TOOLTIP ================= */
 
-    marker.style.left = (x * scale) + "px";
-    marker.style.top = (y * scale) + "px";
-
-    let size = 26 / scale;
-    size = Math.max(18, Math.min(32, size));
-
-    marker.style.width = size + "px";
-    marker.style.height = size + "px";
-  });
-}
-
-/* ============================================================
-   TOOLTIP FIX (IMPORTANT)
-============================================================ */
 function showTooltip(marker, e) {
   tooltip.innerHTML = `
     <img src="icons/${marker.dataset.icon}">
-    <div>
-      <b>${marker.dataset.name}</b><br>
-      ${marker.dataset.category}
-    </div>
+    <div><b>${marker.dataset.name}</b><br>${marker.dataset.category}</div>
   `;
   tooltip.classList.add("show");
 }
@@ -171,9 +132,8 @@ function hideTooltip() {
   tooltip.classList.remove("show");
 }
 
-/* ============================================================
-   ADD MARKER
-============================================================ */
+/* ================= ADD MARKER ================= */
+
 function addMarker(x, y, icon, name, id, category) {
 
   const img = document.createElement("img");
@@ -187,15 +147,12 @@ function addMarker(x, y, icon, name, id, category) {
   img.dataset.category = category || "Inconnu";
   img.dataset.icon = icon;
 
-  /* TOOLTIP */
   img.addEventListener("mouseenter", (e) => showTooltip(img, e));
   img.addEventListener("mousemove", moveTooltip);
   img.addEventListener("mouseleave", hideTooltip);
 
-  /* CLICK DROIT */
   img.addEventListener("contextmenu", (e) => {
     e.preventDefault();
-    e.stopPropagation();
 
     selectedMarker = img;
 
@@ -206,37 +163,16 @@ function addMarker(x, y, icon, name, id, category) {
 
   markerLayer.appendChild(img);
   markers.push(img);
-
-  updateMarkerDisplay();
-  buildFilterMenu();
 }
 
-/* ============================================================
-   CLICK MAP
-============================================================ */
+/* ================= CLICK MAP ================= */
+
 mapContainer.addEventListener("click", async (e) => {
-
-  if (isDragging) return;
-
-  if (moveMode && selectedMarker) {
-    const rect = mapContainer.getBoundingClientRect();
-    const x = (e.clientX - rect.left - posX) / scale;
-    const y = (e.clientY - rect.top - posY) / scale;
-
-    selectedMarker.dataset.x = x;
-    selectedMarker.dataset.y = y;
-
-    await db.collection("markers").doc(selectedMarker.dataset.id).update({ x, y });
-
-    moveMode = false;
-    selectedMarker = null;
-    updateMarkerDisplay();
-    return;
-  }
 
   if (!waitingForPlacement) return;
 
   const rect = mapContainer.getBoundingClientRect();
+
   tempX = (e.clientX - rect.left - posX) / scale;
   tempY = (e.clientY - rect.top - posY) / scale;
 
@@ -245,30 +181,10 @@ mapContainer.addEventListener("click", async (e) => {
   pointMenu.classList.remove("hidden");
 });
 
-/* ============================================================
-   SAVE POINT FIX
-============================================================ */
-document.getElementById("validate-point").onclick = async () => {
+/* ================= SAVE ================= */
 
-  if (!pointName.value || !pointIcon.value) return;
-
-  if (editMode && selectedMarker) {
-
-    selectedMarker.dataset.name = pointName.value;
-    selectedMarker.dataset.category = pointCategory.value;
-    selectedMarker.src = "icons/" + pointIcon.value;
-
-    await db.collection("markers").doc(selectedMarker.dataset.id).update({
-      name: pointName.value,
-      icon: pointIcon.value,
-      category: pointCategory.value
-    });
-
-    editMode = false;
-    selectedMarker = null;
-    pointMenu.classList.add("hidden");
-    return;
-  }
+if (validateBtn) {
+validateBtn.onclick = async () => {
 
   const doc = await db.collection("markers").add({
     x: tempX,
@@ -282,23 +198,21 @@ document.getElementById("validate-point").onclick = async () => {
 
   pointMenu.classList.add("hidden");
 };
+}
 
-/* ============================================================
-   CANCEL FIX
-============================================================ */
-document.getElementById("cancel-point").onclick = () => {
+if (cancelBtn) {
+cancelBtn.onclick = () => {
   pointMenu.classList.add("hidden");
   step1.classList.add("hidden");
 
   waitingForPlacement = false;
   editMode = false;
   moveMode = false;
-  selectedMarker = null;
 };
+}
 
-/* ============================================================
-   MENU ACTIONS FIX
-============================================================ */
+/* ================= MENU ================= */
+
 editBtn.onclick = () => {
   if (!selectedMarker) return;
 
@@ -325,51 +239,21 @@ deleteBtn.onclick = async () => {
   selectedMarker.remove();
   markers = markers.filter(m => m !== selectedMarker);
 
-  selectedMarker = null;
   markerMenu.style.display = "none";
 };
 
-/* ============================================================
-   CLOSE MENU FIX
-============================================================ */
-document.addEventListener("click", (e) => {
-  if (!markerMenu.contains(e.target) && !e.target.classList.contains("marker")) {
-    markerMenu.style.display = "none";
-  }
-});
+/* ================= FIREBASE ================= */
 
-/* ============================================================
-   FIRESTORE REALTIME
-============================================================ */
 db.collection("markers").onSnapshot(snapshot => {
-  snapshot.docChanges().forEach(change => {
 
-    const d = change.doc.data();
+  markers.forEach(m => m.remove());
+  markers = [];
 
-    if (change.type === "added") {
-      addMarker(d.x, d.y, d.icon, d.name, change.doc.id, d.category);
-    }
-
-    if (change.type === "modified") {
-      const m = markers.find(x => x.dataset.id === change.doc.id);
-      if (m) {
-        m.dataset.x = d.x;
-        m.dataset.y = d.y;
-        m.dataset.name = d.name;
-        m.dataset.category = d.category;
-        m.src = "icons/" + d.icon;
-        updateMarkerDisplay();
-      }
-    }
-
-    if (change.type === "removed") {
-      const m = markers.find(x => x.dataset.id === change.doc.id);
-      if (m) m.remove();
-    }
-
+  snapshot.forEach(doc => {
+    const d = doc.data();
+    addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category);
   });
 
-  buildFilterMenu();
 });
 
-});                        
+});

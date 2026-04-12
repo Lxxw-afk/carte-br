@@ -83,7 +83,7 @@ body {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 /* ================= MAP ================= */
@@ -93,7 +93,6 @@ body {
     height: 100vh;
     overflow: hidden;
     position: relative;
-    cursor: grab;
 }
 
 #map-inner {
@@ -101,19 +100,9 @@ body {
     transform-origin: 0 0;
 }
 
-#map {
-    pointer-events: none;
-    user-select: none;
-}
-
-/* ================= MARKERS ================= */
-
 .marker {
     position: absolute;
     transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    z-index: 4000;
 }
 
 /* ================= TOOLTIP STYLE (TRANSPARENT BUTTON STYLE) ================= */
@@ -121,26 +110,15 @@ body {
 #tooltip {
     position: fixed;
     background: rgba(20,20,20,0.85);
-    backdrop-filter: blur(6px);
     color: white;
-    padding: 10px 14px;
+    padding: 10px;
     border-radius: 10px;
-    font-size: 13px;
-    pointer-events: none;
+    display: none;
     z-index: 10000;
-
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    opacity: 0;
-    transform: translateY(5px);
-    transition: all 0.15s ease;
 }
 
 #tooltip.show {
-    opacity: 1;
-    transform: translateY(0);
+    display: flex;
 }
 
 #tooltip img {

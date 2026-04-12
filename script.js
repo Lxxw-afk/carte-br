@@ -1,5 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
+const mapContainer = document.getElementById("map-container");
+const mapInner = document.getElementById("map-inner");
+const markerLayer = document.getElementById("marker-layer");
 
+const tooltip = document.getElementById("tooltip");
+const markerMenu = document.getElementById("marker-menu");
+
+const step1 = document.getElementById("step1");
+const pointMenu = document.getElementById("point-menu");
+
+const pointName = document.getElementById("point-name");
+const pointIcon = document.getElementById("point-icon");
+const pointCategory = document.getElementById("point-category");
+
+const editBtn = document.getElementById("edit-btn");
+const moveBtn = document.getElementById("move-btn");
+const deleteBtn = document.getElementById("delete-btn");
 /* ============================================================
    🔐 SYSTEME DE CONNEXION (FIX)
 ============================================================ */

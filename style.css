@@ -405,3 +405,32 @@ body {
 #filter-panel input {
     cursor: pointer;
 }
+/* ================= FILTER FIX ================= */
+
+#filter-panel.hidden {
+    display: none;
+}
+
+#filter-panel {
+    position: absolute;
+    top: 55px;
+    left: 0;
+
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+
+    border-radius: 10px;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    min-width: 200px;
+    color: white;
+}
+
+/* animation optionnelle */
+#filter-panel.show {
+    display: flex;
+}

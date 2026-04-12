@@ -353,5 +353,5 @@ db.collection("markers").onSnapshot(snapshot => {
 
   buildFilterMenu();
 });
-  });
+
 }

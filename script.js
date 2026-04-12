@@ -180,8 +180,33 @@ mapContainer.addEventListener("wheel", (e) => {
 ============================================================ */
 
 function updateMap() {
+
+  const containerWidth = mapContainer.clientWidth;
+  const containerHeight = mapContainer.clientHeight;
+
+  const mapWidth = mapInner.offsetWidth * scale;
+  const mapHeight = mapInner.offsetHeight * scale;
+
+  // limites (empêche de sortir de la map)
+  const minX = containerWidth - mapWidth;
+  const minY = containerHeight - mapHeight;
+
+  // si map plus petite que écran → centre
+  if (mapWidth < containerWidth) {
+    posX = (containerWidth - mapWidth) / 2;
+  } else {
+    posX = Math.min(0, Math.max(minX, posX));
+  }
+
+  if (mapHeight < containerHeight) {
+    posY = (containerHeight - mapHeight) / 2;
+  } else {
+    posY = Math.min(0, Math.max(minY, posY));
+  }
+
   mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
   markerLayer.style.transform = `translate(${posX}px, ${posY}px)`;
+
   updateMarkerDisplay();
 }
 

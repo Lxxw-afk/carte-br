@@ -355,3 +355,53 @@ body {
     font-size: 13px;
     margin-top: 5px;
 }
+#filter-menu {
+    position: relative;
+}
+
+#toggle-filter {
+    height: 44px;
+    padding: 0 15px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#filter-panel {
+    position: absolute;
+    top: 55px;
+    left: 0;
+
+    background: rgba(255,255,255,0.15); /* 🔥 même que bouton */
+    backdrop-filter: blur(10px);
+
+    border-radius: 10px;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    min-width: 200px;
+    color: white;
+}
+
+/* items */
+#filter-panel label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-weight: bold;
+    text-transform: uppercase;
+
+    cursor: pointer;
+}
+
+/* checkbox style */
+#filter-panel input {
+    cursor: pointer;
+}

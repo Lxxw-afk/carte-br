@@ -405,3 +405,14 @@ body {
 #filter-panel input {
     cursor: pointer;
 }
+#filter-panel {
+    transition: opacity 0.2s ease;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.hidden {
+    display: none !important;
+}

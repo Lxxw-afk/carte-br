@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8" />
-    <title>BRIGADE DE RECHERCHES</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<title>BRIGADE DE RECHERCHES</title>
+<link rel="stylesheet" href="style.css">
 </head>
-    
+
 <body>
 
 <!-- LOGIN -->
@@ -24,10 +24,8 @@
 
     <div id="topbar">
         <h1>BRIGADE DE RECHERCHE</h1>
-
         <button id="new-point-btn">Nouveau point</button>
-
-        <input type="text" id="search-input" placeholder="Rechercher un point">
+        <input id="search-input" placeholder="Rechercher">
     </div>
 
     <button id="credit-btn">Créé par Julien Flament | Lxxw.</button>
@@ -38,55 +36,37 @@
 
     <div id="map-container">
         <div id="map-inner">
-            <img id="map" src="images/map.png" alt="Carte RP">
+            <img id="map" src="images/map.png">
         </div>
         <div id="marker-layer"></div>
     </div>
 
     <div id="point-menu" class="hidden">
-        <div class="point-box">
-            <h3>Configurer le point</h3>
+        <input id="point-name" placeholder="Nom">
 
-            <label>Nom :</label>
-            <input id="point-name" type="text">
+        <select id="point-icon"></select>
 
-            <label>Icône :</label>
-            <select id="point-icon"></select>
+        <select id="point-category">
+            <option value="">Choisir</option>
+            <option value="Drogue">Drogue</option>
+            <option value="Entrepôt">Entrepôt</option>
+            <option value="QG">QG</option>
+            <option value="Munition">Munition</option>
+            <option value="PNJ">PNJ</option>
+        </select>
 
-            <label>Catégorie :</label>
-            <select id="point-category">
-                <option value="">Choisir</option>
-                <option value="Drogue">Drogue</option>
-                <option value="Entrepôt">Entrepôt</option>
-                <option value="QG">QG</option>
-                <option value="Munition">Munition</option>
-                <option value="Trafic d'organe">Trafic d'organe</option>
-                <option value="PNJ">PNJ</option>
-            </select>
-
-            <button id="validate-point">Valider</button>
-            <button id="cancel-point">Annuler</button>
-        </div>
+        <button id="validate-point">Valider</button>
+        <button id="cancel-point">Annuler</button>
     </div>
-
-    <div id="marker-menu" class="hidden">
-        <button id="edit-marker">Modifier</button>
-        <button id="move-marker">Déplacer</button>
-        <button id="delete-marker">Supprimer</button>
-    </div>
-
-    <div id="tooltip"></div>
 
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-<script src="script.js" defer></script>
+<script src="script.js"></script>
 
 </body>
 </html>
-
 
 

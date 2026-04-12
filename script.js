@@ -376,4 +376,3 @@ db.collection("markers").onSnapshot(snapshot => {
   applyFilters();
 });
 
-});

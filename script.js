@@ -101,13 +101,14 @@ let markers = [];
 let tempX = 0, tempY = 0;
 
 /* ============================================================
-   FILTRES (CATÉGORIES)
+   FILTRES (CATÉGORIES + STATUTS)
 ============================================================ */
 
 const toggleFilterBtn = document.getElementById("toggle-filter");
 const filterPanel = document.getElementById("filter-panel");
 
 let activeCategories = new Set();
+let activeStatuses = new Set(["Actif", "Surveillance", "Inactif"]);
 
 toggleFilterBtn.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -121,6 +122,7 @@ document.addEventListener("click", (e) => {
 
   if (!markerMenu.contains(e.target) && !e.target.classList.contains("marker")) {
     markerMenu.classList.add("hidden");
+    markers.forEach(m => m.classList.remove("selected"));
   }
 
   if (suggestionBox && !suggestionBox.contains(e.target) && e.target !== searchInput) {
@@ -136,6 +138,11 @@ function buildFilterMenu() {
   });
 
   filterPanel.innerHTML = "";
+
+  const catTitle = document.createElement("div");
+  catTitle.className = "filter-title";
+  catTitle.textContent = "Catégories";
+  filterPanel.appendChild(catTitle);
 
   categories.forEach(cat => {
     if (!activeCategories.has(cat)) {
@@ -167,13 +174,48 @@ function buildFilterMenu() {
     filterPanel.appendChild(label);
   });
 
+  const statusTitle = document.createElement("div");
+  statusTitle.className = "filter-title";
+  statusTitle.textContent = "Statuts";
+  filterPanel.appendChild(statusTitle);
+
+  ["Actif", "Surveillance", "Inactif"].forEach(status => {
+    const label = document.createElement("label");
+
+    const text = document.createElement("span");
+    text.textContent = status;
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = activeStatuses.has(status);
+
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        activeStatuses.add(status);
+      } else {
+        activeStatuses.delete(status);
+      }
+      applyFilters();
+    });
+
+    label.appendChild(text);
+    label.appendChild(checkbox);
+    filterPanel.appendChild(label);
+  });
+
   applyFilters();
 }
 
 function applyFilters() {
   markers.forEach(marker => {
     const cat = marker.dataset.category || "Non défini";
-    marker.style.display = activeCategories.has(cat) ? "block" : "none";
+    const status = marker.dataset.status || "Actif";
+
+    const show =
+      activeCategories.has(cat) &&
+      activeStatuses.has(status);
+
+    marker.style.display = show ? "block" : "none";
   });
 }
 
@@ -293,6 +335,11 @@ function getStatusLabel(status) {
   return "🟢 Actif";
 }
 
+function selectMarker(marker) {
+  markers.forEach(m => m.classList.remove("selected"));
+  marker.classList.add("selected");
+}
+
 function addMarker(x, y, icon, name, id, category, status, owner) {
   const img = document.createElement("img");
   img.src = "icons/" + icon;
@@ -333,6 +380,7 @@ function addMarker(x, y, icon, name, id, category, status, owner) {
     e.preventDefault();
 
     selectedMarker = img;
+    selectMarker(img);
 
     markerMenu.classList.remove("hidden");
     markerMenu.style.left = e.pageX + "px";
@@ -372,6 +420,7 @@ mapContainer.addEventListener("click", (e) => {
 
     moveMode = false;
     selectedMarker = null;
+    markers.forEach(m => m.classList.remove("selected"));
     return;
   }
 
@@ -414,6 +463,7 @@ validateBtn.addEventListener("click", async () => {
 
     editMode = false;
     selectedMarker = null;
+    markers.forEach(m => m.classList.remove("selected"));
     pointMenu.classList.add("hidden");
     return;
   }
@@ -459,6 +509,8 @@ cancelBtn.addEventListener("click", () => {
   pointCategory.value = "";
   pointOwner.value = "";
   pointStatus.value = "";
+
+  markers.forEach(m => m.classList.remove("selected"));
 });
 
 /* ============================================================
@@ -495,6 +547,7 @@ deleteBtn.addEventListener("click", async () => {
 
   selectedMarker = null;
   markerMenu.classList.add("hidden");
+  markers.forEach(m => m.classList.remove("selected"));
 });
 
 /* ============================================================
@@ -597,6 +650,7 @@ function focusMarker(marker) {
     if (t < 1) {
       requestAnimationFrame(animate);
     } else {
+      selectMarker(marker);
       highlightMarker(marker);
     }
   }

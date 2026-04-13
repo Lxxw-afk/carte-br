@@ -376,7 +376,7 @@ mapContainer.addEventListener("click", (e) => {
   const rect = mapContainer.getBoundingClientRect();
 
   tempX = (e.clientX - rect.left - posX) / scale;
-  tempY = (e.clientY - rect.top - posY) / scale;
+  tempY = (e.clientX - rect.top - posY) / scale;
 
   waitingForPlacement = false;
   step1.classList.add("hidden");
@@ -514,7 +514,13 @@ if (searchInput && suggestionBox) {
     results.slice(0, 5).forEach(marker => {
       const div = document.createElement("div");
       div.className = "suggestion";
-      div.textContent = marker.dataset.name;
+      div.innerHTML = `
+        <b>${marker.dataset.name}</b><br>
+        <span style="opacity:0.7; font-size:11px;">
+          ${marker.dataset.category}
+          ${marker.dataset.owner ? " • " + marker.dataset.owner : ""}
+        </span>
+      `;
 
       div.addEventListener("click", () => {
         focusMarker(marker);
@@ -547,17 +553,53 @@ if (searchInput && suggestionBox) {
   });
 }
 
+function highlightMarker(marker) {
+  const previousTransform = marker.style.transform;
+  const previousFilter = marker.style.filter;
+
+  marker.style.transition = "all 0.3s";
+  marker.style.transform = "translate(-50%, -50%) scale(1.4)";
+  marker.style.filter = (previousFilter ? previousFilter + " " : "") + "drop-shadow(0 0 10px white)";
+
+  setTimeout(() => {
+    marker.style.transform = previousTransform || "translate(-50%, -50%)";
+    marker.style.filter = previousFilter || "";
+  }, 1200);
+}
+
 function focusMarker(marker) {
-  const x = parseFloat(marker.dataset.x);
-  const y = parseFloat(marker.dataset.y);
+  const targetX = parseFloat(marker.dataset.x);
+  const targetY = parseFloat(marker.dataset.y);
 
   const containerW = mapContainer.clientWidth;
   const containerH = mapContainer.clientHeight;
 
-  posX = (containerW / 2) - (x * scale);
-  posY = (containerH / 2) - (y * scale);
+  const targetPosX = (containerW / 2) - (targetX * scale);
+  const targetPosY = (containerH / 2) - (targetY * scale);
 
-  updateMap();
+  const startX = posX;
+  const startY = posY;
+
+  const duration = 300;
+  const startTime = performance.now();
+
+  function animate(time) {
+    const t = Math.min((time - startTime) / duration, 1);
+    const ease = t * (2 - t);
+
+    posX = startX + (targetPosX - startX) * ease;
+    posY = startY + (targetPosY - startY) * ease;
+
+    updateMap();
+
+    if (t < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      highlightMarker(marker);
+    }
+  }
+
+  requestAnimationFrame(animate);
 }
 
 /* ============================================================

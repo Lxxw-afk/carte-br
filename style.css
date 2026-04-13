@@ -30,16 +30,12 @@ body {
     position: fixed;
     top: 15px;
     left: 20px;
-
     display: flex;
     align-items: center;
     gap: 12px;
-
     padding: 8px 12px;
-
     background: rgba(0,0,0,0.55);
     border-radius: 10px;
-
     z-index: 2000;
 }
 
@@ -55,17 +51,24 @@ body {
 #toggle-filter {
     height: 38px;
     padding: 0 12px;
-
     border-radius: 8px;
     border: none;
-
     font-weight: bold;
     background: rgba(255,255,255,0.15);
     color: white;
 }
 
+#new-point-btn,
+#toggle-filter {
+    cursor: pointer;
+}
+
 #search-input::placeholder {
     color: rgba(255,255,255,0.8);
+}
+
+#search-wrapper {
+    position: relative;
 }
 
 /* ============================================================
@@ -77,11 +80,9 @@ body {
     top: 45px;
     left: 0;
     width: 220px;
-
     background: rgba(0,0,0,0.92);
     border-radius: 8px;
     overflow: hidden;
-
     z-index: 9999;
     box-shadow: 0 8px 20px rgba(0,0,0,0.25);
 }
@@ -140,35 +141,42 @@ body {
     z-index: 4000;
 }
 
+/* Statuts enquête */
+
+.marker.status-actif {
+    filter: drop-shadow(0 0 6px #2ecc71);
+}
+
+.marker.status-surveillance {
+    filter: drop-shadow(0 0 6px #f39c12);
+}
+
+.marker.status-inactif {
+    filter: drop-shadow(0 0 6px #e74c3c);
+}
+
 /* ============================================================
    TOOLTIP
 ============================================================ */
 
 #tooltip {
     position: absolute;
-    background: rgba(20,20,20,0.9);
+    background: rgba(20,20,20,0.92);
     color: white;
-
-    padding: 6px 10px;
+    padding: 8px 10px;
     border-radius: 8px;
-
     font-size: 12px;
     z-index: 10000;
-
     display: none;
     flex-direction: column;
     align-items: center;
-
     transform: translate(-50%, -120%);
+    text-align: center;
+    pointer-events: none;
 }
 
 #tooltip.show {
     display: flex;
-}
-
-#tooltip img {
-    width: 18px;
-    height: 18px;
 }
 
 /* ============================================================
@@ -180,13 +188,30 @@ body {
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-
     background: rgba(0,0,0,0.9);
     padding: 15px;
     border-radius: 10px;
-
     color: white;
     z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 240px;
+}
+
+#point-menu input,
+#point-menu select,
+#point-menu button {
+    height: 38px;
+    border-radius: 8px;
+    border: none;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+#point-menu button {
+    cursor: pointer;
+    font-weight: bold;
 }
 
 /* ============================================================
@@ -197,20 +222,19 @@ body {
     position: absolute;
     background: #222;
     border-radius: 6px;
-
     display: flex;
     flex-direction: column;
-
     z-index: 9999;
+    overflow: hidden;
 }
 
 #marker-menu button {
     background: none;
     border: none;
     color: white;
-
     padding: 8px 12px;
     cursor: pointer;
+    text-align: left;
 }
 
 #marker-menu button:hover {
@@ -229,25 +253,40 @@ body {
     position: absolute;
     top: 45px;
     left: 0;
-
     background: rgba(0,0,0,0.85);
     padding: 10px;
-
     border-radius: 8px;
     min-width: 180px;
-
     display: flex;
     flex-direction: column;
     gap: 6px;
-
     z-index: 3000;
 }
 
 #filter-panel label {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 10px;
     color: white;
     font-size: 13px;
+}
+
+/* ============================================================
+   MESSAGE STEP
+============================================================ */
+
+#step1 {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 16px;
+    z-index: 3000;
 }
 
 /* ============================================================
@@ -258,19 +297,17 @@ body {
     position: fixed;
     bottom: 10px;
     right: 10px;
-
     background: rgba(0,0,0,0.6);
     color: white;
-
     border: none;
     padding: 6px 10px;
-
     border-radius: 6px;
     z-index: 9999;
+    cursor: default;
 }
 
 /* ============================================================
-   LOGIN (FIX FOND BLANC)
+   LOGIN
 ============================================================ */
 
 #login-screen {
@@ -291,10 +328,33 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-
     background: rgba(0,0,0,0.75);
     padding: 20px;
     border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 240px;
+}
+
+#login-box input,
+#login-box button {
+    height: 38px;
+    border-radius: 8px;
+    border: none;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+#login-box button {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#login-error {
+    color: #ff7b7b;
+    font-size: 13px;
+    min-height: 16px;
 }
 
 /* ============================================================

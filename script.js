@@ -552,7 +552,7 @@ function focusMarker(marker) {
 }
 
 /* ============================================================
-   FIRESTORE
+   FIRESTORE.
 ============================================================ */
 
 db.collection("markers").onSnapshot(snapshot => {

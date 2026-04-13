@@ -30,12 +30,16 @@ body {
     position: fixed;
     top: 15px;
     left: 20px;
+
     display: flex;
     align-items: center;
     gap: 12px;
+
     padding: 8px 12px;
+
     background: rgba(0,0,0,0.55);
     border-radius: 10px;
+
     z-index: 2000;
 }
 
@@ -51,8 +55,10 @@ body {
 #toggle-filter {
     height: 38px;
     padding: 0 12px;
+
     border-radius: 8px;
     border: none;
+
     font-weight: bold;
     background: rgba(255,255,255,0.15);
     color: white;
@@ -84,19 +90,12 @@ body {
     border-radius: 8px;
     overflow: hidden;
     z-index: 9999;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
 }
 
 .suggestion {
     padding: 8px 10px;
     color: white;
     cursor: pointer;
-    font-size: 13px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-
-.suggestion:last-child {
-    border-bottom: none;
 }
 
 .suggestion:hover {
@@ -153,20 +152,26 @@ body {
     filter: drop-shadow(0 0 6px #e74c3c);
 }
 
-/* Animation recherche uniquement */
+/* ============================================================
+   FIX ANIMATION RECHERCHE (REMPLACE L'ANCIENNE)
+============================================================ */
+
 .marker.search-highlight {
-    animation: markerPulse 1s ease;
+    animation: markerGlow 0.9s ease;
 }
 
-@keyframes markerPulse {
+@keyframes markerGlow {
     0% {
-        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        filter: brightness(1);
     }
-    30% {
-        transform: translate(-50%, -50%) scale(1.35);
+    35% {
+        opacity: 0.85;
+        filter: brightness(1.8) drop-shadow(0 0 10px white);
     }
     100% {
-        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        filter: brightness(1);
     }
 }
 
@@ -178,15 +183,20 @@ body {
     position: absolute;
     background: rgba(20,20,20,0.92);
     color: white;
+
     padding: 8px 10px;
     border-radius: 8px;
+
     font-size: 12px;
     z-index: 10000;
+
     display: none;
     flex-direction: column;
     align-items: center;
+
     transform: translate(-50%, -120%);
     text-align: center;
+
     pointer-events: none;
 }
 
@@ -203,14 +213,18 @@ body {
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
+
     background: rgba(0,0,0,0.9);
     padding: 15px;
     border-radius: 10px;
+
     color: white;
     z-index: 5000;
+
     display: flex;
     flex-direction: column;
     gap: 8px;
+
     min-width: 260px;
 }
 
@@ -224,11 +238,6 @@ body {
     box-sizing: border-box;
 }
 
-#point-menu button {
-    cursor: pointer;
-    font-weight: bold;
-}
-
 /* ============================================================
    MENU CLIC DROIT
 ============================================================ */
@@ -237,19 +246,20 @@ body {
     position: absolute;
     background: #222;
     border-radius: 6px;
+
     display: flex;
     flex-direction: column;
+
     z-index: 9999;
-    overflow: hidden;
 }
 
 #marker-menu button {
     background: none;
     border: none;
     color: white;
+
     padding: 8px 12px;
     cursor: pointer;
-    text-align: left;
 }
 
 #marker-menu button:hover {
@@ -268,108 +278,25 @@ body {
     position: absolute;
     top: 45px;
     left: 0;
+
     background: rgba(0,0,0,0.85);
     padding: 10px;
+
     border-radius: 8px;
     min-width: 180px;
+
     display: flex;
     flex-direction: column;
     gap: 6px;
+
     z-index: 3000;
 }
 
 #filter-panel label {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 10px;
     color: white;
     font-size: 13px;
-}
-
-/* ============================================================
-   MESSAGE STEP
-============================================================ */
-
-#step1 {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.85);
-    color: white;
-    padding: 12px 18px;
-    border-radius: 10px;
-    font-size: 16px;
-    z-index: 3000;
-}
-
-/* ============================================================
-   CREDIT
-============================================================ */
-
-#credit-btn {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    z-index: 9999;
-    cursor: default;
-}
-
-/* ============================================================
-   LOGIN
-============================================================ */
-
-#login-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-}
-
-#login-screen img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: white;
-}
-
-#login-box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.75);
-    padding: 20px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 240px;
-}
-
-#login-box input,
-#login-box button {
-    height: 38px;
-    border-radius: 8px;
-    border: none;
-    padding: 0 10px;
-    box-sizing: border-box;
-}
-
-#login-box button {
-    cursor: pointer;
-    font-weight: bold;
-}
-
-#login-error {
-    color: #ff7b7b;
-    font-size: 13px;
-    min-height: 16px;
 }
 
 /* ============================================================
@@ -380,12 +307,14 @@ body {
     position: fixed;
     bottom: 50px;
     right: 20px;
+
     width: 220px;
     height: 140px;
+
     background: rgba(0,0,0,0.75);
-    border: 2px solid rgba(255,255,255,0.2);
     border-radius: 10px;
     overflow: hidden;
+
     z-index: 9000;
 }
 
@@ -393,17 +322,12 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    background: rgba(255,255,255,0.05);
-    pointer-events: none;
-    user-select: none;
 }
 
 #mini-map-viewport {
     position: absolute;
-    border: 2px solid #ffffff;
-    background: rgba(255,255,255,0.12);
-    box-sizing: border-box;
-    pointer-events: none;
+    border: 2px solid white;
+    background: rgba(255,255,255,0.1);
 }
 
 /* ============================================================

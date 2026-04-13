@@ -22,12 +22,19 @@
 <!-- APP -->
 <div id="app" class="hidden">
 
+    <!-- TOPBAR -->
     <div id="topbar">
         <h1>BRIGADE DE RECHERCHE</h1>
 
         <button id="new-point-btn">Nouveau point</button>
-        <input id="search-input" placeholder="Rechercher">
 
+        <!-- 🔍 RECHERCHE -->
+        <div style="position: relative;">
+            <input id="search-input" placeholder="Rechercher">
+            <div id="search-suggestions" class="hidden"></div>
+        </div>
+
+        <!-- FILTRES -->
         <div id="filter-menu">
             <button id="toggle-filter">Catégories</button>
             <div id="filter-panel" class="hidden"></div>
@@ -40,6 +47,7 @@
         👉 Cliquez sur la carte pour placer votre point.
     </div>
 
+    <!-- MAP -->
     <div id="map-container">
         <div id="map-inner">
             <img id="map" src="images/map.png">
@@ -47,6 +55,7 @@
         <div id="marker-layer"></div>
     </div>
 
+    <!-- MENU POINT -->
     <div id="point-menu" class="hidden">
         <input id="point-name" placeholder="Nom">
 
@@ -65,16 +74,19 @@
         <button id="cancel-point">Annuler</button>
     </div>
 
+    <!-- MENU CLIC DROIT -->
     <div id="marker-menu" class="hidden">
         <button id="edit-marker">Modifier</button>
         <button id="move-marker">Déplacer</button>
         <button id="delete-marker">Supprimer</button>
     </div>
 
+    <!-- TOOLTIP -->
     <div id="tooltip"></div>
 
 </div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 

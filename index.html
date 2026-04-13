@@ -1,97 +1,91 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<title>BRIGADE DE RECHERCHES</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <title>BRIGADE DE RECHERCHES</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<!-- LOGIN -->
-<div id="login-screen">
-    <img src="images/Brigade2recherches.png" id="login-bg">
-
-    <div id="login-box">
-        <input type="password" id="access-code" placeholder="Code d'accès">
-        <button id="login-btn">Connexion</button>
-        <div id="login-error"></div>
-    </div>
-</div>
-
-<!-- APP -->
-<div id="app" class="hidden">
-
-    <!-- TOPBAR -->
-    <div id="topbar">
-        <h1>BRIGADE DE RECHERCHE</h1>
-
-        <button id="new-point-btn">Nouveau point.</button>
-
-        <!-- 🔍 RECHERCHE -->
-        <div style="position: relative;">
-            <input id="search-input" placeholder="Rechercher">
-            <div id="search-suggestions" class="hidden"></div>
-        </div>
-
-        <!-- FILTRES -->
-        <div id="filter-menu">
-            <button id="toggle-filter">Catégories</button>
-            <div id="filter-panel" class="hidden"></div>
+    <!-- LOGIN -->
+    <div id="login-screen">
+        <img src="images/Brigade2recherches.png" id="login-bg" alt="Login">
+        <div id="login-box">
+            <input type="password" id="access-code" placeholder="Code d'accès">
+            <button id="login-btn">Connexion</button>
+            <div id="login-error"></div>
         </div>
     </div>
 
-    <button id="credit-btn">Créé par Julien Flament | Lxxw.</button>
+    <!-- APP -->
+    <div id="app" class="hidden">
 
-    <div id="step1" class="hidden">
-        👉 Cliquez sur la carte pour placer votre point.
-    </div>
+        <div id="topbar">
+            <h1>BRIGADE DE RECHERCHE</h1>
 
-    <!-- MAP -->
-    <div id="map-container">
-        <div id="map-inner">
-            <img id="map" src="images/map.png">
+            <button id="new-point-btn">Nouveau point</button>
+
+            <div id="search-wrapper">
+                <input id="search-input" placeholder="Rechercher">
+                <div id="search-suggestions" class="hidden"></div>
+            </div>
+
+            <div id="filter-menu">
+                <button id="toggle-filter">Catégories</button>
+                <div id="filter-panel" class="hidden"></div>
+            </div>
         </div>
-        <div id="marker-layer"></div>
+
+        <button id="credit-btn">Créé par Julien Flament | Lxxw.</button>
+
+        <div id="step1" class="hidden">
+            👉 Cliquez sur la carte pour placer votre point.
+        </div>
+
+        <div id="map-container">
+            <div id="map-inner">
+                <img id="map" src="images/map.png" alt="Carte">
+            </div>
+            <div id="marker-layer"></div>
+        </div>
+
+        <div id="point-menu" class="hidden">
+            <input id="point-name" placeholder="Nom">
+
+            <select id="point-icon"></select>
+
+            <select id="point-category">
+                <option value="">Choisir une catégorie</option>
+                <option value="Drogue">Drogue</option>
+                <option value="Entrepôt">Entrepôt</option>
+                <option value="QG">QG</option>
+                <option value="Munition">Munition</option>
+                <option value="PNJ">PNJ</option>
+            </select>
+
+            <select id="point-status">
+                <option value="">Choisir un statut</option>
+                <option value="Actif">🟢 Actif</option>
+                <option value="Surveillance">🟠 En surveillance</option>
+                <option value="Inactif">🔴 Inactif</option>
+            </select>
+
+            <button id="validate-point">Valider</button>
+            <button id="cancel-point">Annuler</button>
+        </div>
+
+        <div id="marker-menu" class="hidden">
+            <button id="edit-marker">Modifier</button>
+            <button id="move-marker">Déplacer</button>
+            <button id="delete-marker">Supprimer</button>
+        </div>
+
+        <div id="tooltip"></div>
+
     </div>
 
-    <!-- MENU POINT -->
-    <div id="point-menu" class="hidden">
-        <input id="point-name" placeholder="Nom">
-
-        <select id="point-icon"></select>
-
-        <select id="point-category">
-            <option value="">Choisir</option>
-            <option value="Drogue">Drogue</option>
-            <option value="Entrepôt">Entrepôt</option>
-            <option value="QG">QG</option>
-            <option value="Munition">Munition</option>
-            <option value="PNJ">PNJ</option>
-            <option value="Matériaux">Matériaux</option>
-        </select>
-
-        <button id="validate-point">Valider</button>
-        <button id="cancel-point">Annuler</button>
-    </div>
-
-    <!-- MENU CLIC DROIT -->
-    <div id="marker-menu" class="hidden">
-        <button id="edit-marker">Modifier</button>
-        <button id="move-marker">Déplacer</button>
-        <button id="delete-marker">Supprimer</button>
-    </div>
-
-    <!-- TOOLTIP -->
-    <div id="tooltip"></div>
-
-</div>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-<script src="script.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

@@ -31,6 +31,9 @@ const newPointBtn = document.getElementById("new-point-btn");
 const searchInput = document.getElementById("search-input");
 const suggestionBox = document.getElementById("search-suggestions");
 
+const miniMap = document.getElementById("mini-map");
+const miniMapViewport = document.getElementById("mini-map-viewport");
+
 /* ============================================================
    ICONES
 ============================================================ */
@@ -248,6 +251,7 @@ function updateMap() {
   markerLayer.style.transform = `translate(${posX}px, ${posY}px)`;
 
   updateMarkerDisplay();
+  updateMiniMap();
 }
 
 /* ============================================================
@@ -314,8 +318,8 @@ function addMarker(x, y, icon, name, id, category, status, owner) {
     `;
     tooltip.classList.add("show");
 
-    const px = x * scale + posX;
-    const py = y * scale + posY;
+    const px = parseFloat(img.dataset.x) * scale + posX;
+    const py = parseFloat(img.dataset.y) * scale + posY;
 
     tooltip.style.left = px + "px";
     tooltip.style.top = (py - 15) + "px";
@@ -376,7 +380,7 @@ mapContainer.addEventListener("click", (e) => {
   const rect = mapContainer.getBoundingClientRect();
 
   tempX = (e.clientX - rect.left - posX) / scale;
-  tempY = (e.clientX - rect.top - posY) / scale;
+  tempY = (e.clientY - rect.top - posY) / scale;
 
   waitingForPlacement = false;
   step1.classList.add("hidden");
@@ -554,17 +558,15 @@ if (searchInput && suggestionBox) {
 }
 
 function highlightMarker(marker) {
-  const previousTransform = marker.style.transform;
-  const previousFilter = marker.style.filter;
+  marker.classList.remove("search-highlight");
 
-  marker.style.transition = "all 0.3s";
-  marker.style.transform = "translate(-50%, -50%) scale(1.4)";
-  marker.style.filter = (previousFilter ? previousFilter + " " : "") + "drop-shadow(0 0 10px white)";
+  void marker.offsetWidth;
+
+  marker.classList.add("search-highlight");
 
   setTimeout(() => {
-    marker.style.transform = previousTransform || "translate(-50%, -50%)";
-    marker.style.filter = previousFilter || "";
-  }, 1200);
+    marker.classList.remove("search-highlight");
+  }, 900);
 }
 
 function focusMarker(marker) {
@@ -603,6 +605,33 @@ function focusMarker(marker) {
 }
 
 /* ============================================================
+   MINI MAP
+============================================================ */
+
+function updateMiniMap() {
+  const mapNaturalWidth = mapInner.offsetWidth;
+  const mapNaturalHeight = mapInner.offsetHeight;
+
+  if (!mapNaturalWidth || !mapNaturalHeight) return;
+
+  const miniWidth = miniMap.clientWidth;
+  const miniHeight = miniMap.clientHeight;
+
+  const scaleX = miniWidth / mapNaturalWidth;
+  const scaleY = miniHeight / mapNaturalHeight;
+
+  const viewLeft = -posX / scale;
+  const viewTop = -posY / scale;
+  const viewWidth = mapContainer.clientWidth / scale;
+  const viewHeight = mapContainer.clientHeight / scale;
+
+  miniMapViewport.style.left = (viewLeft * scaleX) + "px";
+  miniMapViewport.style.top = (viewTop * scaleY) + "px";
+  miniMapViewport.style.width = (viewWidth * scaleX) + "px";
+  miniMapViewport.style.height = (viewHeight * scaleY) + "px";
+}
+
+/* ============================================================
    FIRESTORE
 ============================================================ */
 
@@ -614,6 +643,11 @@ db.collection("markers").onSnapshot(snapshot => {
     const d = doc.data();
     addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category, d.status, d.owner);
   });
+
+  updateMiniMap();
 });
+
+window.addEventListener("load", updateMiniMap);
+window.addEventListener("resize", updateMiniMap);
 
 });

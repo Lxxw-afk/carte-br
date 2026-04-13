@@ -90,12 +90,19 @@ body {
     border-radius: 8px;
     overflow: hidden;
     z-index: 9999;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
 }
 
 .suggestion {
     padding: 8px 10px;
     color: white;
     cursor: pointer;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.suggestion:last-child {
+    border-bottom: none;
 }
 
 .suggestion:hover {
@@ -153,7 +160,8 @@ body {
 }
 
 /* ============================================================
-   FIX ANIMATION RECHERCHE (REMPLACE L'ANCIENNE)
+   ANIMATION RECHERCHE (FIX)
+   Ne touche plus au transform du marqueur
 ============================================================ */
 
 .marker.search-highlight {
@@ -238,6 +246,11 @@ body {
     box-sizing: border-box;
 }
 
+#point-menu button {
+    cursor: pointer;
+    font-weight: bold;
+}
+
 /* ============================================================
    MENU CLIC DROIT
 ============================================================ */
@@ -251,6 +264,7 @@ body {
     flex-direction: column;
 
     z-index: 9999;
+    overflow: hidden;
 }
 
 #marker-menu button {
@@ -260,6 +274,7 @@ body {
 
     padding: 8px 12px;
     cursor: pointer;
+    text-align: left;
 }
 
 #marker-menu button:hover {
@@ -295,8 +310,101 @@ body {
 #filter-panel label {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 10px;
     color: white;
     font-size: 13px;
+}
+
+/* ============================================================
+   MESSAGE STEP
+============================================================ */
+
+#step1 {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 16px;
+    z-index: 3000;
+}
+
+/* ============================================================
+   CREDIT
+============================================================ */
+
+#credit-btn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+
+    background: rgba(0,0,0,0.6);
+    color: white;
+
+    border: none;
+    padding: 6px 10px;
+
+    border-radius: 6px;
+    z-index: 9999;
+    cursor: default;
+}
+
+/* ============================================================
+   LOGIN
+============================================================ */
+
+#login-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+}
+
+#login-screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: white;
+}
+
+#login-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background: rgba(0,0,0,0.75);
+    padding: 20px;
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    min-width: 240px;
+}
+
+#login-box input,
+#login-box button {
+    height: 38px;
+    border-radius: 8px;
+    border: none;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+#login-box button {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#login-error {
+    color: #ff7b7b;
+    font-size: 13px;
+    min-height: 16px;
 }
 
 /* ============================================================
@@ -312,6 +420,7 @@ body {
     height: 140px;
 
     background: rgba(0,0,0,0.75);
+    border: 2px solid rgba(255,255,255,0.2);
     border-radius: 10px;
     overflow: hidden;
 
@@ -322,12 +431,17 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    background: rgba(255,255,255,0.05);
+    pointer-events: none;
+    user-select: none;
 }
 
 #mini-map-viewport {
     position: absolute;
-    border: 2px solid white;
-    background: rgba(255,255,255,0.1);
+    border: 2px solid #ffffff;
+    background: rgba(255,255,255,0.12);
+    box-sizing: border-box;
+    pointer-events: none;
 }
 
 /* ============================================================

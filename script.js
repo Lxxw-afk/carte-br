@@ -17,6 +17,7 @@ const pointMenu = document.getElementById("point-menu");
 const pointName = document.getElementById("point-name");
 const pointIcon = document.getElementById("point-icon");
 const pointCategory = document.getElementById("point-category");
+const pointOwner = document.getElementById("point-owner");
 const pointStatus = document.getElementById("point-status");
 
 const editBtn = document.getElementById("edit-marker");
@@ -288,7 +289,7 @@ function getStatusLabel(status) {
   return "🟢 Actif";
 }
 
-function addMarker(x, y, icon, name, id, category, status) {
+function addMarker(x, y, icon, name, id, category, status, owner) {
   const img = document.createElement("img");
   img.src = "icons/" + icon;
   img.className = "marker";
@@ -300,6 +301,7 @@ function addMarker(x, y, icon, name, id, category, status) {
   img.dataset.icon = icon;
   img.dataset.category = category || "Non défini";
   img.dataset.status = status || "Actif";
+  img.dataset.owner = owner || "";
 
   applyMarkerStatusStyle(img, img.dataset.status);
 
@@ -307,6 +309,7 @@ function addMarker(x, y, icon, name, id, category, status) {
     tooltip.innerHTML = `
       <b>${img.dataset.name}</b><br>
       ${img.dataset.category}<br>
+      ${img.dataset.owner ? img.dataset.owner + "<br>" : ""}
       ${getStatusLabel(img.dataset.status)}
     `;
     tooltip.classList.add("show");
@@ -392,6 +395,7 @@ validateBtn.addEventListener("click", async () => {
     selectedMarker.dataset.icon = pointIcon.value;
     selectedMarker.dataset.category = pointCategory.value;
     selectedMarker.dataset.status = pointStatus.value || "Actif";
+    selectedMarker.dataset.owner = pointOwner.value;
 
     selectedMarker.src = "icons/" + pointIcon.value;
     applyMarkerStatusStyle(selectedMarker, selectedMarker.dataset.status);
@@ -400,7 +404,8 @@ validateBtn.addEventListener("click", async () => {
       name: pointName.value,
       icon: pointIcon.value,
       category: pointCategory.value,
-      status: pointStatus.value || "Actif"
+      status: pointStatus.value || "Actif",
+      owner: pointOwner.value
     });
 
     editMode = false;
@@ -415,7 +420,8 @@ validateBtn.addEventListener("click", async () => {
     name: pointName.value,
     icon: pointIcon.value,
     category: pointCategory.value,
-    status: pointStatus.value || "Actif"
+    status: pointStatus.value || "Actif",
+    owner: pointOwner.value
   });
 
   addMarker(
@@ -425,7 +431,8 @@ validateBtn.addEventListener("click", async () => {
     pointName.value,
     doc.id,
     pointCategory.value,
-    pointStatus.value || "Actif"
+    pointStatus.value || "Actif",
+    pointOwner.value
   );
 
   pointMenu.classList.add("hidden");
@@ -446,6 +453,7 @@ cancelBtn.addEventListener("click", () => {
 
   pointName.value = "";
   pointCategory.value = "";
+  pointOwner.value = "";
   pointStatus.value = "";
 });
 
@@ -461,6 +469,7 @@ editBtn.addEventListener("click", () => {
   pointName.value = selectedMarker.dataset.name;
   pointIcon.value = selectedMarker.dataset.icon;
   pointCategory.value = selectedMarker.dataset.category;
+  pointOwner.value = selectedMarker.dataset.owner || "";
   pointStatus.value = selectedMarker.dataset.status || "Actif";
 
   pointMenu.classList.remove("hidden");
@@ -552,7 +561,7 @@ function focusMarker(marker) {
 }
 
 /* ============================================================
-   FIRESTORE.
+   FIRESTORE
 ============================================================ */
 
 db.collection("markers").onSnapshot(snapshot => {
@@ -561,7 +570,7 @@ db.collection("markers").onSnapshot(snapshot => {
 
   snapshot.forEach(doc => {
     const d = doc.data();
-    addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category, d.status);
+    addMarker(d.x, d.y, d.icon, d.name, doc.id, d.category, d.status, d.owner);
   });
 });
 

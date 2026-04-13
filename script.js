@@ -26,6 +26,9 @@ const validateBtn = document.getElementById("validate-point");
 const cancelBtn = document.getElementById("cancel-point");
 const newPointBtn = document.getElementById("new-point-btn");
 
+const searchInput = document.getElementById("search-input");
+const suggestionBox = document.getElementById("search-suggestions");
+
 /* ============================================================
    ICONES
 ============================================================ */
@@ -114,6 +117,10 @@ document.addEventListener("click", (e) => {
 
   if (!markerMenu.contains(e.target)) {
     markerMenu.classList.add("hidden");
+  }
+
+  if (suggestionBox && !suggestionBox.contains(e.target) && e.target !== searchInput) {
+    suggestionBox.classList.add("hidden");
   }
 });
 
@@ -434,6 +441,74 @@ deleteBtn.addEventListener("click", async () => {
   selectedMarker = null;
   markerMenu.classList.add("hidden");
 });
+
+/* ============================================================
+   RECHERCHE AVANCÉE
+============================================================ */
+
+if (searchInput && suggestionBox) {
+  searchInput.addEventListener("input", () => {
+
+    const value = searchInput.value.toLowerCase().trim();
+    suggestionBox.innerHTML = "";
+
+    if (!value) {
+      suggestionBox.classList.add("hidden");
+      return;
+    }
+
+    const results = markers.filter(m =>
+      (m.dataset.name || "").toLowerCase().includes(value)
+    );
+
+    results.slice(0, 5).forEach(marker => {
+      const div = document.createElement("div");
+      div.className = "suggestion";
+      div.textContent = marker.dataset.name;
+
+      div.addEventListener("click", () => {
+        focusMarker(marker);
+        suggestionBox.classList.add("hidden");
+      });
+
+      suggestionBox.appendChild(div);
+    });
+
+    if (results.length > 0) {
+      suggestionBox.classList.remove("hidden");
+    } else {
+      suggestionBox.classList.add("hidden");
+    }
+  });
+
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+
+    const value = searchInput.value.toLowerCase().trim();
+
+    const found = markers.find(m =>
+      (m.dataset.name || "").toLowerCase().includes(value)
+    );
+
+    if (found) {
+      focusMarker(found);
+      suggestionBox.classList.add("hidden");
+    }
+  });
+}
+
+function focusMarker(marker) {
+  const x = parseFloat(marker.dataset.x);
+  const y = parseFloat(marker.dataset.y);
+
+  const containerW = mapContainer.clientWidth;
+  const containerH = mapContainer.clientHeight;
+
+  posX = (containerW / 2) - (x * scale);
+  posY = (containerH / 2) - (y * scale);
+
+  updateMap();
+}
 
 /* ============================================================
    FIRESTORE

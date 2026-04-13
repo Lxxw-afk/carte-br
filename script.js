@@ -208,8 +208,24 @@ window.addEventListener("mouseup", () => {
 mapContainer.addEventListener("wheel", (e) => {
   e.preventDefault();
 
-  scale += (e.deltaY < 0 ? 0.1 : -0.1);
+  const oldScale = scale;
+  const zoomStep = 0.1;
+
+  // nouveau zoom
+  scale += (e.deltaY < 0 ? zoomStep : -zoomStep);
   scale = Math.max(0.5, Math.min(4, scale));
+
+  // centre visible de l'écran
+  const centerX = mapContainer.clientWidth / 2;
+  const centerY = mapContainer.clientHeight / 2;
+
+  // point actuellement au centre, en coordonnées carte
+  const worldX = (centerX - posX) / oldScale;
+  const worldY = (centerY - posY) / oldScale;
+
+  // recalcule posX / posY pour garder ce même point au centre
+  posX = centerX - worldX * scale;
+  posY = centerY - worldY * scale;
 
   updateMap();
 });

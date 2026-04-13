@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <title>BRIGADE DE RECHERCHES</title>
+    <title>BRIGADE DE RECHERCHE</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -36,7 +36,7 @@
             </div>
         </div>
 
-        <button id="credit-btn">Créé par Julien Flament | Lxxw</button>
+        <button id="credit-btn">Créé par Julien Flament | Lxxw.</button>
 
         <div id="step1" class="hidden">
             👉 Cliquez sur la carte pour placer votre point.
@@ -63,6 +63,8 @@
                 <option value="PNJ">PNJ</option>
             </select>
 
+            <input id="point-owner" placeholder="Nom du gang / organisation">
+
             <select id="point-status">
                 <option value="">Choisir un statut</option>
                 <option value="Actif">🟢 Actif</option>
@@ -81,7 +83,6 @@
         </div>
 
         <div id="tooltip"></div>
-
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>

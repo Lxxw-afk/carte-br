@@ -145,20 +145,48 @@ body {
     width: 40px;
     height: 40px;
     z-index: 4000;
-    transition: transform 0.15s ease, filter 0.15s ease, outline 0.15s ease;
+    transition: transform 0.15s ease, filter 0.15s ease;
 }
 
+/* Hover */
 .marker:hover {
     transform: translate(-50%, -50%) scale(1.15);
     z-index: 5000;
 }
 
+/* 🔥 SELECTION DYNAMIQUE */
+
 .marker.selected {
-    outline: 2px solid white;
-    outline-offset: 2px;
+    border-radius: 50%;
     z-index: 6000;
+    animation: selectedPulse 2s ease-in-out infinite;
 }
 
+/* 🟢 ACTIF */
+.marker.selected.status-actif {
+    box-shadow:
+        0 0 0 3px rgba(46,204,113,0.9),
+        0 0 12px rgba(46,204,113,0.6),
+        0 0 22px rgba(46,204,113,0.3);
+}
+
+/* 🟠 SURVEILLANCE */
+.marker.selected.status-surveillance {
+    box-shadow:
+        0 0 0 3px rgba(243,156,18,0.9),
+        0 0 12px rgba(243,156,18,0.6),
+        0 0 22px rgba(243,156,18,0.3);
+}
+
+/* 🔴 INACTIF */
+.marker.selected.status-inactif {
+    box-shadow:
+        0 0 0 3px rgba(231,76,60,0.9),
+        0 0 12px rgba(231,76,60,0.6),
+        0 0 22px rgba(231,76,60,0.3);
+}
+
+/* Glow simple (hors sélection) */
 .marker.status-actif {
     filter: drop-shadow(0 0 6px #2ecc71);
 }
@@ -172,8 +200,25 @@ body {
 }
 
 /* ============================================================
-   ANIMATION RECHERCHE (FIX)
-   Ne touche plus au transform du marqueur
+   ANIMATION SELECTION
+============================================================ */
+
+@keyframes selectedPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.08);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* ============================================================
+   ANIMATION RECHERCHE
 ============================================================ */
 
 .marker.search-highlight {
@@ -326,15 +371,6 @@ body {
     gap: 10px;
     color: white;
     font-size: 13px;
-}
-
-.filter-title {
-    font-size: 12px;
-    opacity: 0.7;
-    margin-top: 6px;
-    margin-bottom: 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 /* ============================================================

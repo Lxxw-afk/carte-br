@@ -148,13 +148,10 @@ body {
     transition: transform 0.15s ease, filter 0.15s ease;
 }
 
-/* Hover */
 .marker:hover {
     transform: translate(-50%, -50%) scale(1.15);
     z-index: 5000;
 }
-
-/* 🔥 SELECTION DYNAMIQUE */
 
 .marker.selected {
     border-radius: 50%;
@@ -241,32 +238,59 @@ body {
 }
 
 /* ============================================================
-   TOOLTIP
+   TOOLTIP PREMIUM
 ============================================================ */
 
 #tooltip {
     position: absolute;
-    background: rgba(20,20,20,0.92);
+
+    background: rgba(20,20,20,0.75);
+    backdrop-filter: blur(8px);
+
     color: white;
 
-    padding: 8px 10px;
-    border-radius: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
 
     font-size: 12px;
     z-index: 10000;
 
     display: none;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+    gap: 10px;
 
     transform: translate(-50%, -120%);
-    text-align: center;
-
     pointer-events: none;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
 }
 
 #tooltip.show {
     display: flex;
+}
+
+.tooltip-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.tooltip-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: left;
+}
+
+.tooltip-title {
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.tooltip-sub {
+    font-size: 11px;
+    opacity: 0.75;
 }
 
 /* ============================================================
@@ -371,6 +395,15 @@ body {
     gap: 10px;
     color: white;
     font-size: 13px;
+}
+
+.filter-title {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* ============================================================

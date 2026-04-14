@@ -357,19 +357,36 @@ function addMarker(x, y, icon, name, id, category, status, owner) {
   applyMarkerStatusStyle(img, img.dataset.status);
 
   img.addEventListener("mouseenter", () => {
+
     tooltip.innerHTML = `
-      <b>${img.dataset.name}</b><br>
-      ${img.dataset.category}<br>
-      ${img.dataset.owner ? img.dataset.owner + "<br>" : ""}
-      ${getStatusLabel(img.dataset.status)}
+      <img src="icons/${img.dataset.icon}" class="tooltip-icon">
+
+      <div class="tooltip-content">
+        <div class="tooltip-title">${img.dataset.name}</div>
+
+        <div class="tooltip-sub">
+          ${img.dataset.category}
+        </div>
+
+        ${img.dataset.owner ? `
+        <div class="tooltip-sub">
+          👤 ${img.dataset.owner}
+        </div>
+        ` : ""}
+
+        <div class="tooltip-sub">
+          ${getStatusLabel(img.dataset.status)}
+        </div>
+      </div>
     `;
+
     tooltip.classList.add("show");
 
     const px = parseFloat(img.dataset.x) * scale + posX;
     const py = parseFloat(img.dataset.y) * scale + posY;
 
     tooltip.style.left = px + "px";
-    tooltip.style.top = (py - 15) + "px";
+    tooltip.style.top = (py - 20) + "px";
   });
 
   img.addEventListener("mouseleave", () => {

@@ -433,7 +433,7 @@ mapContainer.addEventListener("click", (e) => {
     selectedMarker.dataset.x = x;
     selectedMarker.dataset.y = y;
 
-    db.collection("markers".doc(selectedMarker.dataset.id).update({ x, y });
+    db.collection("markers").doc(selectedMarker.dataset.id).update({ x, y });
 
     moveMode = false;
     selectedMarker = null;

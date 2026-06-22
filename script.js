@@ -63,7 +63,7 @@ const loginError = document.getElementById("login-error");
 loginBtn.addEventListener("click", () => {
   const value = document.getElementById("access-code").value.trim();
 
-  if (value === "ILLEGAL21") {
+  if (value === "BRIGADE2026") {
     loginScreen.remove();
     app.classList.remove("hidden");
   } else {

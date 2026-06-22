@@ -41,7 +41,7 @@ const miniMapViewport = document.getElementById("mini-map-viewport");
 const iconList = [
   "Meth.png","cocaine.png","Munitions.png","organes.png",
   "Weed.png","Entrepot.png","Acier.png","Heroine.png",
-  "LSD.png","bijoux.png","Metal.png","Titane.png","QG.png","criminel.png"
+  "LSD.png","bijoux.png","Metal.png","Titane.png","QG.png","criminel.png","ecstasies.png"
 ];
 
 iconList.forEach(icon => {

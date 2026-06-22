@@ -433,7 +433,7 @@ mapContainer.addEventListener("click", (e) => {
     selectedMarker.dataset.x = x;
     selectedMarker.dataset.y = y;
 
-   db.collection("markers_brigade_recherche").doc(selectedMarker.dataset.id).update({ x, y });
+   db.collection("markers").doc(selectedMarker.dataset.id).update({ x, y });
 
     moveMode = false;
     selectedMarker = null;
@@ -470,7 +470,7 @@ validateBtn.addEventListener("click", async () => {
     selectedMarker.src = "icons/" + pointIcon.value;
     applyMarkerStatusStyle(selectedMarker, selectedMarker.dataset.status);
 
-    await db.collection("markers_brigade_recherche").doc(selectedMarker.dataset.id).update({
+    await db.collection("markers").doc(selectedMarker.dataset.id).update({
       name: pointName.value,
       icon: pointIcon.value,
       category: pointCategory.value,
@@ -485,7 +485,7 @@ validateBtn.addEventListener("click", async () => {
     return;
   }
 
-  const doc = await db.collection("markers_brigade_recherche").add({
+  const doc = await db.collection("markers").add({
     x: tempX,
     y: tempY,
     name: pointName.value,
@@ -557,7 +557,7 @@ moveBtn.addEventListener("click", () => {
 deleteBtn.addEventListener("click", async () => {
   if (!selectedMarker) return;
 
-  await db.collection("markers_brigade_recherche").doc(selectedMarker.dataset.id).delete();
+  await db.collection("markers").doc(selectedMarker.dataset.id).delete();
 
   selectedMarker.remove();
   markers = markers.filter(m => m !== selectedMarker);
@@ -706,7 +706,7 @@ function updateMiniMap() {
    FIRESTORE
 ============================================================ */
 
-db.collection("markers_brigade_recherche").onSnapshot(snapshot => {
+db.collection("markers").onSnapshot(snapshot => {
   markers.forEach(m => m.remove());
   markers = [];
 

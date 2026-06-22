@@ -168,17 +168,25 @@ updateMap();});
 
 /* ============================================================UPDATE MAP============================================================ */
 
-function updateMap() {const containerW = mapContainer.clientWidth;const containerH = mapContainer.clientHeight;
+function updateMap() {
+  const containerW = mapContainer.clientWidth;
+  const containerH = mapContainer.clientHeight;
 
-const mapW = mapInner.offsetWidth * scale;const mapH = mapInner.offsetHeight * scale;
+  const mapW = mapInner.offsetWidth * scale;
+  const mapH = mapInner.offsetHeight * scale;
 
-const minX = Math.min(0, containerW - mapW);const minY = Math.min(0, containerH - mapH);
+  const minX = Math.min(0, containerW - mapW);
+  const minY = Math.min(0, containerH - mapH);
 
-posX = Math.max(minX, Math.min(0, posX));posY = Math.max(minY, Math.min(0, posY));
+  posX = Math.max(minX, Math.min(0, posX));
+  posY = Math.max(minY, Math.min(0, posY));
 
-mapInner.style.transform = translate(${posX}px, ${posY}px) scale(${scale});markerLayer.style.transform = translate(${posX}px, ${posY}px);
+  mapInner.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+  markerLayer.style.transform = `translate(${posX}px, ${posY}px)`;
 
-updateMarkerDisplay();updateMiniMap();}
+  updateMarkerDisplay();
+  updateMiniMap();
+}
 
 /* ============================================================MARKERS============================================================ */
 
